@@ -77,6 +77,10 @@ São consumidores que podem marcar na conta da cantina suas compras e depois a c
 
 ## Banco de dados
 
+O banco de dados utilizado será MySQL.
+
+Ele já possui algumas tabelas criadas. O sistema poderá usar essas tabelas existentes, mas não alterá-las.
+
 Todas as tabelas do banco de dados deverão ser criadas com o prefixo `cant_`.
 
 Não é para usar migrations do codeigniter.

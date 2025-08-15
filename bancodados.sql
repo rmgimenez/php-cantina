@@ -327,4 +327,532 @@ CREATE TABLE `funcionarios` (
 
 -- início - tabelas da cantina
 
+-- Tabela de funcionários da cantina
+CREATE TABLE `cant_funcionarios` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `usuario` varchar(50) NOT NULL UNIQUE,
+  `senha` varchar(255) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `tipo` enum('administrador', 'atendente', 'estoquista') NOT NULL DEFAULT 'atendente',
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_funcionarios_usuario` (`usuario`),
+  KEY `idx_cant_funcionarios_tipo` (`tipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de tipos de produtos
+CREATE TABLE `cant_tipos_produtos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_tipos_produtos_nome` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de produtos
+CREATE TABLE `cant_produtos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `codigo_barras` varchar(50) DEFAULT NULL,
+  `nome` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `tipo_produto_id` int NOT NULL,
+  `preco` decimal(10,2) NOT NULL,
+  `estoque_atual` int NOT NULL DEFAULT 0,
+  `estoque_minimo` int NOT NULL DEFAULT 0,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cant_produtos_codigo_barras` (`codigo_barras`),
+  KEY `idx_cant_produtos_nome` (`nome`),
+  KEY `idx_cant_produtos_tipo` (`tipo_produto_id`),
+  CONSTRAINT `fk_cant_produtos_tipo` FOREIGN KEY (`tipo_produto_id`) REFERENCES `cant_tipos_produtos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de contas de alunos
+CREATE TABLE `cant_contas_alunos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ra_aluno` int NOT NULL,
+  `saldo` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `limite_diario` decimal(10,2) DEFAULT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cant_contas_alunos_ra` (`ra_aluno`),
+  CONSTRAINT `fk_cant_contas_alunos_ra` FOREIGN KEY (`ra_aluno`) REFERENCES `cadastro_alunos` (`ra`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de contas de funcionários da escola
+CREATE TABLE `cant_contas_funcionarios` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `codigo_funcionario` int NOT NULL,
+  `saldo` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `limite_mensal` decimal(10,2) DEFAULT NULL,
+  `consumo_mes_atual` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `mes_referencia` date NOT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cant_contas_funcionarios_codigo_mes` (`codigo_funcionario`, `mes_referencia`),
+  KEY `idx_cant_contas_funcionarios_codigo` (`codigo_funcionario`),
+  CONSTRAINT `fk_cant_contas_funcionarios_codigo` FOREIGN KEY (`codigo_funcionario`) REFERENCES `funcionarios` (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de restrições de produtos por aluno
+CREATE TABLE `cant_restricoes_alunos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ra_aluno` int NOT NULL,
+  `tipo_restricao` enum('produto', 'tipo_produto') NOT NULL,
+  `produto_id` int DEFAULT NULL,
+  `tipo_produto_id` int DEFAULT NULL,
+  `permitido` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_restricoes_alunos_ra` (`ra_aluno`),
+  KEY `idx_cant_restricoes_alunos_produto` (`produto_id`),
+  KEY `idx_cant_restricoes_alunos_tipo` (`tipo_produto_id`),
+  CONSTRAINT `fk_cant_restricoes_alunos_ra` FOREIGN KEY (`ra_aluno`) REFERENCES `cadastro_alunos` (`ra`),
+  CONSTRAINT `fk_cant_restricoes_alunos_produto` FOREIGN KEY (`produto_id`) REFERENCES `cant_produtos` (`id`),
+  CONSTRAINT `fk_cant_restricoes_alunos_tipo` FOREIGN KEY (`tipo_produto_id`) REFERENCES `cant_tipos_produtos` (`id`),
+  CONSTRAINT `chk_cant_restricoes_tipo` CHECK (
+    (`tipo_restricao` = 'produto' AND `produto_id` IS NOT NULL AND `tipo_produto_id` IS NULL) OR
+    (`tipo_restricao` = 'tipo_produto' AND `tipo_produto_id` IS NOT NULL AND `produto_id` IS NULL)
+  )
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de pacotes de alimentação
+CREATE TABLE `cant_pacotes_alimentacao` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `tipo_refeicao` enum('lanche_manha', 'almoco', 'lanche_tarde', 'jantar', 'personalizado') NOT NULL,
+  `preco` decimal(10,2) NOT NULL,
+  `dias_validade` int NOT NULL DEFAULT 30,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_pacotes_nome` (`nome`),
+  KEY `idx_cant_pacotes_tipo` (`tipo_refeicao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de produtos inclusos nos pacotes
+CREATE TABLE `cant_pacotes_produtos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `pacote_id` int NOT NULL,
+  `produto_id` int NOT NULL,
+  `quantidade` int NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cant_pacotes_produtos_unique` (`pacote_id`, `produto_id`),
+  KEY `idx_cant_pacotes_produtos_pacote` (`pacote_id`),
+  KEY `idx_cant_pacotes_produtos_produto` (`produto_id`),
+  CONSTRAINT `fk_cant_pacotes_produtos_pacote` FOREIGN KEY (`pacote_id`) REFERENCES `cant_pacotes_alimentacao` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cant_pacotes_produtos_produto` FOREIGN KEY (`produto_id`) REFERENCES `cant_produtos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de compras de pacotes por alunos
+CREATE TABLE `cant_pacotes_alunos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ra_aluno` int NOT NULL,
+  `pacote_id` int NOT NULL,
+  `data_compra` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_inicio` date NOT NULL,
+  `data_fim` date NOT NULL,
+  `valor_pago` decimal(10,2) NOT NULL,
+  `refeicoes_restantes` int NOT NULL DEFAULT 0,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_pacotes_alunos_ra` (`ra_aluno`),
+  KEY `idx_cant_pacotes_alunos_pacote` (`pacote_id`),
+  KEY `idx_cant_pacotes_alunos_data_fim` (`data_fim`),
+  CONSTRAINT `fk_cant_pacotes_alunos_ra` FOREIGN KEY (`ra_aluno`) REFERENCES `cadastro_alunos` (`ra`),
+  CONSTRAINT `fk_cant_pacotes_alunos_pacote` FOREIGN KEY (`pacote_id`) REFERENCES `cant_pacotes_alimentacao` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de vendas
+CREATE TABLE `cant_vendas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `numero_venda` varchar(20) NOT NULL UNIQUE,
+  `tipo_cliente` enum('aluno', 'funcionario', 'dinheiro') NOT NULL,
+  `ra_aluno` int DEFAULT NULL,
+  `codigo_funcionario` int DEFAULT NULL,
+  `funcionario_cantina_id` int NOT NULL,
+  `valor_total` decimal(10,2) NOT NULL,
+  `forma_pagamento` enum('conta', 'dinheiro', 'cartao', 'pix') NOT NULL DEFAULT 'conta',
+  `valor_recebido` decimal(10,2) DEFAULT NULL,
+  `valor_troco` decimal(10,2) DEFAULT NULL,
+  `observacoes` text DEFAULT NULL,
+  `data_venda` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_vendas_numero` (`numero_venda`),
+  KEY `idx_cant_vendas_tipo_cliente` (`tipo_cliente`),
+  KEY `idx_cant_vendas_ra_aluno` (`ra_aluno`),
+  KEY `idx_cant_vendas_codigo_funcionario` (`codigo_funcionario`),
+  KEY `idx_cant_vendas_funcionario_cantina` (`funcionario_cantina_id`),
+  KEY `idx_cant_vendas_data` (`data_venda`),
+  CONSTRAINT `fk_cant_vendas_ra_aluno` FOREIGN KEY (`ra_aluno`) REFERENCES `cadastro_alunos` (`ra`),
+  CONSTRAINT `fk_cant_vendas_codigo_funcionario` FOREIGN KEY (`codigo_funcionario`) REFERENCES `funcionarios` (`codigo`),
+  CONSTRAINT `fk_cant_vendas_funcionario_cantina` FOREIGN KEY (`funcionario_cantina_id`) REFERENCES `cant_funcionarios` (`id`),
+  CONSTRAINT `chk_cant_vendas_cliente` CHECK (
+    (`tipo_cliente` = 'aluno' AND `ra_aluno` IS NOT NULL AND `codigo_funcionario` IS NULL) OR
+    (`tipo_cliente` = 'funcionario' AND `codigo_funcionario` IS NOT NULL AND `ra_aluno` IS NULL) OR
+    (`tipo_cliente` = 'dinheiro' AND `ra_aluno` IS NULL AND `codigo_funcionario` IS NULL)
+  )
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de itens da venda
+CREATE TABLE `cant_vendas_itens` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `venda_id` int NOT NULL,
+  `produto_id` int NOT NULL,
+  `quantidade` int NOT NULL,
+  `preco_unitario` decimal(10,2) NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL,
+  `pacote_aluno_id` int DEFAULT NULL COMMENT 'Se o item foi consumido usando um pacote',
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_vendas_itens_venda` (`venda_id`),
+  KEY `idx_cant_vendas_itens_produto` (`produto_id`),
+  KEY `idx_cant_vendas_itens_pacote` (`pacote_aluno_id`),
+  CONSTRAINT `fk_cant_vendas_itens_venda` FOREIGN KEY (`venda_id`) REFERENCES `cant_vendas` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cant_vendas_itens_produto` FOREIGN KEY (`produto_id`) REFERENCES `cant_produtos` (`id`),
+  CONSTRAINT `fk_cant_vendas_itens_pacote` FOREIGN KEY (`pacote_aluno_id`) REFERENCES `cant_pacotes_alunos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de movimentações financeiras
+CREATE TABLE `cant_movimentacoes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tipo_conta` enum('aluno', 'funcionario') NOT NULL,
+  `ra_aluno` int DEFAULT NULL,
+  `codigo_funcionario` int DEFAULT NULL,
+  `tipo_movimentacao` enum('credito', 'debito') NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `descricao` varchar(255) NOT NULL,
+  `venda_id` int DEFAULT NULL,
+  `funcionario_cantina_id` int DEFAULT NULL,
+  `data_movimentacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_movimentacoes_tipo_conta` (`tipo_conta`),
+  KEY `idx_cant_movimentacoes_ra_aluno` (`ra_aluno`),
+  KEY `idx_cant_movimentacoes_codigo_funcionario` (`codigo_funcionario`),
+  KEY `idx_cant_movimentacoes_venda` (`venda_id`),
+  KEY `idx_cant_movimentacoes_data` (`data_movimentacao`),
+  CONSTRAINT `fk_cant_movimentacoes_ra_aluno` FOREIGN KEY (`ra_aluno`) REFERENCES `cadastro_alunos` (`ra`),
+  CONSTRAINT `fk_cant_movimentacoes_codigo_funcionario` FOREIGN KEY (`codigo_funcionario`) REFERENCES `funcionarios` (`codigo`),
+  CONSTRAINT `fk_cant_movimentacoes_venda` FOREIGN KEY (`venda_id`) REFERENCES `cant_vendas` (`id`),
+  CONSTRAINT `fk_cant_movimentacoes_funcionario_cantina` FOREIGN KEY (`funcionario_cantina_id`) REFERENCES `cant_funcionarios` (`id`),
+  CONSTRAINT `chk_cant_movimentacoes_conta` CHECK (
+    (`tipo_conta` = 'aluno' AND `ra_aluno` IS NOT NULL AND `codigo_funcionario` IS NULL) OR
+    (`tipo_conta` = 'funcionario' AND `codigo_funcionario` IS NOT NULL AND `ra_aluno` IS NULL)
+  )
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de histórico de estoque
+CREATE TABLE `cant_estoque_historico` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `produto_id` int NOT NULL,
+  `tipo_movimentacao` enum('entrada', 'saida', 'ajuste') NOT NULL,
+  `quantidade` int NOT NULL,
+  `estoque_anterior` int NOT NULL,
+  `estoque_atual` int NOT NULL,
+  `motivo` varchar(255) DEFAULT NULL,
+  `venda_id` int DEFAULT NULL,
+  `funcionario_cantina_id` int NOT NULL,
+  `data_movimentacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_estoque_historico_produto` (`produto_id`),
+  KEY `idx_cant_estoque_historico_venda` (`venda_id`),
+  KEY `idx_cant_estoque_historico_funcionario` (`funcionario_cantina_id`),
+  KEY `idx_cant_estoque_historico_data` (`data_movimentacao`),
+  CONSTRAINT `fk_cant_estoque_historico_produto` FOREIGN KEY (`produto_id`) REFERENCES `cant_produtos` (`id`),
+  CONSTRAINT `fk_cant_estoque_historico_venda` FOREIGN KEY (`venda_id`) REFERENCES `cant_vendas` (`id`),
+  CONSTRAINT `fk_cant_estoque_historico_funcionario` FOREIGN KEY (`funcionario_cantina_id`) REFERENCES `cant_funcionarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- View para consulta de alunos com seus responsáveis e contas
+CREATE VIEW `cant_view_alunos_completo` AS
+SELECT 
+    a.ra,
+    a.nome,
+    a.nome_social,
+    a.nasc,
+    a.curso_nome,
+    a.serie,
+    a.turma,
+    a.periodo,
+    a.status,
+    a.nome_resp,
+    a.cpf_resp,
+    a.nasc_resp,
+    a.tel_cel_resp,
+    a.email_resp,
+    a.nome_resp_fin,
+    a.cpf_resp_fin,
+    a.nasc_resp_fin,
+    ca.saldo,
+    ca.limite_diario,
+    ca.ativo as conta_ativa
+FROM alunos a
+LEFT JOIN cant_contas_alunos ca ON a.ra = ca.ra_aluno;
+
+-- View para consulta de produtos com estoque baixo
+CREATE VIEW `cant_view_produtos_estoque_baixo` AS
+SELECT 
+    p.id,
+    p.codigo_barras,
+    p.nome,
+    p.preco,
+    p.estoque_atual,
+    p.estoque_minimo,
+    tp.nome as tipo_produto,
+    (p.estoque_minimo - p.estoque_atual) as quantidade_repor
+FROM cant_produtos p
+INNER JOIN cant_tipos_produtos tp ON p.tipo_produto_id = tp.id
+WHERE p.estoque_atual <= p.estoque_minimo
+  AND p.ativo = 1;
+
+-- View para relatório de vendas por período
+CREATE VIEW `cant_view_vendas_resumo` AS
+SELECT 
+    DATE(v.data_venda) as data_venda,
+    v.tipo_cliente,
+    COUNT(v.id) as total_vendas,
+    SUM(v.valor_total) as valor_total_vendas,
+    fc.nome as funcionario_cantina
+FROM cant_vendas v
+INNER JOIN cant_funcionarios fc ON v.funcionario_cantina_id = fc.id
+GROUP BY DATE(v.data_venda), v.tipo_cliente, fc.nome;
+
+-- View para consulta de pacotes ativos dos alunos
+CREATE VIEW `cant_view_pacotes_alunos_ativos` AS
+SELECT 
+    pa.id,
+    pa.ra_aluno,
+    a.nome as nome_aluno,
+    pac.nome as nome_pacote,
+    pac.tipo_refeicao,
+    pa.data_inicio,
+    pa.data_fim,
+    pa.refeicoes_restantes,
+    pa.valor_pago
+FROM cant_pacotes_alunos pa
+INNER JOIN cadastro_alunos a ON pa.ra_aluno = a.ra
+INNER JOIN cant_pacotes_alimentacao pac ON pa.pacote_id = pac.id
+WHERE pa.ativo = 1 
+  AND pa.data_fim >= CURDATE()
+  AND pa.refeicoes_restantes > 0;
+
+-- Trigger para atualizar saldo do aluno após venda
+DELIMITER $$
+CREATE TRIGGER `tr_cant_vendas_atualizar_saldo_aluno` 
+AFTER INSERT ON `cant_vendas`
+FOR EACH ROW
+BEGIN
+    IF NEW.tipo_cliente = 'aluno' AND NEW.forma_pagamento = 'conta' THEN
+        UPDATE cant_contas_alunos 
+        SET saldo = saldo - NEW.valor_total,
+            data_atualizacao = CURRENT_TIMESTAMP
+        WHERE ra_aluno = NEW.ra_aluno;
+        
+        INSERT INTO cant_movimentacoes (
+            tipo_conta, ra_aluno, tipo_movimentacao, valor, 
+            descricao, venda_id, funcionario_cantina_id, data_movimentacao
+        ) VALUES (
+            'aluno', NEW.ra_aluno, 'debito', NEW.valor_total,
+            CONCAT('Venda #', NEW.numero_venda), NEW.id, NEW.funcionario_cantina_id, NEW.data_venda
+        );
+    END IF;
+END$$
+DELIMITER ;
+
+-- Trigger para atualizar consumo do funcionário após venda
+DELIMITER $$
+CREATE TRIGGER `tr_cant_vendas_atualizar_consumo_funcionario` 
+AFTER INSERT ON `cant_vendas`
+FOR EACH ROW
+BEGIN
+    IF NEW.tipo_cliente = 'funcionario' AND NEW.forma_pagamento = 'conta' THEN
+        UPDATE cant_contas_funcionarios 
+        SET consumo_mes_atual = consumo_mes_atual + NEW.valor_total,
+            data_atualizacao = CURRENT_TIMESTAMP
+        WHERE codigo_funcionario = NEW.codigo_funcionario 
+          AND mes_referencia = DATE_FORMAT(NEW.data_venda, '%Y-%m-01');
+        
+        INSERT INTO cant_movimentacoes (
+            tipo_conta, codigo_funcionario, tipo_movimentacao, valor, 
+            descricao, venda_id, funcionario_cantina_id, data_movimentacao
+        ) VALUES (
+            'funcionario', NEW.codigo_funcionario, 'debito', NEW.valor_total,
+            CONCAT('Venda #', NEW.numero_venda), NEW.id, NEW.funcionario_cantina_id, NEW.data_venda
+        );
+    END IF;
+END$$
+DELIMITER ;
+
+-- Trigger para atualizar estoque após venda
+DELIMITER $$
+CREATE TRIGGER `tr_cant_vendas_itens_atualizar_estoque` 
+AFTER INSERT ON `cant_vendas_itens`
+FOR EACH ROW
+BEGIN
+    DECLARE estoque_anterior INT;
+    
+    SELECT estoque_atual INTO estoque_anterior 
+    FROM cant_produtos 
+    WHERE id = NEW.produto_id;
+    
+    UPDATE cant_produtos 
+    SET estoque_atual = estoque_atual - NEW.quantidade,
+        data_atualizacao = CURRENT_TIMESTAMP
+    WHERE id = NEW.produto_id;
+    
+    INSERT INTO cant_estoque_historico (
+        produto_id, tipo_movimentacao, quantidade, estoque_anterior, 
+        estoque_atual, motivo, venda_id, funcionario_cantina_id, data_movimentacao
+    ) 
+    SELECT 
+        NEW.produto_id, 'saida', NEW.quantidade, estoque_anterior,
+        estoque_anterior - NEW.quantidade, 
+        CONCAT('Venda item #', NEW.id), NEW.venda_id, v.funcionario_cantina_id, v.data_venda
+    FROM cant_vendas v 
+    WHERE v.id = NEW.venda_id;
+END$$
+DELIMITER ;
+
+-- Trigger para decrementar refeições de pacote
+DELIMITER $$
+CREATE TRIGGER `tr_cant_vendas_itens_decrementar_pacote` 
+AFTER INSERT ON `cant_vendas_itens`
+FOR EACH ROW
+BEGIN
+    IF NEW.pacote_aluno_id IS NOT NULL THEN
+        UPDATE cant_pacotes_alunos 
+        SET refeicoes_restantes = refeicoes_restantes - NEW.quantidade
+        WHERE id = NEW.pacote_aluno_id;
+    END IF;
+END$$
+DELIMITER ;
+
+-- Stored Procedure para adicionar crédito na conta do aluno
+DELIMITER $$
+CREATE PROCEDURE `sp_cant_adicionar_credito_aluno`(
+    IN p_ra_aluno INT,
+    IN p_valor DECIMAL(10,2),
+    IN p_funcionario_cantina_id INT,
+    IN p_descricao VARCHAR(255)
+)
+BEGIN
+    DECLARE v_conta_existe INT DEFAULT 0;
+    
+    -- Verifica se a conta do aluno existe
+    SELECT COUNT(*) INTO v_conta_existe 
+    FROM cant_contas_alunos 
+    WHERE ra_aluno = p_ra_aluno;
+    
+    -- Se não existe, cria a conta
+    IF v_conta_existe = 0 THEN
+        INSERT INTO cant_contas_alunos (ra_aluno, saldo) 
+        VALUES (p_ra_aluno, 0);
+    END IF;
+    
+    -- Adiciona o crédito
+    UPDATE cant_contas_alunos 
+    SET saldo = saldo + p_valor,
+        data_atualizacao = CURRENT_TIMESTAMP
+    WHERE ra_aluno = p_ra_aluno;
+    
+    -- Registra a movimentação
+    INSERT INTO cant_movimentacoes (
+        tipo_conta, ra_aluno, tipo_movimentacao, valor, 
+        descricao, funcionario_cantina_id, data_movimentacao
+    ) VALUES (
+        'aluno', p_ra_aluno, 'credito', p_valor,
+        p_descricao, p_funcionario_cantina_id, CURRENT_TIMESTAMP
+    );
+END$$
+DELIMITER ;
+
+-- Stored Procedure para verificar se aluno pode consumir produto
+DELIMITER $$
+CREATE PROCEDURE `sp_cant_verificar_restricao_aluno`(
+    IN p_ra_aluno INT,
+    IN p_produto_id INT,
+    OUT p_pode_consumir BOOLEAN
+)
+BEGIN
+    DECLARE v_produto_restrito INT DEFAULT 0;
+    DECLARE v_tipo_produto_restrito INT DEFAULT 0;
+    DECLARE v_tipo_produto_id INT;
+    
+    -- Busca o tipo do produto
+    SELECT tipo_produto_id INTO v_tipo_produto_id 
+    FROM cant_produtos 
+    WHERE id = p_produto_id;
+    
+    -- Verifica restrição específica do produto
+    SELECT COUNT(*) INTO v_produto_restrito
+    FROM cant_restricoes_alunos
+    WHERE ra_aluno = p_ra_aluno 
+      AND tipo_restricao = 'produto'
+      AND produto_id = p_produto_id
+      AND permitido = 0;
+    
+    -- Verifica restrição do tipo de produto
+    SELECT COUNT(*) INTO v_tipo_produto_restrito
+    FROM cant_restricoes_alunos
+    WHERE ra_aluno = p_ra_aluno 
+      AND tipo_restricao = 'tipo_produto'
+      AND tipo_produto_id = v_tipo_produto_id
+      AND permitido = 0;
+    
+    -- Define se pode consumir
+    SET p_pode_consumir = (v_produto_restrito = 0 AND v_tipo_produto_restrito = 0);
+END$$
+DELIMITER ;
+
+-- Stored Procedure para gerar número de venda
+DELIMITER $$
+CREATE PROCEDURE `sp_cant_gerar_numero_venda`(
+    OUT p_numero_venda VARCHAR(20)
+)
+BEGIN
+    DECLARE v_contador INT;
+    DECLARE v_data_hoje VARCHAR(8);
+    
+    SET v_data_hoje = DATE_FORMAT(CURDATE(), '%Y%m%d');
+    
+    SELECT COALESCE(MAX(CAST(SUBSTRING(numero_venda, 9) AS UNSIGNED)), 0) + 1 
+    INTO v_contador
+    FROM cant_vendas 
+    WHERE numero_venda LIKE CONCAT(v_data_hoje, '%');
+    
+    SET p_numero_venda = CONCAT(v_data_hoje, LPAD(v_contador, 4, '0'));
+END$$
+DELIMITER ;
+
+-- Inserir dados iniciais
+
+-- Tipos de produtos padrão
+INSERT INTO `cant_tipos_produtos` (`nome`, `descricao`) VALUES
+('Salgados', 'Produtos salgados como coxinhas, pastéis, etc.'),
+('Doces', 'Produtos doces como brigadeiros, tortas, etc.'),
+('Bebidas', 'Sucos, refrigerantes, água, etc.'),
+('Lanches', 'Sanduíches, pães, etc.'),
+('Refeições', 'Pratos principais, almoço, etc.');
+
+-- Pacotes de alimentação padrão
+INSERT INTO `cant_pacotes_alimentacao` (`nome`, `descricao`, `tipo_refeicao`, `preco`, `dias_validade`) VALUES
+('Lanche da Manhã - Mensal', 'Pacote de lanche da manhã para 30 dias', 'lanche_manha', 150.00, 30),
+('Almoço - Mensal', 'Pacote de almoço para 30 dias', 'almoco', 300.00, 30),
+('Lanche da Tarde - Mensal', 'Pacote de lanche da tarde para 30 dias', 'lanche_tarde', 120.00, 30),
+('Combo Completo - Mensal', 'Lanche manhã + Almoço + Lanche tarde', 'personalizado', 500.00, 30);
+
 -- fim - tabelas da cantina
