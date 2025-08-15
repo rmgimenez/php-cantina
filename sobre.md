@@ -36,3 +36,51 @@ Bibliotecas utilizadas:
 - [react-query](https://react-query.tanstack.com/) - Para gerenciamento de dados assíncronos.
 - [bootstrap](https://getbootstrap.com/) - Para estilização da aplicação.
 - [react-icons](https://react-icons.github.io/react-icons/) - Para ícones no projeto.
+
+## Funcionalidades
+
+### Atores
+
+#### Funcionários da cantina
+
+São os usuários responsáveis pelo atendimento e gestão da cantina.
+
+Eles usarão um nome de usuário e senha para acessar o sistema.
+
+#### Alunos
+
+São os principais clientes da cantina.
+
+#### Responsáveis dos alunos
+
+São os responsáveis legais pelos alunos e poderão gerenciar as contas de seus dependentes.
+
+#### Funcionários da escola
+
+São consumidores que podem marcar na conta da cantina suas compras e depois a cantina envia um relatório para o departamento pessoal para descontar o valor consumido no mês. A conta fecha por mês.
+
+### Funcionalidades do sistema
+
+- Os funcionários da cantina poderão ser de 3 tipos:
+  - Administrador: Tem acesso total ao sistema, podendo gerenciar usuários, produtos e vendas.
+  - Atendente: Pode realizar vendas e consultar o estoque.
+  - Estoquista: Pode gerenciar o estoque de produtos.
+- Os alunos poderão consultar o saldo de suas contas e realizar compras.
+- Os responsáveis poderão gerenciar as contas de seus dependentes, incluindo a possibilidade de adicionar crédito.
+- Os funcionários da escola poderão realizar compras e marcar na conta da cantina, que será fechada mensalmente.
+- Os responsáveis poderão consultar o que foi consumido e o saldo de seus dependentes através de uma tela onde ele deverá logar com o número do CPF e a data de nascimento.
+- Os responsáveis poderão definir quais tipos de produtos ou produtos individuais que seus dependentes podem consumir.
+- Os produtos deverão possuir um tipo para classificação (ex: salgados, doces, etc).
+- Os responsáveis poderão comprar pacotes de alimentação para seus filhos. Por exemplo, comprar lanche da manhã e almoço por 1 mês.
+- Os funcionários da cantina poderão verificar se o aluno possui pacote de refeição comprada.
+- Os funcionários da cantina poderão verificar o histórico de vendas e consumo dos alunos.
+
+## Banco de dados
+
+Todas as tabelas do banco de dados deverão ser criadas com o prefixo `cant_`.
+
+Não é para usar migrations do codeigniter.
+
+Todo o esquema do banco de dados deve ser criado manualmente.
+
+Os scripts estarão no arquivo `bancodados.sql`.
