@@ -11,9 +11,46 @@ Sistema de controle de cantina escolar feito em PHP com banco de dados MySql.
 - Bootstrap
 - jQuery
 
+Nota: Este projeto deve usar o framework CodeIgniter 4 como base da aplicação. Ajustes de estrutura, roteamento e execução deverão seguir as convenções do CodeIgniter 4.
+
+Observação: o esqueleto do CodeIgniter 4 já foi instalado neste repositório (via Composer `codeigniter4/appstarter`). Use o utilitário `spark` para comandos de desenvolvimento e migrations.
+
 ## Banco de dados
 
 As tabelas do sistema deverão começar com o prefixo `cant_`.
+
+Instruções rápidas de setup local:
+
+- Copie o arquivo de ambiente de exemplo e ajuste as configurações (APP_BASE_URL, database.\*):
+
+```powershell
+cd /d D:\dev\php-cantina
+copy env .env
+# Edite .env e ajuste DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+```
+
+- Instale dependências (caso necessário):
+
+```powershell
+composer install
+```
+
+- Importe o schema inicial (opcional) ou execute migrations do projeto:
+
+```powershell
+# usando mysql cli (ajuste usuário e database):
+mysql -u SEU_USUARIO -p SEU_BANCO < bancodados.sql
+
+# ou, preferencialmente, usar as migrations do projeto (se existirem):
+php spark migrate
+```
+
+- Inicie o servidor de desenvolvimento:
+
+```powershell
+php spark serve -p 8000
+# ou: php -S localhost:8000 -t public
+```
 
 ## Tipos de usuários do sistema
 

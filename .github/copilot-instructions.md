@@ -5,82 +5,92 @@ Instruções curtas e acionáveis para agentes de codificação que vão trabalh
 ## Documento fonte principal
 
 - Leia `sobre.md` primeiro — contém o escopo do sistema, tecnologias usadas e regras importantes (por exemplo, prefixo de tabelas).
-- `README.md` está presente mas vazio; não confie nele como fonte completa.
+- `README.md` é um guia geral, mas `sobre.md` é o documento fonte primário.
 
-## Visão geral rápida (o "porquê")
+## Objetivo
 
-- Sistema PHP para controle de cantina escolar; banco de dados MySQL. Objetivo: registrar consumo por alunos e funcionários e integrar com o sistema APS da escola.
-- Pontos essenciais: integração com APS (dados de responsáveis/alunos), tabelas do banco com prefixo `cant_`, papéis de usuário (caixa, supervisor, gerente, informática).
+Instruções curtas e acionáveis para agentes de codificação que vão trabalhar neste repositório `php-cantina`.
 
-## Tecnologias (visíveis em `sobre.md`)
+## Leitura inicial recomendada (orde nado)
 
-- PHP, MySQL, Composer, JavaScript, Bootstrap, jQuery.
+- `sobre.md` — documento fonte primário com escopo, requisitos e regras (ex.: prefixo `cant_`).
+- `bancodados.sql` — schema e seeds iniciais (veja tabelas `cant_*`, parâmetros e usuários seedados).
+- `app/Config/` — arquivos de configuração do CodeIgniter 4 (App.php, Database.php, Routes.php, etc.).
 
-## Convenções do projeto (regras obrigatórias que o agente deve seguir)
+## Visão geral curta (o que importa)
 
-- Prefixo de tabelas no banco: `cant_` (procure por esse padrão ao localizar SQL/queries).
-- Nomes de variáveis em código: camelCase.
-- Nomes de classes: PascalCase.
+- Projeto é um aplicativo PHP baseado em CodeIgniter 4 (skeleton presente). O entrypoint web está em `public/` e há o CLI helper `spark` na raiz.
+- Banco MySQL com prefixo de tabelas `cant_` (procure por esse padrão em queries e migrations).
+- Integração APS é um domínio importante (staging tables `cant_stg_aps_*` estão no schema). Busque por "APS", "integr", "stg_aps" ao investigar integrações.
+
+## Convenções e padrões detectados (siga estes)
+
+- Código PHP segue as convenções do CodeIgniter 4: classes em PascalCase, namespaces padrão, controllers em `app/Controllers`, models em `app/Models`.
+- Nomes de variáveis: camelCase.
 - Constantes: UPPER_SNAKE_CASE.
-- Nomes de arquivos: kebab-case (use `-` entre palavras).
-- Strings em código: use aspas simples (`'texto'`).
-- Atributos HTML: use aspas duplas ("valor").
-- Termine sentenças em linguagens que exigem com ponto-e-vírgula (`;`).
+- Preferência por aspas simples em strings PHP (`'texto'`) e aspas duplas em atributos HTML ("valor").
+- Prefixo de tabelas: sempre `cant_` (ex.: `cant_usuario`, `cant_venda`).
+- Migrations e seeds: `app/Database/Migrations` e `app/Database/Seeds` (use `php spark migrate` / `php spark db:seed`).
+- Observação sobre nomes de arquivos: o repositório usa o padrão do framework (PascalCase para classes/arquivos PHP). Ignore a recomendação genérica de kebab-case para arquivos PHP — siga o padrão do CodeIgniter para arquivos de classe.
 
-## Onde procurar código relevante
+## Locais-chave no repositório (onde olhar primeiro)
 
-- Procure por arquivos PHP e por padrões SQL que contenham `cant_`.
-- Verifique configurações de conexão com MySQL (normalmente arquivos `config`, `db`, ou `bootstrap` se existirem).
-- Integração com APS: busque por termos `APS`, `integr`, `aluno`, `responsavel` em PHP/JS.
+- `app/Config/Database.php` — parâmetros de conexão; confirme se `.env` existe ou copie `env` para `.env` e ajuste.
+- `bancodados.sql` — esquema completo com seeds iniciais (papéis, permissões, parâmetros). Útil para inspeção rápida do modelo de dados.
+- `app/Database/Migrations` e `app/Database/Seeds` — implementações incrementais do schema; prefira migrations quando existirem.
+- `app/Controllers/`, `app/Models/`, `app/Views/` — fluxo MVC padrão; procure controllers de PDV/recarga/venda para lógica de negócio.
+- `spark` (arquivo CLI) — utilitário do CodeIgniter para servir, migrar e rodar testes.
+- `tests/` e `phpunit.xml.dist` — suíte de testes; veja exemplos em `tests/unit` e `tests/database`.
 
-## Comandos úteis (assunções mínimas)
-
-Algumas ferramentas são citadas em `sobre.md` (Composer, MySQL). Se o repositório tiver `composer.json`, use:
+## Comandos de desenvolvedor (Windows PowerShell)
 
 ```powershell
+# instalar dependências
 composer install
+
+# preparar ambiente (copiar arquivo de exemplo)
+copy env .env; # editar .env para DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+
+# rodar migrations (quando existirem)
+php spark migrate
+
+# iniciar servidor de desenvolvimento (usa public/)
+php spark serve -p 8000
+# alternativa: php -S localhost:8000 -t public
+
+# rodar testes PHPUnit (versão bundlada no vendor)
+vendor\bin\phpunit.bat -c phpunit.xml.dist
 ```
 
-Para localizar rapidamente referências no Windows PowerShell:
+Observação: `composer.json` e `vendor/` estão presentes — não é necessário rebaixar ferramentas manualmente.
 
-```powershell
-# listar arquivos PHP
-Get-ChildItem -Recurse -Filter *.php
-# buscar referências ao prefixo de tabelas
-Select-String -Path . -Pattern 'cant_' -SimpleMatch -List
-# buscar por APS/integracao
-Select-String -Path . -Pattern 'APS|integr|aluno|responsavel' -SimpleMatch -List
-```
+## Integrações e pontos de atenção
 
-Se precisar rodar um servidor local rápido (assumindo que haja um ponto de entrada web), uma opção simples:
+- APS: existem tabelas de staging no `bancodados.sql` (`cant_stg_aps_responsavel`, `cant_stg_aps_aluno`, `cant_stg_aps_funcionario`). A implementação real da integração pode estar em uma camada de serviço (pesquise por "APS", "stg_aps", "integr").
+- Filtre buscas por prefixo `cant_` para localizar rapidamente entidades do domínio.
+- Uso de transações é esperado em operações compostas (venda + itens + estoque + saldo); procure por chamadas a `db->transStart()` / `db->transComplete()` ou uso do Query Builder em transações.
 
-```powershell
-php -S localhost:8000 -t public;
-```
+## Padrões de API / respostas
 
-Observação: não encontramos `composer.json`, arquivos PHP nem estrutura pública neste repositório no momento; as linhas acima são instruções práticas a usar se/quando esses arquivos aparecerem.
+- API internas e endpoints costumam seguir envelope JSON: { success: bool, data: any, errors?: [] } — verificar controllers para confirmar formato e replicar nos novos endpoints.
 
-## Padrões de implementação observáveis / exemplos do repositório
+## Seeds e dados úteis
 
-- `sobre.md` documenta papéis: `caixa`, `supervisor`, `gerente`, `informática`. Quando criar ou revisar código de autorização, garanta que as permissões implementadas correspondam a esses papéis.
-- As funcionalidades desejadas listadas (PDV, relatórios, integração APS, baixa de faturas) são as prioridades do produto — inclua testes e rotas/CAMINHOS relacionados a esses domínios.
+- `bancodados.sql` inclui seeds para papéis (`cant_papel`), permissões e parâmetros (ex.: `janela_cancelamento_min`, `peso_minimo_gramas`). Use esse arquivo como referência ao criar migrations ou seeders.
 
-## Limites do que está documentado aqui
+## Regras práticas para agentes/PRs automatizados
 
-- Este repositório, no estado atual, contém apenas documentação (`sobre.md`) e não possui código fonte PHP ou arquivos de configuração detectados. Não invente caminhos/arquivos não presentes; ao implementar, use busca para localizar os arquivos reais e adapte as instruções.
+- Antes de criar/renomear tabelas, confirme uso do prefixo `cant_` e atualize migrations + `bancodados.sql` se alterar seeds.
+- Siga a estrutura do CodeIgniter 4 ao colocar controllers, models e views. Use `app/Config/Routes.php` para registrar novas rotas.
+- Evite alterações rompantes em nomes de arquivos de classes (siga PascalCase e namespaces do framework).
+- Para mudanças de dados (migrations/seeds), inclua uma nota curta no PR sobre impacto em APS e relatórios (quem consome os dados).
 
-## Orientações para alterações de código geradas por agentes
+## Perguntas para o revisor humano (prioritárias)
 
-- Siga estritamente as convenções descritas acima (nomenclatura, aspas, kebab-case para arquivos).
-- Antes de criar ou renomear tabelas, confirme o prefixo `cant_` e atualize migrations/SQL export do projeto.
-- Ao propor alterações que afetam dados (migrações, scripts SQL), inclua uma breve nota explicando impactos em APS e em relatórios de RH.
-
-## Perguntas para pedir ao revisor humano
-
-1. Onde ficam os arquivos de configuração de banco (ex.: `config.php`, `.env`)?
-2. Existe um `composer.json` que não foi comitado aqui? Qual comando padrão usamos para iniciar o app localmente?
-3. Há testes automatizados ou estilos de lint específicos que devo aplicar?
+1. Onde preferem manter credenciais: `.env` (local) ou `app/Config/Database.php` (committed) para testes? (recomendamos usar `.env`)
+2. Quais jobs de integração APS já existem (endpoints/cron) e qual o ponto de contato para testes end-to-end?
+3. Há regras de lint/format (phpcs, php-cs-fixer) que devo aplicar nas PRs automáticas?
 
 ---
 
-Se algo estiver incorreto ou incompleto, diga o que devo ajustar — vou iterar o arquivo com base no seu retorno.
+Se algo estiver incorreto ou incompleto, indique pontos específicos (ex.: arquivos de integração APS) e eu ajusto o documento.

@@ -7,102 +7,79 @@ Controle de cantina escolar — sistema em PHP com MySQL para registrar consumos
 - Linguagens/stack: PHP, MySQL, JavaScript (Bootstrap, jQuery).
 - Objetivo: registrar consumo por dependente/funcionário, permitir consulta por responsáveis, gerar relatórios e integração com APS.
 
+> Observação: o esqueleto do CodeIgniter 4 já foi instalado neste repositório via Composer (codeigniter4/appstarter). Utilize os comandos do framework (`spark`) para tarefas de desenvolvimento e migrations.
+
 ## Estado atual do repositório
 
-O repositório agora contém:
+O repositório contém um esqueleto CodeIgniter 4 e artefatos do projeto:
 
-- `composer.json` com autoload PSR-4 e scripts (`start`, `migrate`).
-- Estrutura básica `public/index.php` + `src/Bootstrap.php`.
-- Sistema de migrations em `database/migrations` + runner `bin/migrate.php`.
-- Script SQL monolítico de referência (`bancodados.sql`) usado pela primeira migration.
-- Carregamento `.env` minimalista (`src/Env.php`).
+- Estrutura padrão do CodeIgniter 4: `app/` (ou `src/`), `public/`, `writable/`, `tests/`, `vendor/` e o utilitário `spark`.
+- `composer.json` e `composer.lock` gerenciando dependências.
+- `bancodados.sql` — script de schema inicial (referência/migração inicial).
+- Migrations iniciais podem estar em `database/migrations` (verificar e usar preferencialmente).
 
-As futuras mudanças de schema devem ser feitas via novas migrations incrementais. Evite alterar a migration inicial após produção.
+As futuras mudanças de schema devem ser feitas via migrations incrementais. Evite alterar a migration inicial após produção.
+
+## Setup rápido (desenvolvimento)
+
+Prerequisitos: PHP 8+, MySQL 8 (recomendado), Composer.
+
+1. Instale dependências (caso ainda não tenha sido executado):
+
+```powershell
+cd /d D:\dev\php-cantina
+composer install
+```
+
+2. Crie o arquivo de ambiente `.env` a partir do exemplo e ajuste as variáveis (APP_BASE_URL, database.\*):
+
+```powershell
+cd /d D:\dev\php-cantina
+copy env .env
+# Edite .env e configure DB (DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD)
+```
+
+3. Importar o schema inicial (opcional — use migrations preferencialmente):
+
+```powershell
+# Usando mysql cli (ajuste usuário e database):
+mysql -u SEU_USUARIO -p SEU_BANCO < bancodados.sql
+
+# Ou rode as migrations do projeto (se existirem):
+php spark migrate
+```
+
+4. Rodar servidor de desenvolvimento:
+
+```powershell
+cd /d D:\dev\php-cantina
+php spark serve -p 8000
+# ou (alternativa) php -S localhost:8000 -t public
+```
+
+5. Executar testes (se desejar):
+
+```powershell
+cd /d D:\dev\php-cantina
+php vendor\bin\phpunit --testdox
+```
 
 ## Arquivos importantes
 
 - `sobre.md` — escopo do sistema e regras importantes (prefixo de tabelas `cant_`, papéis de usuário).
-- `.github/copilot-instructions.md` — diretrizes específicas para agentes/colaboradores (convenções de código e comandos úteis).
+- `.github/copilot-instructions.md` — diretrizes e convenções do projeto (nomenclatura, prefixos, etc.).
 
-## Início rápido (desenvolvimento)
+## Boas práticas
 
-Prerequisitos: PHP 8+, MySQL 8 (recomendado), Composer.
+- Use migrations para mudanças de schema e mantenha-as idempotentes.
+- Utilize transações em operações que envolvem múltiplas escritas coerentes (venda + itens + estoque + saldo).
+- Siga convenções descritas em `.github/copilot-instructions.md` (camelCase para variáveis, PascalCase para classes, kebab-case para nomes de arquivos, prefixo `cant_` para tabelas, strings em aspas simples em PHP).
 
-Instale dependências:
+## Próximos passos sugeridos
 
-```powershell
-composer install
-```
+1. Verificar e ajustar o `.env` com credenciais do MySQL.
+2. Importar `bancodados.sql` ou aplicar as migrations existentes.
+3. Ajustar e executar seeds de papéis/usuários iniciais (caso necessário).
+4. Criar endpoints iniciais: autenticação (RF001), catálogo de produtos (RF006/RF007) e PDV mínimo (RF010).
 
-Para subir o servidor embutido (página simples inicial):
-
-```powershell
-php -S localhost:8000 -t public;
-```
-
-Aplicar migrations (cria schema, triggers e procedures):
-
-```powershell
-composer migrate
-```
-
-Comandos úteis para localizar artefatos no Windows PowerShell:
-
-```powershell
-# listar arquivos PHP
-Get-ChildItem -Recurse -Filter *.php
-# buscar referências ao prefixo de tabelas
-Select-String -Path . -Pattern 'cant_' -SimpleMatch -List
-# buscar por integrações APS
-Select-String -Path . -Pattern 'APS|integr|aluno|responsavel' -SimpleMatch -List
-```
-
-## Convenções e boas práticas
-
-Consulte `.github/copilot-instructions.md` para regras específicas do projeto (nomenclatura camelCase, PascalCase para classes, kebab-case para nomes de arquivo, uso de aspas simples em strings PHP, prefixo `cant_` para tabelas, etc.). Siga essas convenções ao criar código ou migrações.
-
-## Como contribuir
-
-1. Abra uma issue descrevendo a mudança ou bug.
-2. Crie uma branch com nome descritivo em kebab-case.
-3. Inclua testes e migrações quando necessário.
-4. Abra um pull request com descrição das alterações e impactos (especialmente em integrações APS e relatórios de RH).
-
-## Perguntas que ajudam a progredir
-
-- Onde ficam os arquivos de configuração do banco (`config.php`, `.env`)?
-- Existe um `composer.json` em outra branch ou repositório remoto?
-- Há convenções de testes (ex.: `phpunit`) que devo seguir?
-
-Se quiser, posso procurar por arquivos de configuração em branches remotas ou preparar um esqueleto inicial do projeto (migrations, `composer.json`) — diga qual opção prefere.
-
-## Projeto inicial criado
-
-Criei um esqueleto mínimo do projeto sem framework com autoload PSR-4 (namespace `App\\` -> `src/`) e um ponto de entrada em `public/index.php`.
-
-Para instalar dependências e rodar localmente:
-
-```powershell
-composer install
-php -S localhost:8000 -t public
-```
-
-Copie o arquivo de exemplo de configuração `config/.env.example` para `.env` na raiz:
-
-```powershell
-Copy-Item config/.env.example .env
-```
-
-Depois rode as migrations:
-
-```powershell
-composer migrate
-```
-
-### Próximos passos sugeridos
-
-1. Implementar camada de repositórios (`src/Repository`).
-2. Criar serviços de domínio (VendaService, SaldoService) com transações.
-3. Adicionar PHPUnit e testes de unidade para regras RN021, RN026, RN024.
-4. Adicionar mecanismo de rollback em migrations (guardar hash e opcional método down()).
-5. Implementar roteamento (ex.: FastRoute) e controllers REST para primeiros endpoints (auth, produtos, alunos).
+Se quiser, eu posso configurar o `.env` automaticamente (se você me fornecer as credenciais de desenvolvimento), importar o `bancodados.sql` localmente, e rodar um teste rápido do servidor. Diga qual ação prefere.
