@@ -9,7 +9,7 @@
     <link href="<?= base_url('assets/css/auth.css') ?>" rel="stylesheet" />
     <style>
         body {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #FEA800 0%, #253287 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -21,16 +21,16 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.97);
             backdrop-filter: blur(10px);
             border: none;
             border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(37, 50, 135, 0.08);
         }
 
         .card-header {
             background: transparent;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid #FEA800;
             text-align: center;
             padding: 2rem 2rem 1rem;
         }
@@ -41,43 +41,45 @@
 
         .form-control {
             border-radius: 10px;
-            border: 1px solid #e1e5e9;
+            border: 1px solid #253287;
             padding: 0.75rem 1rem;
         }
 
         .form-control:focus {
-            border-color: #4facfe;
-            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+            border-color: #253287;
+            box-shadow: 0 0 0 0.2rem rgba(37, 50, 135, 0.15);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #253287 0%, #FEA800 100%);
             border: none;
             border-radius: 10px;
             padding: 0.75rem;
             font-weight: 500;
+            color: #fff;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #3d8bfe 0%, #00d4fe 100%);
+            background: linear-gradient(135deg, #B20000 0%, #253287 100%);
+            color: #fff;
         }
 
         .login-options {
             text-align: center;
             margin-top: 1.5rem;
             padding-top: 1rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid #FEA800;
         }
 
         .icon-cantina {
             font-size: 3rem;
-            color: #4facfe;
+            color: #FEA800;
             margin-bottom: 1rem;
         }
 
         .info-box {
-            background: rgba(79, 172, 254, 0.1);
-            border: 1px solid rgba(79, 172, 254, 0.2);
+            background: rgba(254, 168, 0, 0.08);
+            border: 1px solid #FEA800;
             border-radius: 10px;
             padding: 1rem;
             margin-bottom: 1.5rem;
@@ -173,14 +175,15 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const cpfInput = document.querySelector('input[name="cpf"]');
-
-            cpfInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-                e.target.value = value;
-            });
+            if (cpfInput) {
+                cpfInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    e.target.value = value;
+                });
+            }
         });
     </script>
 </body>

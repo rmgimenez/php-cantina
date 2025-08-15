@@ -27,9 +27,9 @@
     <?php $authUser = session()->get('authUser'); ?>
     <?php $authResponsavel = session()->get('authResponsavel'); ?>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: linear-gradient(135deg, #253287 0%, #B20000 100%);">
         <div class="container-fluid">
-            <a class="navbar-brand" href="<?= $authUser ? '/dashboard' : '/portal' ?>">
+            <a class="navbar-brand" href="<?= $authUser ? '/dashboard' : '/portal' ?>" style="color: #FEA800; font-weight: bold;">
                 <i class="fas fa-utensils me-2"></i>Cantina
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +109,7 @@
         </div>
     </nav>
 
-    <main class="container-fluid">
+    <main class="container-fluid" style="background: #f8f9fa; min-height: 90vh;">
         <!-- Alertas de sessão -->
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">

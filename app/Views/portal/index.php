@@ -22,7 +22,7 @@ Portal do Responsável - Cantina
 <div class="row g-4">
     <!-- Card de boas-vindas -->
     <div class="col-12">
-        <div class="card border-0 shadow-sm bg-primary text-white">
+        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #253287 0%, #FEA800 100%); color: #fff;">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-md-8">
@@ -46,14 +46,14 @@ Portal do Responsável - Cantina
     <div class="col-md-6 col-lg-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-info mb-3">
+                <div class="mb-3" style="color: #253287;">
                     <i class="fas fa-users fa-2x"></i>
                 </div>
                 <h6 class="card-title">Meus Dependentes</h6>
                 <p class="card-text text-muted small">
                     Veja todos os alunos sob sua responsabilidade
                 </p>
-                <a href="#" class="btn btn-outline-info btn-sm">
+                <a href="#" class="btn btn-outline-primary btn-sm" style="border-color: #253287; color: #253287;">
                     <i class="fas fa-eye me-1"></i>Visualizar
                 </a>
             </div>
@@ -63,14 +63,14 @@ Portal do Responsável - Cantina
     <div class="col-md-6 col-lg-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-success mb-3">
+                <div class="mb-3" style="color: #10ac84;">
                     <i class="fas fa-wallet fa-2x"></i>
                 </div>
                 <h6 class="card-title">Saldos</h6>
                 <p class="card-text text-muted small">
                     Consulte o saldo disponível de cada dependente
                 </p>
-                <a href="#" class="btn btn-outline-success btn-sm">
+                <a href="#" class="btn btn-outline-success btn-sm" style="border-color: #10ac84; color: #10ac84;">
                     <i class="fas fa-money-bill-wave me-1"></i>Consultar
                 </a>
             </div>
@@ -80,14 +80,14 @@ Portal do Responsável - Cantina
     <div class="col-md-6 col-lg-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-warning mb-3">
+                <div class="mb-3" style="color: #FEA800;">
                     <i class="fas fa-history fa-2x"></i>
                 </div>
                 <h6 class="card-title">Histórico</h6>
                 <p class="card-text text-muted small">
                     Veja o que foi consumido pelos seus dependentes
                 </p>
-                <a href="#" class="btn btn-outline-warning btn-sm">
+                <a href="#" class="btn btn-outline-warning btn-sm" style="border-color: #FEA800; color: #FEA800;">
                     <i class="fas fa-list me-1"></i>Ver Histórico
                 </a>
             </div>
@@ -97,14 +97,14 @@ Portal do Responsável - Cantina
     <div class="col-md-6 col-lg-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-purple mb-3">
+                <div class="mb-3" style="color: #B20000;">
                     <i class="fas fa-gift fa-2x"></i>
                 </div>
                 <h6 class="card-title">Kits/Pacotes</h6>
                 <p class="card-text text-muted small">
                     Adquira pacotes de alimentação com desconto
                 </p>
-                <a href="#" class="btn btn-outline-secondary btn-sm">
+                <a href="#" class="btn btn-outline-danger btn-sm" style="border-color: #B20000; color: #B20000;">
                     <i class="fas fa-shopping-cart me-1"></i>Ver Ofertas
                 </a>
             </div>
@@ -114,7 +114,7 @@ Portal do Responsável - Cantina
     <!-- Seção de informações importantes -->
     <div class="col-12">
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header" style="background: #253287; color: #fff; border-bottom: 2px solid #FEA800;">
                 <h6 class="mb-0">
                     <i class="fas fa-info-circle me-2"></i>Informações Importantes
                 </h6>
@@ -122,7 +122,7 @@ Portal do Responsável - Cantina
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h6 class="text-primary">
+                        <h6 style="color: #253287;">
                             <i class="fas fa-clock me-2"></i>Horários de Funcionamento
                         </h6>
                         <ul class="list-unstyled small text-muted">
@@ -132,7 +132,7 @@ Portal do Responsável - Cantina
                         </ul>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="text-success">
+                        <h6 style="color: #10ac84;">
                             <i class="fas fa-credit-card me-2"></i>Formas de Recarga
                         </h6>
                         <ul class="list-unstyled small text-muted">
@@ -148,7 +148,7 @@ Portal do Responsável - Cantina
 
     <!-- Próximas funcionalidades -->
     <div class="col-12">
-        <div class="alert alert-info border-0">
+        <div class="alert border-0" style="background: #253287; color: #fff;">
             <h6 class="alert-heading">
                 <i class="fas fa-rocket me-2"></i>Em Desenvolvimento
             </h6>
@@ -164,19 +164,6 @@ Portal do Responsável - Cantina
 
 <?= $this->section('css') ?>
 <style>
-    .text-purple {
-        color: #6f42c1 !important;
-    }
-
-    .btn-outline-purple {
-        color: #6f42c1;
-        border-color: #6f42c1;
-    }
-
-    .btn-outline-purple:hover {
-        background-color: #6f42c1;
-        border-color: #6f42c1;
-        color: white;
-    }
+    /* Removido: classes antigas substituídas por cores oficiais no HTML */
 </style>
 <?= $this->endSection() ?>

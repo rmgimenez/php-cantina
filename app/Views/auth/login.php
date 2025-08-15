@@ -9,7 +9,7 @@
     <link href="<?= base_url('assets/css/auth.css') ?>" rel="stylesheet" />
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #253287 0%, #B20000 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -21,16 +21,16 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.97);
             backdrop-filter: blur(10px);
             border: none;
             border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(37, 50, 135, 0.08);
         }
 
         .card-header {
             background: transparent;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid #FEA800;
             text-align: center;
             padding: 2rem 2rem 1rem;
         }
@@ -41,37 +41,39 @@
 
         .form-control {
             border-radius: 10px;
-            border: 1px solid #e1e5e9;
+            border: 1px solid #253287;
             padding: 0.75rem 1rem;
         }
 
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #253287;
+            box-shadow: 0 0 0 0.2rem rgba(37, 50, 135, 0.15);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #253287 0%, #B20000 100%);
             border: none;
             border-radius: 10px;
             padding: 0.75rem;
             font-weight: 500;
+            color: #fff;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            background: linear-gradient(135deg, #253287 0%, #FEA800 100%);
+            color: #333333;
         }
 
         .login-options {
             text-align: center;
             margin-top: 1.5rem;
             padding-top: 1rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid #FEA800;
         }
 
         .icon-cantina {
             font-size: 3rem;
-            color: #667eea;
+            color: #253287;
             margin-bottom: 1rem;
         }
     </style>
