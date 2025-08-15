@@ -9,7 +9,15 @@ Controle de cantina escolar — sistema em PHP com MySQL para registrar consumos
 
 ## Estado atual do repositório
 
-Neste momento o repositório contém documentação (`sobre.md`) e instruções para agentes. O código-fonte PHP, arquivos de configuração (por exemplo `composer.json`, `config.php` ou `.env`) e migrations podem não estar presentes nesta branch. Antes de implementar, procure por esses arquivos ou confirme com o time.
+O repositório agora contém:
+
+- `composer.json` com autoload PSR-4 e scripts (`start`, `migrate`).
+- Estrutura básica `public/index.php` + `src/Bootstrap.php`.
+- Sistema de migrations em `database/migrations` + runner `bin/migrate.php`.
+- Script SQL monolítico de referência (`bancodados.sql`) usado pela primeira migration.
+- Carregamento `.env` minimalista (`src/Env.php`).
+
+As futuras mudanças de schema devem ser feitas via novas migrations incrementais. Evite alterar a migration inicial após produção.
 
 ## Arquivos importantes
 
@@ -18,18 +26,24 @@ Neste momento o repositório contém documentação (`sobre.md`) e instruções 
 
 ## Início rápido (desenvolvimento)
 
-Prerequisitos: PHP (CLI), MySQL, Composer (se aplicável).
+Prerequisitos: PHP 8+, MySQL 8 (recomendado), Composer.
 
-Se houver `composer.json`, instale dependências:
+Instale dependências:
 
 ```powershell
 composer install
 ```
 
-Para subir um servidor PHP embutido (quando houver um ponto de entrada web, ex.: pasta `public`):
+Para subir o servidor embutido (página simples inicial):
 
 ```powershell
 php -S localhost:8000 -t public;
+```
+
+Aplicar migrations (cria schema, triggers e procedures):
+
+```powershell
+composer migrate
 ```
 
 Comandos úteis para localizar artefatos no Windows PowerShell:
@@ -61,3 +75,34 @@ Consulte `.github/copilot-instructions.md` para regras específicas do projeto (
 - Há convenções de testes (ex.: `phpunit`) que devo seguir?
 
 Se quiser, posso procurar por arquivos de configuração em branches remotas ou preparar um esqueleto inicial do projeto (migrations, `composer.json`) — diga qual opção prefere.
+
+## Projeto inicial criado
+
+Criei um esqueleto mínimo do projeto sem framework com autoload PSR-4 (namespace `App\\` -> `src/`) e um ponto de entrada em `public/index.php`.
+
+Para instalar dependências e rodar localmente:
+
+```powershell
+composer install
+php -S localhost:8000 -t public
+```
+
+Copie o arquivo de exemplo de configuração `config/.env.example` para `.env` na raiz:
+
+```powershell
+Copy-Item config/.env.example .env
+```
+
+Depois rode as migrations:
+
+```powershell
+composer migrate
+```
+
+### Próximos passos sugeridos
+
+1. Implementar camada de repositórios (`src/Repository`).
+2. Criar serviços de domínio (VendaService, SaldoService) com transações.
+3. Adicionar PHPUnit e testes de unidade para regras RN021, RN026, RN024.
+4. Adicionar mecanismo de rollback em migrations (guardar hash e opcional método down()).
+5. Implementar roteamento (ex.: FastRoute) e controllers REST para primeiros endpoints (auth, produtos, alunos).
