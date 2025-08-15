@@ -10,6 +10,8 @@ Sistema de controle de cantina escolar feito em PHP com banco de dados MySql.
 - JavaScript
 - Bootstrap
 - jQuery
+- Datatable
+- Plugins jQuery
 
 Nota: Este projeto deve usar o framework CodeIgniter 4 como base da aplicação. Ajustes de estrutura, roteamento e execução deverão seguir as convenções do CodeIgniter 4.
 
@@ -98,6 +100,8 @@ Os dados dos responsáveis deverão ser buscados no sistema de controle de aluno
 - Venda de refeição por quilo.
 - Preço diferente por cada funcionário. (definir regras de precificação, pois o almoço varia de preço de acordo com o funcionário).
 - Sistema de pacotes de alimentação para os alunos (kits). O responsável poderá por exemplo comprar o pacote do lanche da manhã e do almoço por um período. O sistema deverá controlar o consumo desses pacotes.
+- Os funcionário vão logar no sistema através do nome de usuário e senha.
+- Os responsáveis vão logar no sistema através do CPF e senha. Essa tabela já existe no canco de dados do APS.
 
 ## Requisitos Funcionais (RF)
 
