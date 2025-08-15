@@ -1,50 +1,80 @@
-## Instruções para agentes de codificação — `php-cantina`
+# Guia rápido para agentes de codificação — php-cantina
 
-### Visão geral e arquitetura
+Objetivo: dar ao agente informação suficiente para começar a trabalhar neste repositório sem perguntas repetitivas.
 
-- Sistema de controle de cantina escolar em PHP, baseado em CodeIgniter 4 (MVC). Entrypoint web: `public/`. CLI: `spark` na raiz.
-- Banco de dados MySQL, todas as tabelas do sistema usam prefixo `cant_` (ex: `cant_usuario`, `cant_venda`).
-- Integração com sistema APS (controle de alunos/funcionários) via tabelas de staging `cant_stg_aps_*` e camada de serviço (busque por "APS", "stg_aps", "integr").
-- Estrutura principal: controllers em `app/Controllers/`, models em `app/Models/`, views em `app/Views/`. Configurações em `app/Config/`.
+Checklist rápida (o que vou assumir / verificar quando começar a editar):
 
-### Fluxos críticos e comandos
+- Verificar `bancodados.sql` para entender o modelo de dados existente (tabelas importadas e views).
+- Procurar código em `backend/` e `frontend/` (neste ponto as pastas podem estar vazias; adaptar a mudanças).
+- Respeitar convenções de código e estilo do projeto descritas abaixo.
 
-- Instalação: `composer install`
-- Configuração: copie `env` para `.env` e ajuste DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD.
-- Migrations: `php spark migrate` (schema incremental em `app/Database/Migrations`).
-- Servidor dev: `php spark serve -p 8000` (ou `php -S localhost:8000 -t public`).
-- Testes: `vendor\bin\phpunit.bat -c phpunit.xml.dist` (testes em `tests/`).
+Visão geral do projeto
 
-### Convenções e padrões do projeto
+- Estrutura: duas partes principais — `backend/` (CodeIgniter 4) e `frontend/` (Vite + React). Os arquivos que implementam cada parte podem não estar presentes neste snapshot; use os arquivos SQL e os .md como fontes de verdade.
+- Fluxo de dados: o backend expõe APIs (CodeIgniter) que o frontend consome (axios/react-query). O build do frontend gera estáticos que serão servidos pelo backend em produção.
+- Banco de dados: `bancodados.sql` contém as tabelas legadas principais (ex.: `cadastro_alunos`, `familias`, `funcionarios`) e uma view (`alunos`). As tabelas específicas da cantina ainda não aparecem no SQL (marcadas como "-- início - tabelas da cantina" sem conteúdo).
 
-- Classes PHP: PascalCase; variáveis: camelCase; constantes: UPPER_SNAKE_CASE.
-- Strings PHP: aspas simples; HTML: aspas duplas.
-- Controllers, models e views seguem padrão CodeIgniter 4 (ex: `UsuarioModel` em `app/Models/`).
-- Sempre use prefixo `cant_` para novas tabelas e atualize seeds/migrations.
-- Rotas: registre novas em `app/Config/Routes.php`.
-- Não altere tabelas legadas sem prefixo (ex: `cadastro_alunos`).
+Padrões e convenções específicas (seguir estritamente)
 
-### Integrações e pontos de atenção
+- Nomes de variáveis: camelCase.
+- Nomes de classes: PascalCase.
+- Constantes: UPPER_SNAKE_CASE.
+- Nomes de arquivos: kebab-case (ex.: `produto-list.tsx`).
+- Strings: usar sempre aspas simples em código ('exemplo').
+- Atributos HTML: usar aspas duplas ("id", "class").
+- Terminar linhas de instrução com ponto e vírgula quando aplicável.
 
-- APS: tabelas de staging (`cant_stg_aps_responsavel`, etc.) e serviços de integração. Busque "APS" ou "stg_aps" para localizar lógica.
-- Transações: operações compostas (venda, estoque, saldo) devem usar transações (`db->transStart()`/`transComplete()`).
-- APIs: endpoints retornam envelope JSON `{ success: bool, data: any, errors?: [] }`.
+Desenvolvimento local — comandos esperados (adapte caso arquivos estejam faltando)
 
-### Exemplos e arquivos-chave
+- Backend (CodeIgniter 4 — suposição padrão):
+  - Instalar dependências: `composer install`.
+  - Servir localmente: `php spark serve` ou configurar Apache/Nginx com document root apontando para `public/`.
+  - Nota: se `backend/` estiver vazio, crie scaffold mínimos seguindo CodeIgniter 4; confirme com o mantenedor antes de grandes mudanças.
+- Frontend (Vite + React, pnpm):
+  - Instalar: `pnpm install`.
+  - Rodar em dev: `pnpm dev`.
+  - Build de produção: `pnpm build` (arquivos estáticos devem ser copiados/servidos pelo backend quando necessário).
 
-- `sobre.md`: escopo, requisitos, regras e prefixos obrigatórios.
-- `bancodados.sql`: schema completo, seeds de papéis, permissões e parâmetros.
-- `app/Config/Database.php`: conexão DB (prefira `.env` para credenciais).
-- `app/Controllers/Auth.php`, `app/Models/UsuarioModel.php`: exemplos de autenticação e padrão de model/controller.
-- `tests/unit/HealthTest.php`: exemplo de teste unitário.
+Pontos importantes para o agente quando for editar/gerar código
 
-### Dicas para agentes/PRs
+- Ao alterar o esquema do banco de dados, atualize `bancodados.sql` (manter charset latin1 e comentários existentes) e documente a migração.
+- Procure por campos legados no SQL (muitos campos com nomes em português e formatos antigos). Evite renomear colunas sem conversação prévia.
+- Se for adicionar endpoints novos, mantenha os contratos simples: URL, método HTTP, formato JSON de request/response. Exemplos: GET `/api/alunos/:ra` -> retorna a view `alunos` por `ra`.
+- Ao criar novos arquivos frontend, siga kebab-case e exportações padrão do React.
 
-- Sempre valide uso do prefixo `cant_` em tabelas e queries.
-- Siga estrutura e nomenclatura do CodeIgniter 4.
-- Ao criar migrations/seeds, sincronize com `bancodados.sql`.
-- Explique no PR impactos em APS ou relatórios ao alterar dados.
+Integrações e dependências externas a checar
+
+- Dependências esperadas (frontend): `react-router-dom`, `axios`, `zustand`, `@tanstack/react-query` (react-query), `bootstrap`, `react-icons`.
+- Backend: CodeIgniter 4 (assumido). Pode haver integrações com MySQL/MariaDB (ver `bancodados.sql`).
+
+Detecção de problemas e ações automáticas do agente
+
+- Se encontrar pastas vazias onde arquivos são esperados (ex.: `backend/`, `frontend/`), gerar um resumo de opções (scaffold mínimo, pedir arquivos ao mantenedor, ou criar READMEs explicando o scaffold).
+- Antes de abrir PR: rodar `pnpm install` & `pnpm build` (se frontend existir) e executar checks do PHP (lint ou php -l) se houver código PHP.
+
+Arquivos/locais que o agente deve ler primeiro
+
+- `bancodados.sql` — fonte principal do modelo de dados;
+- `README.md`, `sobre.md` — contexto do projeto (estão no repositório raiz);
+- `backend/` e `frontend/` — procurar `composer.json`, `package.json`, `vite.config.*`, `app` ou `src`.
+
+Exemplos de linguagem usados no repositório
+
+- Tabela: `cadastro_alunos` usa `ra` como PK; a view `alunos` junta `cadastro_alunos`, `matriculas_alunos` e `cursos` com filtros por `ano_matricula` e `ano_letivo`.
+
+Comportamento esperado do agente ao criar um PR
+
+- Forneça um resumo curto no corpo do PR: o que foi mudado, por que, arquivos afetados, passos para testar localmente.
+- Inclua comandos rápidos para teste (por exemplo: `pnpm install; pnpm dev`), e notas sobre banco de dados (como importar `bancodados.sql` se relevante).
+
+Seções que normalmente não devem ser alteradas automaticamente
+
+- Não modificar manualmente os campos do SQL legados sem comunicação (nomes em português, tipos e charset).
+
+Feedback
+
+- Se alguma seção está ambígua ou faltar exemplos (ex.: local de `public/` do backend ou `package.json` do frontend), peça ao mantenedor por esses arquivos antes de mudanças grandes.
 
 ---
 
-Se algo estiver desatualizado ou faltar contexto (ex: detalhes APS), sinalize pontos específicos para revisão.
+Obrigado — peça para eu ajustar qualquer parte deste guia com exemplos adicionais ou formatos de PR/commit específicos do time.

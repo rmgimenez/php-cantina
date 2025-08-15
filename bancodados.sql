@@ -326,19 +326,5 @@ CREATE TABLE `funcionarios` (
 -- fim - tabelas que já existem no banco de dados
 
 -- início - tabelas da cantina
-CREATE TABLE `cant_usuarios` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(255) NOT NULL,
-  `email` VARCHAR(255) DEFAULT NULL,
-  `cpf` VARCHAR(14) DEFAULT NULL,
-  `senha_hash` VARCHAR(255) NOT NULL,
-  `tipo` ENUM('caixa','supervisor','gerente','informatica') NOT NULL DEFAULT 'caixa',
-  `status` TINYINT(1) NOT NULL DEFAULT 1,
-  `ultimo_acesso` DATETIME DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_cant_usuario_email` (`email`),
-  UNIQUE KEY `ux_cant_usuario_cpf` (`cpf`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Tabela cant_usuario: armazena usuários do sistema da cantina (credenciais, CPF, tipo de papel e status). Usada para autenticação e autorização.';
-
 
 -- fim - tabelas da cantina
