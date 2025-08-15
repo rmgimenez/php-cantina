@@ -2,6 +2,16 @@
 
 Sistema de controle de cantina escolar feito em PHP com banco de dados MySql.
 
+## Cores
+
+Cores principais da aplicação:
+
+- Azul: #253287
+- Vermelho: #B20000
+- Amarelo: #FEA800
+- Escuro: #333333
+- Claro: #FFFFFF
+
 ## Tecnologias utilizadas
 
 - PHP
@@ -12,6 +22,7 @@ Sistema de controle de cantina escolar feito em PHP com banco de dados MySql.
 - jQuery
 - Datatable
 - Plugins jQuery
+- Select2
 
 Nota: Este projeto deve usar o framework CodeIgniter 4 como base da aplicação. Ajustes de estrutura, roteamento e execução deverão seguir as convenções do CodeIgniter 4.
 
@@ -20,6 +31,12 @@ Observação: o esqueleto do CodeIgniter 4 já foi instalado neste repositório 
 ## Banco de dados
 
 As tabelas do sistema deverão começar com o prefixo `cant_`.
+
+As tabelas já existentes não precisam serem criadas e não obedecem a regra do prefixo.
+
+As tabelas existentes não podem ser alteradas.
+
+As tabelas deverão ter o nome no plural.
 
 Instruções rápidas de setup local:
 
@@ -53,6 +70,14 @@ php spark migrate
 php spark serve -p 8000
 # ou: php -S localhost:8000 -t public
 ```
+
+### Tabelas já existentes
+
+- `cadastro_alunos`
+- `funcionarios`
+- `familias`
+
+A view `alunos` que junta as informações das tabelas `cadastro_alunos` e `familias`. Nessa view mostra apenas os alunos ativos.
 
 ## Tipos de usuários do sistema
 

@@ -1,527 +1,344 @@
--- ------------------------------------------------------------
--- Banco de Dados: Sistema de Cantina Escolar
--- Gerado a partir dos requisitos funcionais (RF001-RF040) e RN001-RN053
--- Prefixo obrigatório: cant_
--- Observação: Em produção recomenda-se quebrar em migrations individuais.
--- Charset/Collation: utf8mb4 / utf8mb4_unicode_ci
--- ------------------------------------------------------------
+-- início - tabelas que já existem no banco de dados
+CREATE TABLE `cadastro_alunos` (
+  `ra` int NOT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  `nome_social` varchar(255) DEFAULT NULL,
+  `nacionalidade` smallint DEFAULT NULL,
+  `natural_de` varchar(255) DEFAULT NULL,
+  `reside` varchar(255) DEFAULT NULL,
+  `nasc` datetime DEFAULT NULL,
+  `sexo` varchar(255) DEFAULT NULL,
+  `estcivil` varchar(255) DEFAULT NULL,
+  `dt_cadastro` datetime DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `email2` varchar(255) DEFAULT NULL,
+  `familia` double DEFAULT NULL,
+  `cod_religião` smallint DEFAULT NULL,
+  `cert_nasc` varchar(255) DEFAULT NULL,
+  `rg` varchar(255) DEFAULT NULL,
+  `rg_emissao` datetime DEFAULT NULL,
+  `cpf` varchar(255) DEFAULT NULL,
+  `t_eleitoral` varchar(255) DEFAULT NULL,
+  `zon_sec` varchar(255) DEFAULT NULL,
+  `reservista` varchar(255) DEFAULT NULL,
+  `categoria` varchar(255) DEFAULT NULL,
+  `reserv_emissao` datetime DEFAULT NULL,
+  `reserv_orgemissor` varchar(255) DEFAULT NULL,
+  `tipo` varchar(255) DEFAULT NULL,
+  `residecom` varchar(255) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `bairro` varchar(255) DEFAULT NULL,
+  `tel_cel` varchar(255) DEFAULT NULL,
+  `tel_res` varchar(255) DEFAULT NULL,
+  `cidade` varchar(255) DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  `cep` varchar(255) DEFAULT NULL,
+  `fax` varchar(255) DEFAULT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `gr_sanguineo` char(255) DEFAULT NULL,
+  `rh` char(255) DEFAULT NULL,
+  `sarampo` int DEFAULT NULL,
+  `catapora` int DEFAULT NULL,
+  `coqueluche` int DEFAULT NULL,
+  `caxumba` int DEFAULT NULL,
+  `rubeola` int DEFAULT NULL,
+  `dengue` int DEFAULT NULL,
+  `h1n1` int DEFAULT NULL,
+  `covid19` int DEFAULT NULL,
+  `outras_doencas` int DEFAULT NULL,
+  `esp_outras_doencas` varchar(255) DEFAULT NULL,
+  `cardiovascular` int DEFAULT NULL,
+  `neurologico` int DEFAULT NULL,
+  `diabete` int DEFAULT NULL,
+  `audicao` int DEFAULT NULL,
+  `respiratorio` int DEFAULT NULL,
+  `musculo_esqueletico` int DEFAULT NULL,
+  `visao` int DEFAULT NULL,
+  `outros_disturbios` int DEFAULT NULL,
+  `esp_outros_disturbios` varchar(255) DEFAULT NULL,
+  `medicacao` int DEFAULT NULL,
+  `descricao_medicacao` varchar(255) DEFAULT NULL,
+  `tratamento` int DEFAULT NULL,
+  `descricao_tratamento` varchar(255) DEFAULT NULL,
+  `anti_termico` varchar(255) DEFAULT NULL,
+  `dosagem_anti_termico` varchar(255) DEFAULT NULL,
+  `analgesico` varchar(255) DEFAULT NULL,
+  `dosagem_analgesico` varchar(255) DEFAULT NULL,
+  `cicatrizante` varchar(255) DEFAULT NULL,
+  `dosagem_cicatrizante` varchar(255) DEFAULT NULL,
+  `outra_medicacao` varchar(255) DEFAULT NULL,
+  `dosagem_outra_medicacao` varchar(255) DEFAULT NULL,
+  `cirurgia` int DEFAULT NULL,
+  `descricao_cirurgia` varchar(255) DEFAULT NULL,
+  `medico` varchar(255) DEFAULT NULL,
+  `tel_medico` varchar(255) DEFAULT NULL,
+  `dentista` varchar(255) DEFAULT NULL,
+  `tel_dentista` varchar(255) DEFAULT NULL,
+  `convenio` varchar(255) DEFAULT NULL,
+  `hospital` varchar(255) DEFAULT NULL,
+  `obs_medicas` longtext,
+  `alergia` int DEFAULT NULL,
+  `descricao_alergia` varchar(255) DEFAULT NULL,
+  `obs` longtext,
+  `nome_resp` varchar(255) DEFAULT NULL,
+  `rg_resp` varchar(255) DEFAULT NULL,
+  `cpf_resp` varchar(255) DEFAULT NULL,
+  `nasc_resp` datetime DEFAULT NULL,
+  `endereco_resp` varchar(255) DEFAULT NULL,
+  `bairro_resp` varchar(255) DEFAULT NULL,
+  `tel_cel_resp` varchar(255) DEFAULT NULL,
+  `tel_res_resp` varchar(255) DEFAULT NULL,
+  `cidade_resp` varchar(255) DEFAULT NULL,
+  `estado_resp` varchar(255) DEFAULT NULL,
+  `cep_resp` varchar(255) DEFAULT NULL,
+  `fax_resp` varchar(255) DEFAULT NULL,
+  `email_resp` varchar(255) DEFAULT NULL,
+  `email_resp2` varchar(255) DEFAULT NULL,
+  `empresa_resp` varchar(255) DEFAULT NULL,
+  `cod_prof_resp` smallint DEFAULT NULL,
+  `tel_emp_resp` varchar(255) DEFAULT NULL,
+  `nome_resp_fin` varchar(255) DEFAULT NULL,
+  `tipo_resp_fin` varchar(4) DEFAULT NULL,
+  `rg_resp_fin` varchar(255) DEFAULT NULL,
+  `cpf_resp_fin` varchar(255) DEFAULT NULL,
+  `cnpj_resp_fin` varchar(255) DEFAULT NULL,
+  `nasc_resp_fin` datetime DEFAULT NULL,
+  `endereco_resp_fin` varchar(255) DEFAULT NULL,
+  `bairro_resp_fin` varchar(255) DEFAULT NULL,
+  `tel_cel_resp_fin` varchar(255) DEFAULT NULL,
+  `tel_res_resp_fin` varchar(255) DEFAULT NULL,
+  `cidade_resp_fin` varchar(255) DEFAULT NULL,
+  `estado_resp_fin` varchar(255) DEFAULT NULL,
+  `cep_resp_fin` varchar(255) DEFAULT NULL,
+  `fax_resp_fin` varchar(255) DEFAULT NULL,
+  `email_resp_fin` varchar(255) DEFAULT NULL,
+  `email_resp_fin2` varchar(255) DEFAULT NULL,
+  `empresa_resp_fin` varchar(255) DEFAULT NULL,
+  `cod_prof_resp_fin` smallint DEFAULT NULL,
+  `tel_emp_resp_fin` varchar(255) DEFAULT NULL,
+  `cod_respfinanc` char(255) DEFAULT NULL,
+  `cod_resp` char(255) DEFAULT NULL,
+  `endrespfin` int DEFAULT NULL,
+  `telrespfin` int DEFAULT NULL,
+  `endresp` int DEFAULT NULL,
+  `teltresp` int DEFAULT NULL,
+  `nro_chamada` smallint DEFAULT NULL,
+  `curso_nome` varchar(255) DEFAULT NULL,
+  `curso` int DEFAULT NULL,
+  `serie` smallint DEFAULT NULL,
+  `turma` varchar(255) DEFAULT NULL,
+  `dt_matricula` datetime DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `situacao_bib` smallint DEFAULT NULL,
+  `obs_bib` longtext,
+  `ult_emprestimo` varchar(255) DEFAULT NULL,
+  `data_ult_emprestimo` datetime DEFAULT NULL,
+  `rematriculado` int DEFAULT NULL,
+  `obs_fin` varchar(255) DEFAULT NULL,
+  `pesquisa` varchar(255) DEFAULT NULL,
+  `tesouraria` int DEFAULT NULL,
+  `periodo` varchar(255) DEFAULT NULL,
+  `ano_letivo` int DEFAULT NULL,
+  `coordenacao` int DEFAULT NULL,
+  `obs_coo` varchar(255) DEFAULT NULL,
+  `escola_destino` varchar(255) DEFAULT NULL,
+  `motivo` varchar(255) DEFAULT NULL,
+  `codigo_tipo_motivo` int DEFAULT NULL,
+  `dia_transferencia` varchar(255) DEFAULT NULL,
+  `senha` varchar(255) DEFAULT NULL,
+  `grade` smallint DEFAULT NULL,
+  `plano_pagamento` int DEFAULT NULL,
+  `faz_tratamento_homeopatia` int DEFAULT NULL,
+  `faz_tratamento_alopatia` int DEFAULT NULL,
+  `teve_problema_ao_nascer` int DEFAULT NULL,
+  `teve_problema_ao_nascer_qual` varchar(255) DEFAULT NULL,
+  `convulsao_com_febre` int DEFAULT NULL,
+  `convulsao_sem_febre` int DEFAULT NULL,
+  `neurologista` int DEFAULT NULL,
+  `neurologista_quando` varchar(255) DEFAULT NULL,
+  `neurologista_porque` varchar(255) DEFAULT NULL,
+  `tratamento_foniatrico` int DEFAULT NULL,
+  `tratamento_foniatrico_porque` varchar(255) DEFAULT NULL,
+  `tratamento_fisioterapico` int DEFAULT NULL,
+  `tratamento_fisioterapico_porque` varchar(255) DEFAULT NULL,
+  `escola_anterior` varchar(255) DEFAULT NULL,  
+  `foi_retido` int DEFAULT NULL,
+  `foi_retido_motivo` varchar(255) DEFAULT NULL,
+  `existe_local_para_estudo` int DEFAULT NULL,
+  `existe_horario_para_estudo` int DEFAULT NULL,
+  `ha_acompanhamento_estudos` int DEFAULT NULL,
+  `ha_acompanhamento_estudos_quem` varchar(255) DEFAULT NULL,  
+  `meio_transporte_chegada_escola` varchar(255) DEFAULT NULL,
+  `meio_transporte_saida_escola` varchar(255) DEFAULT NULL,
+  `pessoa_autorizada_retirar_aluno1` varchar(255) DEFAULT NULL,
+  `pessoa_autorizada_retirar_aluno2` varchar(255) DEFAULT NULL,
+  `pessoa_autorizada_retirar_aluno3` varchar(255) DEFAULT NULL,
+  `pessoa_autorizada_retirar_aluno4` varchar(255) DEFAULT NULL,
+  `autorizado_deixar_colegio_sozinho` int DEFAULT NULL,
+  `quem_fica_aluno_ausencia_pais` varchar(255) DEFAULT NULL,
+  `relacionamento_mae` varchar(255) DEFAULT NULL,
+  `relacionamento_pai` varchar(255) DEFAULT NULL,
+  `reserva` int DEFAULT NULL,
+  `concomitante` int DEFAULT NULL,
+  `cor_raca` varchar(255) DEFAULT NULL,
+  `programa_bilingue` int DEFAULT NULL,
+  `curriculum_americano` int DEFAULT NULL,
+  `nao_divulgar_imagem` int DEFAULT NULL,
+  `prodesp` varchar(255) DEFAULT NULL,
+  `latitude` varchar(255) DEFAULT NULL,
+  `longitude` varchar(255) DEFAULT NULL,
+  `santanna_mais` int DEFAULT NULL,
+  `importado` int DEFAULT NULL,
+  `assist_medica_emergencia` tinyint DEFAULT NULL,
+  `obs_portaria` longtext,
+  `necessidade_educ_especial` tinyint DEFAULT '0',
+  `possui_laudo` tinyint DEFAULT '0',
+  PRIMARY KEY (`ra`),
+  KEY `idx_cadastro_alunos_ra` (`ra`),
+  KEY `idx_cadastro_alunos_nome` (`nome`),
+  KEY `idx_cadastro_alunos_cpf_resp` (`cpf_resp`),
+  KEY `idx_cadastro_alunos_cpf_resp_fin` (`cpf_resp_fin`),
+  KEY `idx_cadastro_alunos_familia` (`familia`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS=0;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` 
+SQL SECURITY DEFINER VIEW `alunos` AS 
+select `a`.`ra` AS `ra`,`a`.`nome` AS `nome`,`a`.`nome_social` AS `nome_social`,`a`.`nacionalidade` AS `nacionalidade`,`a`.`natural_de` AS `natural_de`,`a`.`reside` AS `reside`,`a`.`nasc` AS `nasc`,`a`.`sexo` AS `sexo`,`a`.`estcivil` AS `estcivil`,`a`.`dt_cadastro` AS `dt_cadastro`,`a`.`email` AS `email`,`a`.`email2` AS `email2`,`a`.`familia` AS `familia`,`a`.`cod_religião` AS `cod_religião`,`a`.`cert_nasc` AS `cert_nasc`,`a`.`rg` AS `rg`,`a`.`rg_emissao` AS `rg_emissao`,`a`.`cpf` AS `cpf`,`a`.`t_eleitoral` AS `t_eleitoral`,`a`.`zon_sec` AS `zon_sec`,`a`.`reservista` AS `reservista`,`a`.`categoria` AS `categoria`,`a`.`reserv_emissao` AS `reserv_emissao`,`a`.`reserv_orgemissor` AS `reserv_orgemissor`,`a`.`tipo` AS `tipo`,`a`.`residecom` AS `residecom`,`a`.`endereco` AS `endereco`,`a`.`bairro` AS `bairro`,`a`.`tel_cel` AS `tel_cel`,`a`.`tel_res` AS `tel_res`,`a`.`cidade` AS `cidade`,`a`.`estado` AS `estado`,`a`.`cep` AS `cep`,`a`.`fax` AS `fax`,`a`.`foto` AS `foto`,`a`.`gr_sanguineo` AS `gr_sanguineo`,`a`.`rh` AS `rh`,`a`.`sarampo` AS `sarampo`,`a`.`catapora` AS `catapora`,`a`.`coqueluche` AS `coqueluche`,`a`.`caxumba` AS `caxumba`,`a`.`rubeola` AS `rubeola`,`a`.`dengue` AS `dengue`,`a`.`h1n1` AS `h1n1`,`a`.`covid19` AS `covid19`,`a`.`outras_doencas` AS `outras_doencas`,`a`.`esp_outras_doencas` AS `esp_outras_doencas`,`a`.`cardiovascular` AS `cardiovascular`,`a`.`neurologico` AS `neurologico`,`a`.`diabete` AS `diabete`,`a`.`audicao` AS `audicao`,`a`.`respiratorio` AS `respiratorio`,`a`.`musculo_esqueletico` AS `musculo_esqueletico`,`a`.`visao` AS `visao`,`a`.`outros_disturbios` AS `outros_disturbios`,`a`.`esp_outros_disturbios` AS `esp_outros_disturbios`,`a`.`medicacao` AS `medicacao`,`a`.`descricao_medicacao` AS `descricao_medicacao`,`a`.`tratamento` AS `tratamento`,`a`.`descricao_tratamento` AS `descricao_tratamento`,`a`.`anti_termico` AS `anti_termico`,`a`.`dosagem_anti_termico` AS `dosagem_anti_termico`,`a`.`analgesico` AS `analgesico`,`a`.`dosagem_analgesico` AS `dosagem_analgesico`,`a`.`cicatrizante` AS `cicatrizante`,`a`.`dosagem_cicatrizante` AS `dosagem_cicatrizante`,`a`.`outra_medicacao` AS `outra_medicacao`,`a`.`dosagem_outra_medicacao` AS `dosagem_outra_medicacao`,`a`.`cirurgia` AS `cirurgia`,`a`.`descricao_cirurgia` AS `descricao_cirurgia`,`a`.`medico` AS `medico`,`a`.`tel_medico` AS `tel_medico`,`a`.`dentista` AS `dentista`,`a`.`tel_dentista` AS `tel_dentista`,`a`.`convenio` AS `convenio`,`a`.`hospital` AS `hospital`,`a`.`obs_medicas` AS `obs_medicas`,`a`.`alergia` AS `alergia`,`a`.`descricao_alergia` AS `descricao_alergia`,`a`.`obs` AS `obs`,`a`.`nome_resp` AS `nome_resp`,`a`.`rg_resp` AS `rg_resp`,`a`.`cpf_resp` AS `cpf_resp`,`a`.`nasc_resp` AS `nasc_resp`,`a`.`endereco_resp` AS `endereco_resp`,`a`.`bairro_resp` AS `bairro_resp`,`a`.`tel_cel_resp` AS `tel_cel_resp`,`a`.`tel_res_resp` AS `tel_res_resp`,`a`.`cidade_resp` AS `cidade_resp`,`a`.`estado_resp` AS `estado_resp`,`a`.`cep_resp` AS `cep_resp`,`a`.`fax_resp` AS `fax_resp`,`a`.`email_resp` AS `email_resp`,`a`.`email_resp2` AS `email_resp2`,`a`.`empresa_resp` AS `empresa_resp`,`a`.`cod_prof_resp` AS `cod_prof_resp`,`a`.`tel_emp_resp` AS `tel_emp_resp`,`a`.`nome_resp_fin` AS `nome_resp_fin`,`a`.`tipo_resp_fin` AS `tipo_resp_fin`,`a`.`rg_resp_fin` AS `rg_resp_fin`,`a`.`cpf_resp_fin` AS `cpf_resp_fin`,`a`.`cnpj_resp_fin` AS `cnpj_resp_fin`,`a`.`nasc_resp_fin` AS `nasc_resp_fin`,`a`.`endereco_resp_fin` AS `endereco_resp_fin`,`a`.`bairro_resp_fin` AS `bairro_resp_fin`,`a`.`tel_cel_resp_fin` AS `tel_cel_resp_fin`,`a`.`tel_res_resp_fin` AS `tel_res_resp_fin`,`a`.`cidade_resp_fin` AS `cidade_resp_fin`,`a`.`estado_resp_fin` AS `estado_resp_fin`,`a`.`cep_resp_fin` AS `cep_resp_fin`,`a`.`fax_resp_fin` AS `fax_resp_fin`,`a`.`email_resp_fin` AS `email_resp_fin`,`a`.`email_resp_fin2` AS `email_resp_fin2`,`a`.`empresa_resp_fin` AS `empresa_resp_fin`,`a`.`cod_prof_resp_fin` AS `cod_prof_resp_fin`,`a`.`tel_emp_resp_fin` AS `tel_emp_resp_fin`,`a`.`cod_respfinanc` AS `cod_respfinanc`,`a`.`cod_resp` AS `cod_resp`,`a`.`endrespfin` AS `endrespfin`,`a`.`telrespfin` AS `telrespfin`,`a`.`endresp` AS `endresp`,`a`.`teltresp` AS `teltresp`,`m`.`nro_chamada` AS `nro_chamada`,`c`.`nome` AS `curso_nome`,`m`.`curso` AS `curso`,`m`.`serie` AS `serie`,`m`.`turma` AS `turma`,`m`.`data_matricula` AS `dt_matricula`,`m`.`status` AS `status`,`a`.`situacao_bib` AS `situacao_bib`,`a`.`obs_bib` AS `obs_bib`,`a`.`ult_emprestimo` AS `ult_emprestimo`,`a`.`data_ult_emprestimo` AS `data_ult_emprestimo`,`a`.`rematriculado` AS `rematriculado`,`a`.`obs_fin` AS `obs_fin`,`a`.`pesquisa` AS `pesquisa`,`a`.`tesouraria` AS `tesouraria`,`m`.`periodo` AS `periodo`,`m`.`ano_letivo` AS `ano_letivo`,`a`.`coordenacao` AS `coordenacao`,`a`.`obs_coo` AS `obs_coo`,`a`.`escola_destino` AS `escola_destino`,`a`.`motivo` AS `motivo`,`a`.`codigo_tipo_motivo` AS `codigo_tipo_motivo`,`m`.`data_saida` AS `dia_transferencia`,`a`.`senha` AS `senha`,`a`.`grade` AS `grade`,`a`.`plano_pagamento` AS `plano_pagamento`,`a`.`faz_tratamento_homeopatia` AS `faz_tratamento_homeopatia`,`a`.`faz_tratamento_alopatia` AS `faz_tratamento_alopatia`,`a`.`teve_problema_ao_nascer` AS `teve_problema_ao_nascer`,`a`.`teve_problema_ao_nascer_qual` AS `teve_problema_ao_nascer_qual`,`a`.`convulsao_com_febre` AS `convulsao_com_febre`,`a`.`convulsao_sem_febre` AS `convulsao_sem_febre`,`a`.`neurologista` AS `neurologista`,`a`.`neurologista_quando` AS `neurologista_quando`,`a`.`neurologista_porque` AS `neurologista_porque`,`a`.`tratamento_foniatrico` AS `tratamento_foniatrico`,`a`.`tratamento_foniatrico_porque` AS `tratamento_foniatrico_porque`,`a`.`tratamento_fisioterapico` AS `tratamento_fisioterapico`,`a`.`tratamento_fisioterapico_porque` AS `tratamento_fisioterapico_porque`,`a`.`escola_anterior` AS `escola_anterior`,`a`.`escola_frequetou_cidade1` AS `escola_frequetou_cidade1`,`a`.`escola_frequetou_serie1` AS `escola_frequetou_serie1`,`a`.`escola_frequetou_ano1` AS `escola_frequetou_ano1`,`a`.`escola_frequetou_nome2` AS `escola_frequetou_nome2`,`a`.`escola_frequetou_cidade2` AS `escola_frequetou_cidade2`,`a`.`escola_frequetou_serie2` AS `escola_frequetou_serie2`,`a`.`escola_frequetou_ano2` AS `escola_frequetou_ano2`,`a`.`escola_frequetou_nome3` AS `escola_frequetou_nome3`,`a`.`escola_frequetou_cidade3` AS `escola_frequetou_cidade3`,`a`.`escola_frequetou_serie3` AS `escola_frequetou_serie3`,`a`.`escola_frequetou_ano3` AS `escola_frequetou_ano3`,`a`.`escola_frequetou_nome4` AS `escola_frequetou_nome4`,`a`.`escola_frequetou_cidade4` AS `escola_frequetou_cidade4`,`a`.`escola_frequetou_serie4` AS `escola_frequetou_serie4`,`a`.`escola_frequetou_ano4` AS `escola_frequetou_ano4`,`a`.`motivo_escolha_escola` AS `motivo_escolha_escola`,`a`.`foi_retido` AS `foi_retido`,`a`.`foi_retido_motivo` AS `foi_retido_motivo`,`a`.`existe_local_para_estudo` AS `existe_local_para_estudo`,`a`.`existe_horario_para_estudo` AS `existe_horario_para_estudo`,`a`.`ha_acompanhamento_estudos` AS `ha_acompanhamento_estudos`,`a`.`ha_acompanhamento_estudos_quem` AS `ha_acompanhamento_estudos_quem`,`a`.`participa_atividade_esportiva` AS `participa_atividade_esportiva`,`a`.`participa_atividade_esportiva_onde` AS `participa_atividade_esportiva_onde`,`a`.`participa_atividade_religiosa` AS `participa_atividade_religiosa`,`a`.`participa_atividade_religiosa_onde` AS `participa_atividade_religiosa_onde`,`a`.`participa_atividade_recreativa` AS `participa_atividade_recreativa`,`a`.`participa_atividade_recreativa_onde` AS `participa_atividade_recreativa_onde`,`a`.`participa_aula_informatica` AS `participa_aula_informatica`,`a`.`participa_aula_informatica_onde` AS `participa_aula_informatica_onde`,`a`.`participa_aula_linguas` AS `participa_aula_linguas`,`a`.`participa_aula_linguas_onde` AS `participa_aula_linguas_onde`,`a`.`participa_outras_atividades` AS `participa_outras_atividades`,`a`.`participa_outras_atividades_quais` AS `participa_outras_atividades_quais`,`a`.`meio_transporte_chegada_escola` AS `meio_transporte_chegada_escola`,`a`.`meio_transporte_saida_escola` AS `meio_transporte_saida_escola`,`a`.`pessoa_autorizada_retirar_aluno1` AS `pessoa_autorizada_retirar_aluno1`,`a`.`pessoa_autorizada_retirar_aluno2` AS `pessoa_autorizada_retirar_aluno2`,`a`.`pessoa_autorizada_retirar_aluno3` AS `pessoa_autorizada_retirar_aluno3`,`a`.`pessoa_autorizada_retirar_aluno4` AS `pessoa_autorizada_retirar_aluno4`,`a`.`autorizado_deixar_colegio_sozinho` AS `autorizado_deixar_colegio_sozinho`,`a`.`quem_fica_aluno_ausencia_pais` AS `quem_fica_aluno_ausencia_pais`,`a`.`relacionamento_mae` AS `relacionamento_mae`,`a`.`relacionamento_pai` AS `relacionamento_pai`,`a`.`reserva` AS `reserva`,`a`.`concomitante` AS `concomitante`,`a`.`cor_raca` AS `cor_raca`,`a`.`programa_bilingue` AS `programa_bilingue`,`a`.`curriculum_americano` AS `curriculum_americano`,`a`.`nao_divulgar_imagem` AS `nao_divulgar_imagem`,`a`.`prodesp` AS `prodesp`,`a`.`latitude` AS `latitude`,`a`.`longitude` AS `longitude`,`a`.`santanna_mais` AS `santanna_mais`,`a`.`importado` AS `importado`,`a`.`assist_medica_emergencia` AS `assist_medica_emergencia`,`a`.`obs_portaria` AS `obs_portaria`,`a`.`necessidade_educ_especial` AS `necessidade_educ_especial`,`a`.`possui_laudo` AS `possui_laudo` from ((`cadastro_alunos` `a` join `matriculas_alunos` `m` on((`a`.`ra` = `m`.`ra`))) join `cursos` `c` on((`m`.`curso` = `c`.`codigo`))) where ((`m`.`ano_matricula` = '2025') and ((`m`.`ano_letivo` = '2025_2026') or (`m`.`ano_letivo` = '2025')) and (`m`.`status` = 'MAT') and (`c`.`ativo` = 1) and (`c`.`complementar` = 0));
 
--- ------------------------------------------------------------
--- TABELAS DE CONTROLE DE ACESSO / USUÁRIOS
--- ------------------------------------------------------------
+CREATE TABLE `familias` (
+  `codigo` double NOT NULL,
+  `nome_pai` varchar(255) DEFAULT NULL,
+  `rg_pai` varchar(255) DEFAULT NULL,
+  `cpf_pai` varchar(255) DEFAULT NULL,
+  `nasc_pai` datetime DEFAULT NULL,
+  `endereco_pai` varchar(255) DEFAULT NULL,
+  `bairro_pai` varchar(255) DEFAULT NULL,
+  `tel_cel_pai` varchar(255) DEFAULT NULL,
+  `tel_res_pai` varchar(255) DEFAULT NULL,
+  `cidade_pai` varchar(255) DEFAULT NULL,
+  `estado_pai` varchar(255) DEFAULT NULL,
+  `cep_pai` varchar(255) DEFAULT NULL,
+  `fax_pai` varchar(255) DEFAULT NULL,
+  `email_pai` varchar(255) DEFAULT NULL,
+  `email_pai2` varchar(255) DEFAULT NULL,
+  `empresa_pai` varchar(255) DEFAULT NULL,
+  `cod_prof_pai` smallint DEFAULT NULL,
+  `tel_emp_pai` varchar(255) DEFAULT NULL,
+  `nome_mae` varchar(255) DEFAULT NULL,
+  `rg_mae` varchar(255) DEFAULT NULL,
+  `cpf_mae` varchar(255) DEFAULT NULL,
+  `nasc_mae` datetime DEFAULT NULL,
+  `endereco_mae` varchar(255) DEFAULT NULL,
+  `bairro_mae` varchar(255) DEFAULT NULL,
+  `tel_cel_mae` varchar(255) DEFAULT NULL,
+  `tel_res_mae` varchar(255) DEFAULT NULL,
+  `cidade_mae` varchar(255) DEFAULT NULL,
+  `estado_mae` varchar(255) DEFAULT NULL,
+  `cep_mae` varchar(255) DEFAULT NULL,
+  `fax_mae` varchar(255) DEFAULT NULL,
+  `email_mae` varchar(255) DEFAULT NULL,
+  `email_mae2` varchar(255) DEFAULT NULL,
+  `empresa_mae` varchar(255) DEFAULT NULL,
+  `cod_prof_mae` smallint DEFAULT NULL,
+  `tel_emp_mae` varchar(255) DEFAULT NULL,
+  `telpaialuno` int DEFAULT NULL,
+  `telmaealuno` int DEFAULT NULL,
+  `endmaealuno` int DEFAULT NULL,
+  `endpaialuno` int DEFAULT NULL,
+  `falecido_pai` int DEFAULT NULL,
+  `falecido_mae` int DEFAULT NULL,
+  `estado_civil_pais` varchar(255) DEFAULT NULL,
+  `nacionalidade_pai` smallint DEFAULT NULL,
+  `nacionalidade_mae` smallint DEFAULT NULL,
+  `grau_instrucao_pai` varchar(255) DEFAULT NULL,
+  `grau_instrucao_mae` varchar(255) DEFAULT NULL,
+  `codigo_formacao_pai` smallint DEFAULT NULL,
+  `codigo_formacao_mae` smallint DEFAULT NULL,
+  `conjuge_pai_nome` varchar(255) DEFAULT NULL,
+  `conjuge_pai_telefone` varchar(255) DEFAULT NULL,
+  `conjuge_mae_nome` varchar(255) DEFAULT NULL,
+  `conjuge_mae_telefone` varchar(255) DEFAULT NULL,
+  `estado_civil_pai` varchar(255) DEFAULT NULL,
+  `estado_civil_mae` varchar(255) DEFAULT NULL,
+  `pai_nova_uniao_marital` int DEFAULT NULL,
+  `mae_nova_uniao_marital` int DEFAULT NULL,
+  `tipo_resp1` varchar(45) DEFAULT 'Pai',
+  `tipo_resp2` varchar(45) DEFAULT 'Mãe',
+  `avisos_pedagogicos_resp1` tinyint DEFAULT NULL,
+  `avisos_pedagogicos_resp2` tinyint DEFAULT NULL,
+  PRIMARY KEY (`codigo`),
+  KEY `idx_familia_codigo` (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-/* REMOVIDAS: cant_papel, cant_permissao, cant_papel_permissao
-   Substituímos a estrutura de papéis/permissões por um campo 'tipo' em cant_usuario.
-   As tabelas `cant_papel`, `cant_permissao` e `cant_papel_permissao` foram removidas por decisão de simplificação:
-   permissions serão determinadas pelo campo `tipo` em `cant_usuario` (valores: 'caixa','supervisor','gerente','informatica','responsavel').
-*/
+CREATE TABLE `funcionarios` (
+  `codigo` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `nacionalidade` smallint DEFAULT NULL,
+  `natural_de` varchar(255) DEFAULT NULL,
+  `reside` varchar(255) DEFAULT NULL,
+  `nasc` date DEFAULT NULL,
+  `sexo` varchar(255) DEFAULT NULL,
+  `estcivil` varchar(255) DEFAULT NULL,
+  `dt_cadastro` date DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `email_pessoal` varchar(255) DEFAULT NULL,
+  `cert_nasc` varchar(255) DEFAULT NULL,
+  `rg` varchar(255) DEFAULT NULL,
+  `rg_emissao` date DEFAULT NULL,
+  `cpf` varchar(255) DEFAULT NULL,
+  `t_eleitoral` varchar(255) DEFAULT NULL,
+  `zon_sec` varchar(255) DEFAULT NULL,
+  `reservista` varchar(255) DEFAULT NULL,
+  `categoria` varchar(255) DEFAULT NULL,
+  `reserv_emissao` date DEFAULT NULL,
+  `reserv_orgemissor` varchar(255) DEFAULT NULL,
+  `tipo` varchar(255) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `bairro` varchar(255) DEFAULT NULL,
+  `tel_cel` varchar(255) DEFAULT NULL,
+  `tel_res` varchar(255) DEFAULT NULL,
+  `cidade` varchar(255) DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  `cep` varchar(255) DEFAULT NULL,
+  `fax` varchar(255) DEFAULT NULL,
+  `e_professor` int DEFAULT NULL,
+  `cargo` varchar(255) DEFAULT NULL,
+  `obs` longtext,
+  `senha` varchar(255) DEFAULT NULL,
+  `horentrada` time DEFAULT NULL,
+  `horalmocoinicio` time DEFAULT NULL,
+  `horalmocofim` time DEFAULT NULL,
+  `horsaida` time DEFAULT NULL,
+  `departamento` varchar(255) DEFAULT NULL,
+  `inativo` int DEFAULT NULL,
+  `data_saida` date DEFAULT NULL,
+  `end_numero` varchar(20) DEFAULT NULL,
+  `end_complemento` varchar(45) DEFAULT NULL,
+  `dt_admissao` date DEFAULT NULL,
+  `rnm_numero` varchar(50) DEFAULT NULL,
+  `rnm_validade` varchar(50) DEFAULT NULL,
+  `rnm_prazo_residencia` varchar(50) DEFAULT NULL,
+  `data_atualizacao_funcionario` datetime DEFAULT NULL COMMENT 'data de atualização de cadastro de funcionário. o funcionário deve atualizar a cada 6 meses.',
+  `acesso_kids` tinyint DEFAULT '0',
+  PRIMARY KEY (`codigo`),
+  KEY `idx_funcionario_codigo` (`codigo`)
+) ENGINE=InnoDB AUTO_INCREMENT=2706 DEFAULT CHARSET=latin1;
+-- fim - tabelas que já existem no banco de dados
 
-CREATE TABLE IF NOT EXISTS cant_usuario (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	nome VARCHAR(150) NOT NULL,
-	email VARCHAR(150) NULL,
-	cpf CHAR(11) NULL,
-	senha_hash VARCHAR(255) NOT NULL,
-	-- campo 'tipo' define as permissões/roles do usuário sem necessidade de tabelas separadas
-	tipo ENUM('caixa','supervisor','gerente','informatica','responsavel') NOT NULL DEFAULT 'caixa',
-	status ENUM('ativo','inativo','bloqueado') NOT NULL DEFAULT 'ativo',
-	ultimo_acesso DATETIME NULL,
-	tentativas_login INT NOT NULL DEFAULT 0,
-	bloqueado_ate DATETIME NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_usuario_email (email),
-	UNIQUE KEY uq_usuario_cpf (cpf),
-	INDEX idx_usuario_tipo (tipo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- início - tabelas da cantina
+CREATE TABLE `cant_usuarios` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) DEFAULT NULL,
+  `cpf` VARCHAR(14) DEFAULT NULL,
+  `senha_hash` VARCHAR(255) NOT NULL,
+  `tipo` ENUM('caixa','supervisor','gerente','informatica') NOT NULL DEFAULT 'caixa',
+  `status` TINYINT(1) NOT NULL DEFAULT 1,
+  `ultimo_acesso` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_cant_usuario_email` (`email`),
+  UNIQUE KEY `ux_cant_usuario_cpf` (`cpf`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Tabela cant_usuario: armazena usuários do sistema da cantina (credenciais, CPF, tipo de papel e status). Usada para autenticação e autorização.';
 
--- Funcionários da cantina / importados APS (RF003, RF030)
-CREATE TABLE IF NOT EXISTS cant_funcionario (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	usuario_id BIGINT UNSIGNED NOT NULL UNIQUE,
-	aps_id BIGINT UNSIGNED NULL, -- id origem APS
-	matricula VARCHAR(50) NULL,
-	tipo_funcionario VARCHAR(50) NULL, -- usado para precificação diferenciada RN022
-	tipo_contratacao VARCHAR(50) NULL,
-	data_admissao DATE NULL,
-	ativo TINYINT(1) NOT NULL DEFAULT 1,
-	arquivado TINYINT(1) NOT NULL DEFAULT 0, -- RN043
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_func_matricula (matricula),
-	INDEX idx_func_tipo (tipo_funcionario),
-	CONSTRAINT fk_func_usuario FOREIGN KEY (usuario_id) REFERENCES cant_usuario(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Responsáveis (RF004) - autenticação via CPF
-CREATE TABLE IF NOT EXISTS cant_responsavel (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aps_id BIGINT UNSIGNED NULL,
-	nome VARCHAR(150) NOT NULL,
-	cpf CHAR(11) NOT NULL,
-	email VARCHAR(150) NULL,
-	telefone VARCHAR(30) NULL,
-	status ENUM('ativo','inativo') NOT NULL DEFAULT 'ativo',
-	usuario_id BIGINT UNSIGNED NULL UNIQUE, -- referência cant_usuario (papel responsavel)
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_resp_cpf (cpf),
-	CONSTRAINT fk_resp_usuario FOREIGN KEY (usuario_id) REFERENCES cant_usuario(id) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Alunos (RF005)
-CREATE TABLE IF NOT EXISTS cant_aluno (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aps_id BIGINT UNSIGNED NULL,
-	nome VARCHAR(150) NOT NULL,
-	matricula VARCHAR(50) NOT NULL,
-	serie VARCHAR(50) NULL,
-	turno VARCHAR(30) NULL,
-	status ENUM('ativo','inativo') NOT NULL DEFAULT 'ativo',
-	saldo_atual DECIMAL(12,2) NOT NULL DEFAULT 0.00, -- visão denormalizada para leitura rápida
-	saldo_reservado DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_aluno_matricula (matricula),
-	INDEX idx_aluno_nome (nome)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Histórico de série (RN009)
-CREATE TABLE IF NOT EXISTS cant_aluno_serie_historico (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aluno_id BIGINT UNSIGNED NOT NULL,
-	serie VARCHAR(50) NOT NULL,
-	turno VARCHAR(30) NULL,
-	vigencia_inicio DATE NOT NULL,
-	vigencia_fim DATE NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT fk_aluno_hist_aluno FOREIGN KEY (aluno_id) REFERENCES cant_aluno(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	INDEX idx_aluno_hist_aluno (aluno_id, vigencia_inicio)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Vinculo Responsável <> Aluno (RF004)
-CREATE TABLE IF NOT EXISTS cant_responsavel_aluno (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	responsavel_id BIGINT UNSIGNED NOT NULL,
-	aluno_id BIGINT UNSIGNED NOT NULL,
-	status ENUM('ativo','inativo') NOT NULL DEFAULT 'ativo',
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_resp_aluno (responsavel_id, aluno_id),
-	CONSTRAINT fk_respAluno_responsavel FOREIGN KEY (responsavel_id) REFERENCES cant_responsavel(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_respAluno_aluno FOREIGN KEY (aluno_id) REFERENCES cant_aluno(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	INDEX idx_respAluno_aluno (aluno_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Preferências de restrição de consumo (RF014, RF023) RN025
-CREATE TABLE IF NOT EXISTS cant_responsavel_aluno_preferencias (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	responsavel_id BIGINT UNSIGNED NOT NULL,
-	aluno_id BIGINT UNSIGNED NOT NULL,
-	produto_id BIGINT UNSIGNED NULL,
-	categoria_id BIGINT UNSIGNED NULL,
-	permitido ENUM('sim','nao','alerta') NOT NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_pref_resp_aluno_prod_cat (responsavel_id, aluno_id, produto_id, categoria_id),
-	CONSTRAINT fk_pref_resp FOREIGN KEY (responsavel_id) REFERENCES cant_responsavel(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_pref_aluno FOREIGN KEY (aluno_id) REFERENCES cant_aluno(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_pref_prod FOREIGN KEY (produto_id) REFERENCES cant_produto(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_pref_cat FOREIGN KEY (categoria_id) REFERENCES cant_categoria(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	INDEX idx_pref_aluno (aluno_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ------------------------------------------------------------
--- CATÁLOGO / ESTOQUE
--- ------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS cant_categoria (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	nome VARCHAR(100) NOT NULL,
-	descricao VARCHAR(255) NULL,
-	ativa TINYINT(1) NOT NULL DEFAULT 1,
-	ordem_exibicao INT NOT NULL DEFAULT 0,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_categoria_nome (nome)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_produto (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	categoria_id BIGINT UNSIGNED NOT NULL,
-	nome VARCHAR(150) NOT NULL,
-	descricao VARCHAR(255) NULL,
-	tipo ENUM('unitario','peso','kit') NOT NULL, -- RN012
-	preco_base DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-	unidade_medida VARCHAR(20) NULL, -- ex: 'UN','KG'
-	permite_saldo TINYINT(1) NOT NULL DEFAULT 1,
-	ativo TINYINT(1) NOT NULL DEFAULT 1, -- RN011 inativação
-	estoque_minimo DECIMAL(12,3) NULL,
-	estoque_atual DECIMAL(12,3) NULL DEFAULT 0.000,
-	sem_controle_estoque TINYINT(1) NOT NULL DEFAULT 0, -- RN015
-	codigo_interno VARCHAR(50) NULL,
-	flags_restricao VARCHAR(255) NULL, -- RN013
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_prod_cat_nome (categoria_id, nome),
-	UNIQUE KEY uq_prod_codigo (codigo_interno),
-	INDEX idx_prod_categoria (categoria_id),
-	INDEX idx_prod_nome (nome),
-	CONSTRAINT fk_prod_categoria FOREIGN KEY (categoria_id) REFERENCES cant_categoria(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Movimentações de estoque (RF008)
-CREATE TABLE IF NOT EXISTS cant_estoque_mov (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	produto_id BIGINT UNSIGNED NOT NULL,
-	tipo ENUM('entrada','saida','ajuste') NOT NULL,
-	quantidade DECIMAL(12,3) NOT NULL,
-	origem VARCHAR(50) NOT NULL, -- 'compra','venda','ajuste','cancelamento'
-	usuario_id BIGINT UNSIGNED NULL,
-	custo_unitario_opcional DECIMAL(12,4) NULL,
-	observacao VARCHAR(255) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	INDEX idx_est_mov_prod (produto_id),
-	INDEX idx_est_mov_tipo (tipo),
-	CONSTRAINT fk_est_mov_prod FOREIGN KEY (produto_id) REFERENCES cant_produto(id) ON UPDATE CASCADE,
-	CONSTRAINT fk_est_mov_usuario FOREIGN KEY (usuario_id) REFERENCES cant_usuario(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Kits (RF009)
-CREATE TABLE IF NOT EXISTS cant_kit (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	nome VARCHAR(150) NOT NULL,
-	descricao VARCHAR(255) NULL,
-	periodo_tipo ENUM('semana','mes','custom') NOT NULL,
-	duracao_dias INT NOT NULL,
-	preco DECIMAL(12,2) NOT NULL,
-	ativo TINYINT(1) NOT NULL DEFAULT 1,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_kit_nome (nome)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_kit_itens (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	kit_id BIGINT UNSIGNED NOT NULL,
-	produto_id BIGINT UNSIGNED NOT NULL,
-	quantidade_permitida INT NOT NULL DEFAULT 1, -- RN016
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_kit_item (kit_id, produto_id),
-	CONSTRAINT fk_kit_item_kit FOREIGN KEY (kit_id) REFERENCES cant_kit(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_kit_item_prod FOREIGN KEY (produto_id) REFERENCES cant_produto(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_kit_assinatura (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	kit_id BIGINT UNSIGNED NOT NULL,
-	aluno_id BIGINT UNSIGNED NOT NULL,
-	responsavel_id BIGINT UNSIGNED NULL,
-	inicio_vigencia DATE NOT NULL,
-	fim_vigencia DATE NOT NULL,
-	saldo_consumos_restante INT NOT NULL,
-	status ENUM('ativa','consumido','expirada','cancelada') NOT NULL DEFAULT 'ativa',
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_kit_assinatura_periodo (kit_id, aluno_id, inicio_vigencia, fim_vigencia), -- RN017
-	INDEX idx_kit_ass_aluno (aluno_id),
-	CONSTRAINT fk_kit_ass_kit FOREIGN KEY (kit_id) REFERENCES cant_kit(id) ON UPDATE CASCADE,
-	CONSTRAINT fk_kit_ass_aluno FOREIGN KEY (aluno_id) REFERENCES cant_aluno(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_kit_ass_resp FOREIGN KEY (responsavel_id) REFERENCES cant_responsavel(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Preço Personalizado (RF012)
-CREATE TABLE IF NOT EXISTS cant_preco_personalizado (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	produto_id BIGINT UNSIGNED NOT NULL,
-	tipo_funcionario VARCHAR(50) NOT NULL,
-	preco DECIMAL(12,2) NOT NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_preco_prod_tipo (produto_id, tipo_funcionario),
-	CONSTRAINT fk_preco_prod FOREIGN KEY (produto_id) REFERENCES cant_produto(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ------------------------------------------------------------
--- VENDAS / PDV (RF010-RF016)
--- ------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS cant_venda (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	tipo_consumidor ENUM('aluno','funcionario','externo') NOT NULL,
-	aluno_id BIGINT UNSIGNED NULL,
-	funcionario_id BIGINT UNSIGNED NULL,
-	total_bruto DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-	total_descontos DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-	total_liquido DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-	forma_pagamento ENUM('saldo','dinheiro','misto','folha') NOT NULL,
-	status ENUM('ativa','cancelada') NOT NULL DEFAULT 'ativa',
-	usuario_caixa_id BIGINT UNSIGNED NOT NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	INDEX idx_venda_data (created_at),
-	INDEX idx_venda_aluno (aluno_id),
-	INDEX idx_venda_func (funcionario_id),
-	CONSTRAINT fk_venda_aluno FOREIGN KEY (aluno_id) REFERENCES cant_aluno(id) ON UPDATE CASCADE,
-	CONSTRAINT fk_venda_funcionario FOREIGN KEY (funcionario_id) REFERENCES cant_funcionario(id) ON UPDATE CASCADE,
-	CONSTRAINT fk_venda_usuario_caixa FOREIGN KEY (usuario_caixa_id) REFERENCES cant_usuario(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_venda_item (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	venda_id BIGINT UNSIGNED NOT NULL,
-	produto_id BIGINT UNSIGNED NOT NULL,
-	quantidade DECIMAL(12,3) NOT NULL DEFAULT 1.000,
-	preco_unitario DECIMAL(12,2) NOT NULL,
-	subtotal DECIMAL(12,2) NOT NULL,
-	origem_preco ENUM('base','personalizado','kit','desconto','promocao') NOT NULL DEFAULT 'base',
-	desconto_aplicado DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-	peso_registrado_gramas INT NULL, -- RF011
-	kit_assinatura_id BIGINT UNSIGNED NULL, -- se origem_preco='kit'
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT fk_vendaitem_venda FOREIGN KEY (venda_id) REFERENCES cant_venda(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_vendaitem_prod FOREIGN KEY (produto_id) REFERENCES cant_produto(id) ON UPDATE CASCADE,
-	CONSTRAINT fk_vendaitem_kit_ass FOREIGN KEY (kit_assinatura_id) REFERENCES cant_kit_assinatura(id) ON UPDATE CASCADE,
-	INDEX idx_vendaitem_prod (produto_id),
-	INDEX idx_vendaitem_venda (venda_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_venda_pagamento (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	venda_id BIGINT UNSIGNED NOT NULL,
-	tipo ENUM('saldo','dinheiro','folha') NOT NULL,
-	valor DECIMAL(12,2) NOT NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT fk_vendapg_venda FOREIGN KEY (venda_id) REFERENCES cant_venda(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	INDEX idx_vendapg_venda (venda_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_venda_cancelamento (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	venda_id BIGINT UNSIGNED NOT NULL UNIQUE,
-	motivo VARCHAR(255) NULL,
-	usuario_id BIGINT UNSIGNED NOT NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT fk_venda_cancel_venda FOREIGN KEY (venda_id) REFERENCES cant_venda(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_venda_cancel_usuario FOREIGN KEY (usuario_id) REFERENCES cant_usuario(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ------------------------------------------------------------
--- SALDOS / FINANCEIRO (RF017-RF020, RF018 recarga)
--- ------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS cant_movimento_saldo (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aluno_id BIGINT UNSIGNED NOT NULL,
-	tipo ENUM('credito','debito','reserva','ajuste') NOT NULL,
-	valor DECIMAL(12,2) NOT NULL,
-	referencia_tipo ENUM('venda','recarga','ajuste','kit','outro') NOT NULL,
-	referencia_id BIGINT UNSIGNED NULL,
-	observacao VARCHAR(255) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	INDEX idx_movsaldo_aluno (aluno_id, created_at),
-	CONSTRAINT fk_movsaldo_aluno FOREIGN KEY (aluno_id) REFERENCES cant_aluno(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_recarga (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aluno_id BIGINT UNSIGNED NOT NULL,
-	responsavel_id BIGINT UNSIGNED NULL,
-	valor DECIMAL(12,2) NOT NULL,
-	meio ENUM('dinheiro','pix','boleto','cartao','outro') NOT NULL,
-	status ENUM('pendente','confirmada','cancelada') NOT NULL DEFAULT 'pendente',
-	comprovante_ref VARCHAR(150) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	INDEX idx_recarga_aluno (aluno_id),
-	CONSTRAINT fk_recarga_aluno FOREIGN KEY (aluno_id) REFERENCES cant_aluno(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_recarga_resp FOREIGN KEY (responsavel_id) REFERENCES cant_responsavel(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_fatura_func (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	funcionario_id BIGINT UNSIGNED NOT NULL,
-	mes_ref CHAR(7) NOT NULL, -- formato YYYY-MM
-	total DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-	status ENUM('aberta','baixada','reprocessar') NOT NULL DEFAULT 'aberta', -- RN031
-	data_baixa DATETIME NULL,
-	observacao VARCHAR(255) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_fatura_func_mes (funcionario_id, mes_ref),
-	CONSTRAINT fk_fatura_func_func FOREIGN KEY (funcionario_id) REFERENCES cant_funcionario(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_fatura_func_item (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	fatura_id BIGINT UNSIGNED NOT NULL,
-	venda_id BIGINT UNSIGNED NOT NULL,
-	valor DECIMAL(12,2) NOT NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_fatura_item_venda (fatura_id, venda_id),
-	CONSTRAINT fk_faturaitem_fatura FOREIGN KEY (fatura_id) REFERENCES cant_fatura_func(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_faturaitem_venda FOREIGN KEY (venda_id) REFERENCES cant_venda(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_fatura_func_pagamento (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	fatura_id BIGINT UNSIGNED NOT NULL,
-	data_pagamento DATETIME NOT NULL,
-	valor DECIMAL(12,2) NOT NULL,
-	metodo VARCHAR(50) NOT NULL, -- 'folha'
-	usuario_id BIGINT UNSIGNED NOT NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT fk_faturapg_fatura FOREIGN KEY (fatura_id) REFERENCES cant_fatura_func(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_faturapg_usuario FOREIGN KEY (usuario_id) REFERENCES cant_usuario(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ------------------------------------------------------------
--- RELATÓRIOS / AUDITORIA / LOGS (RF025-RF028, RF027, RF040)
--- ------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS cant_auditoria (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	usuario_id BIGINT UNSIGNED NULL,
-	acao VARCHAR(100) NOT NULL,
-	entidade VARCHAR(100) NULL,
-	entidade_id BIGINT UNSIGNED NULL,
-	dados_antes JSON NULL,
-	dados_depois JSON NULL,
-	ip VARCHAR(45) NULL,
-	user_agent VARCHAR(255) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	INDEX idx_audit_entidade (entidade, entidade_id),
-	INDEX idx_audit_usuario (usuario_id, created_at),
-	CONSTRAINT fk_audit_usuario FOREIGN KEY (usuario_id) REFERENCES cant_usuario(id) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_log_erro (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	nivel VARCHAR(20) NOT NULL, -- ERROR, WARNING, INFO
-	mensagem VARCHAR(255) NOT NULL,
-	stack_trace TEXT NULL,
-	contexto_json JSON NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	INDEX idx_logerro_data (created_at),
-	INDEX idx_logerro_nivel (nivel)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Exportações podem ser on-the-fly, sem tabela persistente adicional.
-
--- ------------------------------------------------------------
--- INTEGRAÇÕES APS (RF029, RF030)
--- ------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS cant_staging_aps_responsavel (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aps_id BIGINT UNSIGNED NOT NULL,
-	nome VARCHAR(150) NOT NULL,
-	cpf CHAR(11) NOT NULL,
-	email VARCHAR(150) NULL,
-	telefone VARCHAR(30) NULL,
-	recebido_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_stage_resp_aps (aps_id),
-	INDEX idx_stage_resp_cpf (cpf)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_staging_aps_aluno (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aps_id BIGINT UNSIGNED NOT NULL,
-	nome VARCHAR(150) NOT NULL,
-	matricula VARCHAR(50) NOT NULL,
-	serie VARCHAR(50) NULL,
-	turno VARCHAR(30) NULL,
-	recebido_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_stage_aluno_aps (aps_id),
-	INDEX idx_stage_aluno_matricula (matricula)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_staging_aps_funcionario (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	aps_id BIGINT UNSIGNED NOT NULL,
-	nome VARCHAR(150) NOT NULL,
-	cpf CHAR(11) NULL,
-	matricula VARCHAR(50) NULL,
-	tipo_funcionario VARCHAR(50) NULL,
-	recebido_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE KEY uq_stage_func_aps (aps_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ------------------------------------------------------------
--- PARAMETRIZAÇÕES / JOBS / NOTIFICAÇÕES (RF031-RF037)
--- ------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS cant_parametro (
-	chave VARCHAR(100) PRIMARY KEY,
-	valor VARCHAR(255) NOT NULL,
-	descricao VARCHAR(255) NULL,
-	escopo VARCHAR(50) NULL,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_job_execucao (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	job VARCHAR(100) NOT NULL, -- ex: 'sync_aps_full'
-	status ENUM('sucesso','erro','executando') NOT NULL,
-	started_at DATETIME NULL,
-	ended_at DATETIME NULL,
-	mensagem VARCHAR(255) NULL,
-	latencia_ms INT NULL, -- RN045
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	INDEX idx_jobexec_job (job, started_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_notificacao (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	responsavel_id BIGINT UNSIGNED NOT NULL,
-	tipo VARCHAR(50) NOT NULL, -- 'saldo_baixo','kit_expira','recarga_confirmada'
-	payload_json JSON NULL,
-	status_envio ENUM('pendente','enviado','erro') NOT NULL DEFAULT 'pendente',
-	tentativas INT NOT NULL DEFAULT 0,
-	proxima_tentativa DATETIME NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	INDEX idx_notif_resp (responsavel_id),
-	INDEX idx_notif_tipo (tipo),
-	CONSTRAINT fk_notif_resp FOREIGN KEY (responsavel_id) REFERENCES cant_responsavel(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ------------------------------------------------------------
--- BUSCA GLOBAL (RF035) pode ser implementada via índices já criados.
--- PAGINAÇÃO (RF036) tratada em nível de aplicação.
--- SEGURANÇA DE SESSÃO (RF039) tratada em aplicação/framework (CI4 sessions).
--- ------------------------------------------------------------
-
--- Tabela opcional para tentativas de login detalhadas (RN002 auditoria)
-CREATE TABLE IF NOT EXISTS cant_login_tentativa (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	usuario_id BIGINT UNSIGNED NULL,
-	cpf_email_informado VARCHAR(150) NULL,
-	sucesso TINYINT(1) NOT NULL,
-	ip VARCHAR(45) NULL,
-	user_agent VARCHAR(255) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	INDEX idx_loginTent_usuario (usuario_id, created_at),
-	CONSTRAINT fk_logintent_usuario FOREIGN KEY (usuario_id) REFERENCES cant_usuario(id) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ------------------------------------------------------------
--- SEEDS BÁSICOS (Papéis principais)
--- ------------------------------------------------------------
--- REMOVIDA seed de papéis, agora gerenciados diretamente na tabela cant_usuario.
-
--- Parâmetros iniciais (podem ser ajustados) RN044
-INSERT INTO cant_parametro (chave, valor, descricao, escopo) VALUES
-	('janela_cancelamento_minutos','30','Janela padrão para cancelamento de venda','operacao'),
-	('peso_minimo_gramas','1','Peso mínimo permitido para produtos por peso','operacao'),
-	('valor_minimo_recarga','5.00','Valor mínimo para recarga de saldo','financeiro'),
-	('valor_maximo_recarga_diaria','500.00','Valor máximo de recarga por dia','financeiro'),
-	('saldo_baixo_threshold','10.00','Limite para disparo de notificação de saldo baixo','notificacao'),
-	('timeout_sessao_minutos','30','Tempo de inatividade para expirar sessão','seguranca'),
-	('kpi_cache_minutos','5','Tempo de cache para KPIs','performance')
-ON DUPLICATE KEY UPDATE valor=VALUES(valor), descricao=VALUES(descricao);
-
-SET FOREIGN_KEY_CHECKS=1;
-
--- FIM DO SCRIPT
+-- fim - tabelas da cantina

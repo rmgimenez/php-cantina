@@ -1,0 +1,86 @@
+/* Estilos específicos para páginas de autenticação */
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.auth-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: 2rem 2rem 1rem;
+}
+
+.auth-body {
+  padding: 1rem 2rem 2rem;
+}
+
+.auth-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.auth-form .input-group-text {
+  background-color: #f8f9fa;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+}
+
+.auth-form .form-control {
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+
+.auth-form .form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.auth-options {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Background específico para funcionários */
+.auth-funcionarios {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Background específico para responsáveis */
+.auth-responsaveis {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Responsivo */
+@media (max-width: 576px) {
+  .auth-card {
+    margin: 1rem;
+    max-width: none;
+  }
+
+  .auth-header {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .auth-body {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+
+  .auth-icon {
+    font-size: 2.5rem;
+  }
+}
