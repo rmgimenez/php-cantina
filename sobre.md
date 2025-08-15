@@ -70,6 +70,14 @@ Papéis
 - gerente: todos os acessos do supervisor e acesso a cadastro de novos funcionários.
 - informática: acesso total ao sistema, podendo fazer manutenção e ajustes técnicos.
 
+Observação sobre papéis/permissões
+
+As tabelas separadas de `papel` e `permissao` foram removidas. Agora a tabela `cant_usuario` possui um campo `tipo` (ENUM) com os valores:
+
+- 'caixa', 'supervisor', 'gerente', 'informatica', 'responsavel'
+
+Esse campo define o papel do usuário e serve de base para aplicar permissões na aplicação. A decisão simplifica o esquema inicial e facilita o seed de usuários; se no futuro for necessária uma matriz de permissões mais granular podemos migrar para tabelas dedicadas sem perda dos dados.
+
 ### Responsáveis pelos alunos
 
 Serão os usuários que poderão consultar o que foi consumido por seus dependentes.

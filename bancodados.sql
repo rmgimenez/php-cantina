@@ -13,31 +13,11 @@ SET FOREIGN_KEY_CHECKS=0;
 -- TABELAS DE CONTROLE DE ACESSO / USUÁRIOS
 -- ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS cant_papel (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	codigo VARCHAR(50) NOT NULL UNIQUE, -- 'caixa','supervisor','gerente','informatica','responsavel'
-	nome VARCHAR(100) NOT NULL,
-	descricao VARCHAR(255) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_permissao (
-	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	codigo VARCHAR(100) NOT NULL UNIQUE, -- ex: 'venda.cancelar'
-	nome VARCHAR(150) NOT NULL,
-	descricao VARCHAR(255) NULL,
-	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS cant_papel_permissao (
-	papel_id BIGINT UNSIGNED NOT NULL,
-	permissao_id BIGINT UNSIGNED NOT NULL,
-	PRIMARY KEY (papel_id, permissao_id),
-	CONSTRAINT fk_papelperm_papel FOREIGN KEY (papel_id) REFERENCES cant_papel(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_papelperm_perm FOREIGN KEY (permissao_id) REFERENCES cant_permissao(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/* REMOVIDAS: cant_papel, cant_permissao, cant_papel_permissao
+   Substituímos a estrutura de papéis/permissões por um campo 'tipo' em cant_usuario.
+   As tabelas `cant_papel`, `cant_permissao` e `cant_papel_permissao` foram removidas por decisão de simplificação:
+   permissions serão determinadas pelo campo `tipo` em `cant_usuario` (valores: 'caixa','supervisor','gerente','informatica','responsavel').
+*/
 
 CREATE TABLE IF NOT EXISTS cant_usuario (
 	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -45,17 +25,17 @@ CREATE TABLE IF NOT EXISTS cant_usuario (
 	email VARCHAR(150) NULL,
 	cpf CHAR(11) NULL,
 	senha_hash VARCHAR(255) NOT NULL,
-	papel_id BIGINT UNSIGNED NOT NULL,
+	-- campo 'tipo' define as permissões/roles do usuário sem necessidade de tabelas separadas
+	tipo ENUM('caixa','supervisor','gerente','informatica','responsavel') NOT NULL DEFAULT 'caixa',
 	status ENUM('ativo','inativo','bloqueado') NOT NULL DEFAULT 'ativo',
 	ultimo_acesso DATETIME NULL,
-	tentativas_login INT NOT NULL DEFAULT 0, -- RN002
-	bloqueado_ate DATETIME NULL, -- RN002 bloqueio temporário
+	tentativas_login INT NOT NULL DEFAULT 0,
+	bloqueado_ate DATETIME NULL,
 	created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	UNIQUE KEY uq_usuario_email (email),
 	UNIQUE KEY uq_usuario_cpf (cpf),
-	INDEX idx_usuario_papel (papel_id),
-	CONSTRAINT fk_usuario_papel FOREIGN KEY (papel_id) REFERENCES cant_papel(id) ON UPDATE CASCADE
+	INDEX idx_usuario_tipo (tipo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Funcionários da cantina / importados APS (RF003, RF030)
@@ -529,13 +509,7 @@ CREATE TABLE IF NOT EXISTS cant_login_tentativa (
 -- ------------------------------------------------------------
 -- SEEDS BÁSICOS (Papéis principais)
 -- ------------------------------------------------------------
-INSERT INTO cant_papel (codigo, nome, descricao) VALUES
-	('caixa','Caixa','Operador de PDV'),
-	('supervisor','Supervisor','Acesso a relatórios e cadastros'),
-	('gerente','Gerente','Gestão completa exceto técnico'),
-	('informatica','Informática','Acesso total técnico'),
-	('responsavel','Responsável','Portal do responsável')
-ON DUPLICATE KEY UPDATE nome=VALUES(nome), descricao=VALUES(descricao);
+-- REMOVIDA seed de papéis, agora gerenciados diretamente na tabela cant_usuario.
 
 -- Parâmetros iniciais (podem ser ajustados) RN044
 INSERT INTO cant_parametro (chave, valor, descricao, escopo) VALUES
