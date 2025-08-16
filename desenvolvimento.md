@@ -37,11 +37,11 @@ Este documento define as tarefas organizadas para desenvolvimento do sistema de 
 
 #### Task 1.3: Configuração Inicial do Frontend
 
-- [ ] Configurar Vite com proxy para backend
-- [ ] Configurar roteamento com React Router
-- [ ] Configurar Axios com interceptadores
-- [ ] Configurar Zustand para estado global
-- [ ] Configurar React Query
+- [x] Configurar Vite com proxy para backend
+- [x] Configurar roteamento com React Router
+- [x] Configurar Axios com interceptadores
+- [x] Configurar Zustand para estado global
+- [x] Configurar React Query
 
 **Arquivos envolvidos:**
 
