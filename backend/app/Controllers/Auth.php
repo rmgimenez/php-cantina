@@ -13,11 +13,40 @@ class Auth extends BaseApiController
 {
     private FuncionarioCantinaModel $funcionarioModel;
     private string $jwtSecret;
+    private string $jwtIssuer;
+    private string $jwtAudience;
+    private int $jwtTtl; // em segundos
 
     public function __construct()
     {
         $this->funcionarioModel = new FuncionarioCantinaModel();
         $this->jwtSecret = getenv('JWT_SECRET') ?: 'sua-chave-secreta-jwt-muito-segura-aqui';
+        $this->jwtIssuer = getenv('JWT_ISSUER') ?: 'cantina-escolar';
+        $this->jwtAudience = getenv('JWT_AUDIENCE') ?: 'cantina-escolar';
+        // TTL padrão 24h (86400s) se não houver variável
+        $this->jwtTtl = (int) (getenv('JWT_TTL') ?: 86400);
+    }
+
+    /**
+     * Gera payload e token JWT para um funcionário
+     */
+    private function gerarToken(array $funcionario): string
+    {
+        $agora = time();
+        $payload = [
+            'iss' => $this->jwtIssuer,
+            'aud' => $this->jwtAudience,
+            'iat' => $agora,
+            'nbf' => $agora,
+            'exp' => $agora + $this->jwtTtl,
+            'sub' => (string) $funcionario['id'],
+            'user_id' => $funcionario['id'],
+            'usuario' => $funcionario['usuario'],
+            'nome' => $funcionario['nome'],
+            'tipo' => $funcionario['tipo']
+        ];
+
+        return JWT::encode($payload, $this->jwtSecret, 'HS256');
     }
 
     /**
@@ -54,18 +83,7 @@ class Auth extends BaseApiController
             }
 
             // Gerar token JWT
-            $payload = [
-                'iss' => 'cantina-escolar',
-                'aud' => 'cantina-escolar',
-                'iat' => time(),
-                'exp' => time() + (24 * 60 * 60), // 24 horas
-                'user_id' => $funcionario['id'],
-                'usuario' => $funcionario['usuario'],
-                'nome' => $funcionario['nome'],
-                'tipo' => $funcionario['tipo']
-            ];
-
-            $token = JWT::encode($payload, $this->jwtSecret, 'HS256');
+            $token = $this->gerarToken($funcionario);
 
             // Atualizar último acesso
             $this->funcionarioModel->atualizarUltimoAcesso($funcionario['id']);
@@ -189,18 +207,7 @@ class Auth extends BaseApiController
             }
 
             // Gerar novo token
-            $payload = [
-                'iss' => 'cantina-escolar',
-                'aud' => 'cantina-escolar',
-                'iat' => time(),
-                'exp' => time() + (24 * 60 * 60), // 24 horas
-                'user_id' => $funcionario['id'],
-                'usuario' => $funcionario['usuario'],
-                'nome' => $funcionario['nome'],
-                'tipo' => $funcionario['tipo']
-            ];
-
-            $newToken = JWT::encode($payload, $this->jwtSecret, 'HS256');
+            $newToken = $this->gerarToken($funcionario);
 
             return $this->respondSuccess([
                 'token' => $newToken

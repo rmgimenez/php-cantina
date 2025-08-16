@@ -26,10 +26,14 @@ Este documento define as tarefas organizadas para desenvolvimento do sistema de 
 
 #### Task 1.2: Sistema de Autenticação - Backend
 
-- [ ] Criar Model `FuncionarioCantina`
-- [ ] Criar Controller `Auth` para login/logout
-- [ ] Implementar middleware de autenticação JWT
-- [ ] Criar endpoints:
+- [x] Criar Model `FuncionarioCantina`
+- [x] Criar Controller `Auth` para login/logout
+- [x] Implementar middleware de autenticação JWT
+- [x] Criar endpoints:
+  - `POST /api/auth/login`
+  - `POST /api/auth/logout`
+  - `GET /api/auth/me`
+  - `POST /api/auth/refresh`
 
 #### Task 1.3: Configuração Inicial do Frontend
 

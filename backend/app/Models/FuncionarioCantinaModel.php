@@ -161,9 +161,15 @@ class FuncionarioCantinaModel extends Model
      */
     public function atualizarUltimoAcesso(int $id): bool
     {
-        return $this->set('data_atualizacao', 'NOW()', false)
-                   ->where('id', $id)
-                   ->update();
+        try {
+            // Usa update direto para evitar "There is no data to update" caso set() interno falhe
+            return $this->update($id, [
+                'data_atualizacao' => date('Y-m-d H:i:s')
+            ]);
+        } catch (\Throwable $e) {
+            log_message('warning', 'Falha ao atualizar último acesso do funcionário ID ' . $id . ': ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**

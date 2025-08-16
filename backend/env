@@ -98,6 +98,9 @@ encryption.key = 'sua-chave-aqui-32-caracteres-min'
 
 #--------------------------------------------------------------------
 JWT_SECRET = 'sua-chave-jwt-super-secreta-para-cantina-escolar-2025'
+JWT_ISSUER = 'cantina-escolar'
+JWT_AUDIENCE = 'cantina-escolar'
+JWT_TTL = 86400
 
 #--------------------------------------------------------------------
 
