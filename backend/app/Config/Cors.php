@@ -24,82 +24,57 @@ class Cors extends BaseConfig
      *      maxAge: int,
      *  }
      */
-    public array $default = [
-        /**
-         * Origins for the `Access-Control-Allow-Origin` header.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-         *
-         * E.g.:
-         *   - ['http://localhost:8080']
-         *   - ['https://www.example.com']
-         */
-        'allowedOrigins' => ['http://localhost:5173', 'http://localhost:3000'],
+    public array $default = [];
 
-        /**
-         * Origin regex patterns for the `Access-Control-Allow-Origin` header.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-         *
-         * NOTE: A pattern specified here is part of a regular expression. It will
-         *       be actually `#\A<pattern>\z#`.
-         *
-         * E.g.:
-         *   - ['https://\w+\.example\.com']
-         */
-        'allowedOriginsPatterns' => [],
+    /**
+     * Build environment-aware defaults.
+     * In development we'll allow common local frontend origins (Vite/React).
+     * In other environments the config stays conservative; you can override
+     * with an environment variable CORS_ALLOWED_ORIGINS (comma-separated).
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
-        /**
-         * Weather to send the `Access-Control-Allow-Credentials` header.
-         *
-         * The Access-Control-Allow-Credentials response header tells browsers whether
-         * the server allows cross-origin HTTP requests to include credentials.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
-         */
-        'supportsCredentials' => true,
+        // Allow override from environment (comma separated list)
+        $envOrigins = getenv('CORS_ALLOWED_ORIGINS');
+        if ($envOrigins !== false && trim($envOrigins) !== '') {
+            $origins = array_map('trim', explode(',', $envOrigins));
+        } elseif (defined('ENVIRONMENT') && ENVIRONMENT === 'development') {
+            // Common origins used in frontend development (Vite, CRA, etc.)
+            $origins = [
+                'http://localhost:5173',
+                'http://127.0.0.1:5173',
+                'http://localhost:3000',
+                'http://127.0.0.1:3000',
+            ];
+        } else {
+            // Production / conservative default: no wildcard; must be configured
+            $origins = [];
+        }
 
-        /**
-         * Set headers to allow.
-         *
-         * The Access-Control-Allow-Headers response header is used in response to
-         * a preflight request which includes the Access-Control-Request-Headers to
-         * indicate which HTTP headers can be used during the actual request.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
-         */
-        'allowedHeaders' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+        $this->default = [
+            // Origins for the `Access-Control-Allow-Origin` header.
+            'allowedOrigins' => $origins,
 
-        /**
-         * Set headers to expose.
-         *
-         * The Access-Control-Expose-Headers response header allows a server to
-         * indicate which response headers should be made available to scripts running
-         * in the browser, in response to a cross-origin request.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-         */
-        'exposedHeaders' => [],
+            // Origin regex patterns for the `Access-Control-Allow-Origin` header.
+            'allowedOriginsPatterns' => [],
 
-        /**
-         * Set methods to allow.
-         *
-         * The Access-Control-Allow-Methods response header specifies one or more
-         * methods allowed when accessing a resource in response to a preflight
-         * request.
-         *
-         * E.g.:
-         *   - ['GET', 'POST', 'PUT', 'DELETE']
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
-         */
-        'allowedMethods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+            // Whether to send the `Access-Control-Allow-Credentials` header.
+            'supportsCredentials' => true,
 
-        /**
-         * Set how many seconds the results of a preflight request can be cached.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
-         */
-        'maxAge' => 7200,
-    ];
+            // Set headers to allow.
+            'allowedHeaders' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+
+            // Set headers to expose.
+            'exposedHeaders' => [],
+
+            // Set methods to allow.
+            'allowedMethods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+
+            // Set how many seconds the results of a preflight request can be cached.
+            'maxAge' => 7200,
+        ];
+    }
+
 }

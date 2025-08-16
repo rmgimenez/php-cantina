@@ -7,21 +7,8 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index');
 
-// Rota para testar se a API está funcionando
-$routes->get('api/health', function() {
-    $response = \Config\Services::response();
-    $data = [
-        'success' => true,
-        'message' => 'API da Cantina Escolar funcionando',
-        'timestamp' => date('Y-m-d H:i:s')
-    ];
-    
-    $response->setStatusCode(200)
-            ->setContentType('application/json')
-            ->setBody(json_encode($data));
-    
-    return $response;
-});
+// Rota para testar se a API está funcionando - usa controller Health::index
+$routes->get('api/health', 'Health::index');
 
 // Rotas da API
 $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {

@@ -16,11 +16,13 @@ Este documento define as tarefas organizadas para desenvolvimento do sistema de 
 
 #### Task 1.1: Configuração Inicial do Backend
 
-- [ ] Configurar arquivo `.env` do CodeIgniter 4
-- [ ] Configurar conexão com banco de dados
-- [ ] Configurar CORS para desenvolvimento
-- [ ] Criar estrutura base de resposta para APIs
-- [ ] Configurar rotas base
+- [x] Configurar arquivo `.env` do CodeIgniter 4
+- [x] Configurar conexão com banco de dados
+- [x] Configurar CORS para desenvolvimento
+- [x] Criar estrutura base de resposta para APIs
+- [x] Configurar rotas base
+
+- Nota: Implementado em `backend/app/Config/Cors.php` — em `development` permite origens locais do frontend (ex.: `http://localhost:5173`, `http://localhost:3000`) e aceita override via variável de ambiente `CORS_ALLOWED_ORIGINS` (lista separada por vírgula).
 
 #### Task 1.2: Sistema de Autenticação - Backend
 
