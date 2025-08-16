@@ -102,20 +102,4 @@ class Cors extends BaseConfig
          */
         'maxAge' => 7200,
     ];
-
-    /**
-     * Development CORS configuration (allows common Vite dev servers)
-     */
-    public array $dev = [
-        'allowedOrigins' => [
-            'http://localhost:5173',
-            'http://localhost:3000',
-        ],
-        'allowedOriginsPatterns' => [],
-        'supportsCredentials' => true,
-        'allowedHeaders' => ['Content-Type', 'Authorization', 'X-Requested-With'],
-        'exposedHeaders' => [],
-        'allowedMethods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        'maxAge' => 7200,
-    ];
 }

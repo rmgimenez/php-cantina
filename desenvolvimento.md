@@ -16,34 +16,37 @@ Este documento define as tarefas organizadas para desenvolvimento do sistema de 
 
 #### Task 1.1: Configuração Inicial do Backend
 
-- [ ] Configurar arquivo `.env` do CodeIgniter 4
-- [ ] Configurar conexão com banco de dados
-- [ ] Configurar CORS para desenvolvimento
-- [ ] Criar estrutura base de resposta para APIs
-- [ ] Configurar rotas base
+- [x] Configurar arquivo `.env` do CodeIgniter 4
+- [x] Configurar conexão com banco de dados
+- [x] Configurar CORS para desenvolvimento
+- [x] Criar estrutura base de resposta para APIs
+- [x] Configurar rotas base
 
 **Arquivos envolvidos:**
 
-- `backend/env`
-- `backend/app/Config/Database.php`
-- `backend/app/Config/Cors.php`
-- `backend/app/Config/Routes.php`
+- `backend/env` ✅
+- `backend/app/Config/Database.php` ✅
+- `backend/app/Config/Cors.php` ✅
+- `backend/app/Config/Routes.php` ✅
+- `backend/app/Controllers/BaseApiController.php` ✅ (criado)
 
 #### Task 1.2: Sistema de Autenticação - Backend
 
-- [ ] Criar Model `FuncionarioCantina`
-- [ ] Criar Controller `Auth` para login/logout
-- [ ] Implementar middleware de autenticação JWT
-- [ ] Criar endpoints:
-  - `POST /api/auth/login`
-  - `POST /api/auth/logout`
-  - `GET /api/auth/me`
+- [x] Criar Model `FuncionarioCantina`
+- [x] Criar Controller `Auth` para login/logout
+- [x] Implementar middleware de autenticação JWT
+- [x] Criar endpoints:
+  - `POST /api/auth/login` ✅
+  - `POST /api/auth/logout` ✅
+  - `GET /api/auth/me` ✅
+  - `POST /api/auth/refresh` ✅ (bônus)
 
 **Arquivos a criar:**
 
-- `backend/app/Models/FuncionarioCantinaModel.php`
-- `backend/app/Controllers/Auth.php`
-- `backend/app/Filters/JWTAuth.php`
+- `backend/app/Models/FuncionarioCantinaModel.php` ✅
+- `backend/app/Controllers/Auth.php` ✅
+- `backend/app/Filters/JWTAuth.php` ✅
+- `backend/app/Database/Seeds/FuncionarioCantinaSeeder.php` ✅ (bônus)
 
 #### Task 1.3: Configuração Inicial do Frontend
 
