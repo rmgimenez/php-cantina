@@ -52,11 +52,11 @@ Este documento define as tarefas organizadas para desenvolvimento do sistema de 
 
 #### Task 1.4: Tela de Login - Frontend
 
-- [ ] Criar componente de layout de autenticação
-- [ ] Criar tela de login com formulário
-- [ ] Implementar validação de formulário
-- [ ] Integrar com API de autenticação
-- [ ] Criar hook `useAuth`
+- [x] Criar componente de layout de autenticação
+- [x] Criar tela de login com formulário
+- [x] Implementar validação de formulário (mínima: campos obrigatórios)
+- [x] Integrar com API de autenticação
+- [x] Criar hook `useAuth`
 
 **Arquivos a criar:**
 

@@ -1,5 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+// Declare `process` para evitar dependência de tipos do Node (@types/node)
+declare const process: any;
 // usamos path relativo; Vite resolverá a partir do diretório do projeto
 
 // https://vite.dev/config/
