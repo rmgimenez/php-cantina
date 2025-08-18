@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useAuth } from "../../hooks/use-auth";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/use-auth';
 
 interface FormState {
   usuario: string;
@@ -8,7 +9,8 @@ interface FormState {
 
 export function LoginForm() {
   const { login } = useAuth();
-  const [form, setForm] = useState<FormState>({ usuario: "", senha: "" });
+  const navigate = useNavigate();
+  const [form, setForm] = useState<FormState>({ usuario: '', senha: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,63 +22,63 @@ export function LoginForm() {
     e.preventDefault();
     setError(null);
     if (!form.usuario || !form.senha) {
-      setError("Preencha usuário e senha.");
+      setError('Preencha usuário e senha.');
       return;
     }
     setLoading(true);
     const resp = await login(form);
     setLoading(false);
     if (!resp.success) {
-      setError(resp.message || "Erro ao entrar");
+      setError(resp.message || 'Erro ao entrar');
     } else {
-      window.location.href = "/";
+      navigate('/');
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 360, margin: "0 auto" }}>
+    <form onSubmit={handleSubmit} style={{ maxWidth: 360, margin: '0 auto' }}>
       <h2>Login Cantina</h2>
       {error && (
-        <div style={{ color: "red", marginBottom: 12 }} role="alert">
+        <div style={{ color: 'red', marginBottom: 12 }} role='alert'>
           {error}
         </div>
       )}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <label
           style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left",
+            display: 'flex',
+            flexDirection: 'column',
+            textAlign: 'left',
           }}
         >
           <span>Usuário</span>
           <input
-            name="usuario"
+            name='usuario'
             value={form.usuario}
             onChange={handleChange}
-            autoComplete="username"
-            placeholder="Usuário"
+            autoComplete='username'
+            placeholder='Usuário'
           />
         </label>
         <label
           style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left",
+            display: 'flex',
+            flexDirection: 'column',
+            textAlign: 'left',
           }}
         >
           <span>Senha</span>
           <input
-            name="senha"
-            type="password"
+            name='senha'
+            type='password'
             value={form.senha}
             onChange={handleChange}
-            autoComplete="current-password"
-            placeholder="Senha"
+            autoComplete='current-password'
+            placeholder='Senha'
           />
         </label>
-        <button type="submit" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar"}
+        <button type='submit' disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
         </button>
       </div>
     </form>
