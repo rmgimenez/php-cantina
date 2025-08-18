@@ -23,7 +23,7 @@ class TipoProdutoModel extends Model
 
     // Validação
     protected $validationRules = [
-        'nome' => 'required|min_length[2]|max_length[100]|is_unique[cant_tipos_produtos.nome,id,{id}]',
+        'nome' => 'required|min_length[2]|max_length[100]',
         'descricao' => 'permit_empty|max_length[1000]',
         'ativo' => 'permit_empty|in_list[0,1]'
     ];
@@ -92,21 +92,19 @@ class TipoProdutoModel extends Model
     }
 
     /**
-     * Busca com filtros
+     * Busca com filtros e paginação
      *
      * @param array $filtros
+     * @param int $page
+     * @param int $perPage
      * @return array
      */
-    public function buscarComFiltros(array $filtros = []): array
+    public function buscarComFiltrosPaginado(array $filtros = [], int $page = 1, int $perPage = 20): array
     {
         $builder = $this->builder();
 
         if (!empty($filtros['nome'])) {
             $builder->like('nome', $filtros['nome']);
-        }
-
-        if (!empty($filtros['descricao'])) {
-            $builder->like('descricao', $filtros['descricao']);
         }
 
         if (isset($filtros['ativo'])) {
@@ -115,7 +113,35 @@ class TipoProdutoModel extends Model
             $builder->where('ativo', 1); // Por padrão, só ativos
         }
 
-        return $builder->orderBy('nome', 'ASC')->get()->getResultArray();
+        $offset = ($page - 1) * $perPage;
+        
+        return $builder->orderBy('nome', 'ASC')
+                      ->limit($perPage, $offset)
+                      ->get()
+                      ->getResultArray();
+    }
+
+    /**
+     * Conta registros com filtros
+     *
+     * @param array $filtros
+     * @return int
+     */
+    public function contarComFiltros(array $filtros = []): int
+    {
+        $builder = $this->builder();
+
+        if (!empty($filtros['nome'])) {
+            $builder->like('nome', $filtros['nome']);
+        }
+
+        if (isset($filtros['ativo'])) {
+            $builder->where('ativo', $filtros['ativo']);
+        } else {
+            $builder->where('ativo', 1); // Por padrão, só ativos
+        }
+
+        return $builder->countAllResults();
     }
 
     /**
