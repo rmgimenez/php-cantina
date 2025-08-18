@@ -56,8 +56,9 @@ class JwtAuthFilter implements FilterInterface
                 return $this->unauthorized('Token expirado');
             }
 
-            // Adiciona informações do usuário à requisição
-            $request->user = $decoded;
+            // Armazena informações do usuário de forma compatível com PHP 8.2+
+            // Evita criar propriedades dinâmicas em IncomingRequest (deprecated)
+            $GLOBALS['authenticated_user'] = $decoded;
 
             return $request;
         } catch (\Firebase\JWT\ExpiredException $e) {

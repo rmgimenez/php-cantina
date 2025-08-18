@@ -199,7 +199,13 @@ class BaseApiController extends Controller
      */
     protected function getAuthenticatedUser(): ?object
     {
-        return $this->request->user ?? null;
+        // Compatibilidade: alguns filtros antigos podem setar $request->user (legacy)
+        if (isset($this->request) && is_object($this->request) && property_exists($this->request, 'user')) {
+            return $this->request->user ?? null;
+        }
+
+        // Método preferido: verificar variável global definida pelo filtro JWT
+        return $GLOBALS['authenticated_user'] ?? null;
     }
 
     /**

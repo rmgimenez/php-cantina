@@ -130,7 +130,21 @@ class Produtos extends BaseApiController
             $filteredData['estoque_minimo'] = (int)$filteredData['estoque_minimo'];
             $filteredData['ativo'] = (string)$filteredData['ativo']; // Convertendo para string
 
-            $produtoId = $this->model->insert($filteredData);
+            // Normalizar chaves numéricas (evita passar índices inteiros ao Query Builder)
+            $normalizedForInsert = [];
+            $allowedFields = $this->model->allowedFields;
+            foreach ($filteredData as $k => $v) {
+                if (is_int($k) || (is_string($k) && ctype_digit($k))) {
+                    $idx = (int)$k;
+                    if (isset($allowedFields[$idx])) {
+                        $normalizedForInsert[$allowedFields[$idx]] = $v;
+                        continue;
+                    }
+                }
+                $normalizedForInsert[$k] = $v;
+            }
+
+            $produtoId = $this->model->insert($normalizedForInsert);
 
             if (!$produtoId) {
                 return $this->respondError('Erro ao criar produto', 500, $this->model->errors());
@@ -198,7 +212,21 @@ class Produtos extends BaseApiController
                 $data['ativo'] = (string)$data['ativo']; // Convertendo para string
             }
 
-            $success = $this->model->update($id, $data);
+            // Normalizar chaves numéricas antes do update (mesma razão que no create)
+            $normalizedForUpdate = [];
+            $allowedFields = $this->model->allowedFields;
+            foreach ($data as $k => $v) {
+                if (is_int($k) || (is_string($k) && ctype_digit($k))) {
+                    $idx = (int)$k;
+                    if (isset($allowedFields[$idx])) {
+                        $normalizedForUpdate[$allowedFields[$idx]] = $v;
+                        continue;
+                    }
+                }
+                $normalizedForUpdate[$k] = $v;
+            }
+
+            $success = $this->model->update($id, $normalizedForUpdate);
 
             if (!$success) {
                 return $this->respondError('Erro ao atualizar produto', 500, $this->model->errors());

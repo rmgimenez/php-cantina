@@ -79,7 +79,9 @@ export const useCreateTipoProduto = () => {
 
   return useMutation({
     mutationFn: async (tipoProduto: TipoProdutoInput): Promise<TipoProdutoResponse> => {
+      console.log('Creating tipo produto:', tipoProduto);
       const { data } = await api.post('/tipos-produtos', tipoProduto);
+      console.log('Created tipo produto:', data);
       return data;
     },
     onSuccess: () => {

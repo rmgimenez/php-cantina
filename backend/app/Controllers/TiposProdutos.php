@@ -102,24 +102,27 @@ class TiposProdutos extends BaseApiController
 
             $data = $this->getRequestData();
 
+            // Normaliza primeiro para suportar payloads indexados
+            $data = $this->normalizePayload($data, $this->model->allowedFields);
+
             // Validação básica do payload
-            if (!is_array($data)) {
+            if (!is_array($data) || empty($data)) {
                 log_message('error', 'Payload inválido ao criar tipo de produto: esperado objeto associativo');
                 return $this->respondError('Payload inválido', 400);
             }
 
-            // Validação
+            // Regras de validação
             $rules = [
-                'nome' => 'required|min_length[2]|max_length[100]|is_unique[cant_tipos_produtos.nome]',
+                'nome' => "required|min_length[2]|max_length[100]|is_unique[cant_tipos_produtos.nome]",
                 'descricao' => 'permit_empty|max_length[1000]',
-                'ativo' => 'permit_empty|in_list[0,1,\'0\',\'1\']'
+                'ativo' => 'permit_empty|in_list[0,1]'
             ];
 
             if (!$this->validateInput($rules, $data)) {
                 return $this->respondValidationError($this->getValidationErrors());
             }
 
-            // Define valor padrão para ativo se não informado
+            // Define valores padrão
             if (!isset($data['ativo'])) {
                 $data['ativo'] = '1';
             }
@@ -128,40 +131,63 @@ class TiposProdutos extends BaseApiController
             $allowedFields = $this->model->allowedFields;
             $filteredData = array_intersect_key($data, array_flip($allowedFields));
 
-            // Normaliza payloads que venham como arrays indexados (0,1,2...) para mapear
-            // para chaves permitidas — evita passar chaves numéricas para o Query Builder
-            $filteredData = $this->normalizePayload($filteredData, $allowedFields);
+            // Se o payload veio indexado ou "embalado" (ex: { data: [...] } ou [[...]])
+            // normalizePayload já tenta lidar com arrays indexados, mas quando o corpo
+            // está embalado dentro de outra chave (ex: { "data": [...] }) ou quando
+            // array_intersect_key retornou vazio, devemos tentar extrair e normalizar
+            // explicitamente para evitar passar chaves numéricas ao Model.
+            if (empty($filteredData) && is_array($data)) {
+                // Caso 1: payload estilo [[...]] (array com primeiro elemento sendo o array indexado)
+                if (isset($data[0]) && is_array($data[0]) && array_values($data) === $data) {
+                    $data = $data[0];
+                }
 
-            // Log para depuração
-            log_message('debug', 'TiposProdutos::create payload: ' . json_encode($filteredData));
+                // Caso 2: payload embalado em uma chave comum como 'data'
+                if (isset($data['data']) && is_array($data['data']) && array_values($data['data']) === $data['data']) {
+                    $data = $data['data'];
+                }
 
-            // Garantir que os tipos de dados estão corretos antes da inserção
-            if (isset($filteredData['ativo'])) {
-                $filteredData['ativo'] = (string)$filteredData['ativo']; // Garantir que seja string
+                // Normaliza indexados para associativo com base em allowedFields
+                $data = $this->normalizePayload($data, $allowedFields);
+                $filteredData = array_intersect_key($data, array_flip($allowedFields));
             }
 
-            $id = $this->model->insert($filteredData);
+            // Garantir tipos de dados corretos
+            if (isset($filteredData['ativo'])) {
+                $filteredData['ativo'] = (string)$filteredData['ativo'];
+            }
 
-            if (!$id) {
+            // Log para diagnóstico: registrar se houver chaves não-associativas
+            foreach (array_keys($filteredData) as $k) {
+                if (is_int($k)) {
+                    log_message('error', 'TiposProdutos::create - payload com chave numérica detectada: ' . json_encode($filteredData));
+                    break;
+                }
+            }
+
+            // Normalizar chaves numéricas para nomes de campos (evita passar índices inteiros ao Query Builder)
+            $normalizedForInsert = [];
+            $allowedFields = $this->model->allowedFields;
+            foreach ($filteredData as $k => $v) {
+                if (is_int($k) || (is_string($k) && ctype_digit($k))) {
+                    $idx = (int)$k;
+                    if (isset($allowedFields[$idx])) {
+                        $normalizedForInsert[$allowedFields[$idx]] = $v;
+                        continue;
+                    }
+                }
+                $normalizedForInsert[$k] = $v;
+            }
+
+            $insertId = $this->model->insert($normalizedForInsert);
+
+            if (!$insertId) {
                 return $this->respondError('Erro ao criar tipo de produto', 500, $this->model->errors());
             }
 
-            $tipoProduto = $this->model->find($id);
+            $tipoCriado = $this->model->find($insertId);
 
-            if (!$tipoProduto) {
-                return $this->respondError('Erro ao recuperar o tipo de produto criado', 500);
-            }
-
-            // Formatar response conforme especificação da issue
-            $response = [
-                'id' => (int)$tipoProduto['id'],
-                'nome' => $tipoProduto['nome'],
-                'descricao' => $tipoProduto['descricao'] ?? '',
-                'ativo' => (bool)$tipoProduto['ativo'],
-                'criado_em' => date('c', strtotime($tipoProduto['data_criacao'])) // ISO 8601
-            ];
-
-            return $this->respondSuccess($response, 'Tipo de produto criado com sucesso', 201);
+            return $this->respondSuccess($tipoCriado, 'Tipo de produto criado com sucesso', 201);
         } catch (\Exception $e) {
             log_message('error', 'Erro ao criar tipo de produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -193,8 +219,11 @@ class TiposProdutos extends BaseApiController
 
             $data = $this->getRequestData();
 
+            // Normaliza primeiro para suportar payloads indexados
+            $data = $this->normalizePayload($data, $this->model->allowedFields);
+
             // Validação básica do payload
-            if (!is_array($data)) {
+            if (!is_array($data) || empty($data)) {
                 log_message('error', 'Payload inválido ao atualizar tipo de produto: esperado objeto associativo');
                 return $this->respondError('Payload inválido', 400);
             }
@@ -215,10 +244,21 @@ class TiposProdutos extends BaseApiController
                 $data['ativo'] = (string)$data['ativo']; // Garantir que seja string
             }
 
-            // Caso o cliente tenha enviado um array indexado, normalize para associativo
-            $data = $this->normalizePayload($data, $this->model->allowedFields);
+            // Normalizar chaves numéricas (por exemplo payload vindo como ["Nome","Desc",1])
+            $normalizedForUpdate = [];
+            $allowedFields = $this->model->allowedFields;
+            foreach ($data as $k => $v) {
+                if (is_int($k) || (is_string($k) && ctype_digit($k))) {
+                    $idx = (int)$k;
+                    if (isset($allowedFields[$idx])) {
+                        $normalizedForUpdate[$allowedFields[$idx]] = $v;
+                        continue;
+                    }
+                }
+                $normalizedForUpdate[$k] = $v;
+            }
 
-            $success = $this->model->update($id, $data);
+            $success = $this->model->update($id, $normalizedForUpdate);
 
             if (!$success) {
                 return $this->respondError('Erro ao atualizar tipo de produto', 500, $this->model->errors());
@@ -245,14 +285,21 @@ class TiposProdutos extends BaseApiController
      */
     private function normalizePayload(array $payload, array $allowedFields): array
     {
-        // Se já é associativo com chaves de string, retorna como está
-        foreach ($payload as $k => $v) {
-            if (!is_int($k)) {
-                return $payload;
+        // Detecta se o payload é associativo válido (possui pelo menos uma chave string não numérica)
+        $hasAssocStringKey = false;
+        foreach (array_keys($payload) as $k) {
+            if (is_string($k) && !ctype_digit($k)) {
+                $hasAssocStringKey = true;
+                break;
             }
         }
 
-        // Caso seja um array indexado, mapeia pela ordem dos campos permitidos
+        // Se já é associativo com chaves string "não numéricas", retorna como está
+        if ($hasAssocStringKey) {
+            return $payload;
+        }
+
+        // Caso seja um array indexado (chaves inteiras ou strings numéricas), mapeia pela ordem dos campos permitidos
         $normalized = [];
         $i = 0;
         foreach ($allowedFields as $field) {
