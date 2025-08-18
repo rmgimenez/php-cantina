@@ -10,6 +10,7 @@ O sistema utiliza as seguintes tecnologias:
 - **bootstrap**: Para estilização da aplicação.
 - **react-icons**: Para uso de ícones.
 - **MySQL**: Banco de dados relacional utilizado no backend.
+- **PNPM**: Gerenciador de pacotes utilizado para instalação das dependências.
 
 ## Funcionalidades
 
@@ -56,8 +57,6 @@ O banco de dados utilizado será MySQL.
 Ele já possui algumas tabelas criadas. O sistema poderá usar essas tabelas existentes, mas não alterá-las.
 
 Todas as tabelas do banco de dados deverão ser criadas com o prefixo `cant_`.
-
-Não é para usar migrations do codeigniter.
 
 Todo o esquema do banco de dados deve ser criado manualmente.
 
