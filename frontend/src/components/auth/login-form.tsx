@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../hooks/use-auth";
+import { useNavigate } from "react-router-dom";
 
 interface FormState {
   usuario: string;
@@ -8,6 +9,7 @@ interface FormState {
 
 export function LoginForm() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({ usuario: "", senha: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,56 +31,73 @@ export function LoginForm() {
     if (!resp.success) {
       setError(resp.message || "Erro ao entrar");
     } else {
-      window.location.href = "/";
+      navigate("/");
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 360, margin: "0 auto" }}>
-      <h2>Login Cantina</h2>
-      {error && (
-        <div style={{ color: "red", marginBottom: 12 }} role="alert">
-          {error}
+    <div className="card" style={{ maxWidth: '400px', width: '100%' }}>
+      <div className="card-body">
+        <div className="text-center mb-4">
+          <h2 className="card-title">Login Cantina</h2>
+          <p className="text-muted">Acesse o sistema com suas credenciais</p>
         </div>
-      )}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <label
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left",
-          }}
-        >
-          <span>Usuário</span>
-          <input
-            name="usuario"
-            value={form.usuario}
-            onChange={handleChange}
-            autoComplete="username"
-            placeholder="Usuário"
-          />
-        </label>
-        <label
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left",
-          }}
-        >
-          <span>Senha</span>
-          <input
-            name="senha"
-            type="password"
-            value={form.senha}
-            onChange={handleChange}
-            autoComplete="current-password"
-            placeholder="Senha"
-          />
-        </label>
-        <button type="submit" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
+        
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="usuario" className="form-label">Usuário</label>
+            <input
+              type="text"
+              id="usuario"
+              name="usuario"
+              className="form-control"
+              value={form.usuario}
+              onChange={handleChange}
+              autoComplete="username"
+              placeholder="Digite seu usuário"
+              required
+            />
+          </div>
+          
+          <div className="mb-3">
+            <label htmlFor="senha" className="form-label">Senha</label>
+            <input
+              type="password"
+              id="senha"
+              name="senha"
+              className="form-control"
+              value={form.senha}
+              onChange={handleChange}
+              autoComplete="current-password"
+              placeholder="Digite sua senha"
+              required
+            />
+          </div>
+          
+          <div className="d-grid">
+            <button 
+              type="submit" 
+              className="btn btn-primary btn-lg"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Entrando...
+                </>
+              ) : (
+                'Entrar'
+              )}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 }

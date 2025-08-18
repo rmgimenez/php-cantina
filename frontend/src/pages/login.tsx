@@ -12,14 +12,7 @@ export default function LoginPage() {
   }, [token, navigate]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <div className="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
       <LoginForm />
     </div>
   );
