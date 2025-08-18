@@ -28,16 +28,19 @@ class TiposProdutos extends BaseApiController
             // Parâmetros de paginação
             $page = max(1, (int)$this->getParam('page', 1));
             $perPage = min(100, max(1, (int)$this->getParam('perPage', 20)));
-            
+
             $filtros = [
                 'nome' => $this->getParam('q'), // 'q' conforme especificação da issue
                 'ativo' => $this->getParam('ativo')
             ];
 
             // Remove filtros vazios
-            $filtros = array_filter($filtros, function($value) {
+
+            $filtros = array_filter($filtros, function ($value) {
                 return $value !== null && $value !== '';
             });
+            // Garante que as chaves associativas sejam mantidas
+            $filtros = array_intersect_key($filtros, ['nome' => '', 'ativo' => '']);
 
             $tiposProdutos = $this->model->buscarComFiltrosPaginado($filtros, $page, $perPage);
             $total = $this->model->contarComFiltros($filtros);
@@ -51,7 +54,6 @@ class TiposProdutos extends BaseApiController
                     'totalPages' => ceil($total / $perPage)
                 ]
             ], 'Lista de tipos de produtos obtida com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao listar tipos de produtos: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -78,7 +80,6 @@ class TiposProdutos extends BaseApiController
             }
 
             return $this->respondSuccess($tipoProduto, 'Tipo de produto obtido com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao buscar tipo de produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -123,7 +124,7 @@ class TiposProdutos extends BaseApiController
             }
 
             $tipoProduto = $this->model->find($id);
-            
+
             // Formatar response conforme especificação da issue
             $response = [
                 'id' => (int)$tipoProduto['id'],
@@ -134,7 +135,6 @@ class TiposProdutos extends BaseApiController
             ];
 
             return $this->respondSuccess($response, 'Tipo de produto criado com sucesso', 201);
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao criar tipo de produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -186,7 +186,6 @@ class TiposProdutos extends BaseApiController
             $tipoProdutoAtualizado = $this->model->find($id);
 
             return $this->respondSuccess($tipoProdutoAtualizado, 'Tipo de produto atualizado com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao atualizar tipo de produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -252,7 +251,6 @@ class TiposProdutos extends BaseApiController
                 'tipos_produtos' => $tiposAtivos,
                 'total' => count($tiposAtivos)
             ], 'Lista de tipos ativos obtida com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao listar tipos ativos: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -286,7 +284,6 @@ class TiposProdutos extends BaseApiController
             $tipoProdutoAtualizado = $this->model->find($id);
 
             return $this->respondSuccess($tipoProdutoAtualizado, 'Tipo de produto ativado com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao ativar tipo de produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -320,7 +317,6 @@ class TiposProdutos extends BaseApiController
             $tipoProdutoAtualizado = $this->model->find($id);
 
             return $this->respondSuccess($tipoProdutoAtualizado, 'Tipo de produto desativado com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao desativar tipo de produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');

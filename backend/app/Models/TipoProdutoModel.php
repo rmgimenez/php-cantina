@@ -53,8 +53,8 @@ class TipoProdutoModel extends Model
     public function findAtivos(): array
     {
         return $this->where('ativo', 1)
-                   ->orderBy('nome', 'ASC')
-                   ->findAll();
+            ->orderBy('nome', 'ASC')
+            ->findAll();
     }
 
     /**
@@ -66,7 +66,7 @@ class TipoProdutoModel extends Model
     public function findByNome(string $nome): ?array
     {
         return $this->where('nome', $nome)
-                   ->first();
+            ->first();
     }
 
     /**
@@ -101,6 +101,11 @@ class TipoProdutoModel extends Model
      */
     public function buscarComFiltrosPaginado(array $filtros = [], int $page = 1, int $perPage = 20): array
     {
+        // Garante que $filtros seja associativo
+        if (array_values($filtros) === $filtros) {
+            $filtros = [];
+        }
+
         $builder = $this->builder();
 
         if (!empty($filtros['nome'])) {
@@ -114,11 +119,11 @@ class TipoProdutoModel extends Model
         }
 
         $offset = ($page - 1) * $perPage;
-        
+
         return $builder->orderBy('nome', 'ASC')
-                      ->limit($perPage, $offset)
-                      ->get()
-                      ->getResultArray();
+            ->limit($perPage, $offset)
+            ->get()
+            ->getResultArray();
     }
 
     /**
@@ -166,7 +171,7 @@ class TipoProdutoModel extends Model
         $db = \Config\Database::connect();
         $query = $db->query('SELECT COUNT(*) as total FROM cant_produtos WHERE tipo_produto_id = ? AND ativo = 1', [$id]);
         $result = $query->getRow();
-        
+
         return $result->total == 0;
     }
 

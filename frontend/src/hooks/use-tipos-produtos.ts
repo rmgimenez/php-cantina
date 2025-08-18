@@ -1,13 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-
-// Configuração base do axios
-const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import api from '../lib/axios';
 
 export interface TipoProduto {
   id: number;
@@ -39,7 +31,11 @@ export interface TipoProdutoResponse {
 }
 
 // Hook para listar tipos de produtos
-export const useTiposProdutos = (filtros?: { nome?: string; descricao?: string; ativo?: number }) => {
+export const useTiposProdutos = (filtros?: {
+  nome?: string;
+  descricao?: string;
+  ativo?: number;
+}) => {
   return useQuery({
     queryKey: ['tipos-produtos', filtros],
     queryFn: async (): Promise<TiposProdutosResponse> => {
@@ -98,7 +94,13 @@ export const useUpdateTipoProduto = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, tipoProduto }: { id: number; tipoProduto: TipoProdutoInput }): Promise<TipoProdutoResponse> => {
+    mutationFn: async ({
+      id,
+      tipoProduto,
+    }: {
+      id: number;
+      tipoProduto: TipoProdutoInput;
+    }): Promise<TipoProdutoResponse> => {
       const { data } = await api.put(`/tipos-produtos/${id}`, tipoProduto);
       return data;
     },
