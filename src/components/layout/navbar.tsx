@@ -69,10 +69,28 @@ export default function Navbar({ user, showLogout = true }: NavbarProps) {
               </li>
               {(user.role === "administrador" || user.role === "atendente") && (
                 <>
-                  <li className="nav-item">
-                    <Link href="/vendas" className="nav-link">
+                  <li className="nav-item dropdown">
+                    <a
+                      className="nav-link dropdown-toggle"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
                       Vendas
-                    </Link>
+                    </a>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <Link href="/vendas" className="dropdown-item">
+                          Nova Venda
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/vendas/consulta" className="dropdown-item">
+                          Consultar Vendas
+                        </Link>
+                      </li>
+                    </ul>
                   </li>
                   <li className="nav-item">
                     <Link href="/alunos" className="nav-link">
