@@ -157,13 +157,41 @@ Este documento define as tarefas organizadas para desenvolvimento do sistema de 
   - `GET /api/alunos/{ra}/historico` (adicional)
 - [x] Atualizar rotas em `Config/Routes.php`
 - [x] Criar testes unitários (`AlunosTest.php`)
+- [x] Atualizar `bancodados.sql` com tabelas adicionais requeridas
+- [x] Corrigir visibilidade de métodos no controller
 
-**Arquivos criados:**
+**Arquivos criados/modificados:**
 
-- `backend/app/Models/AlunoModel.php`
-- `backend/app/Models/ContaAlunoModel.php`
-- `backend/app/Controllers/Alunos.php`
-- `backend/tests/Feature/AlunosTest.php`
+- `backend/app/Models/AlunoModel.php` - Model para gestão de alunos usando view existente
+- `backend/app/Models/ContaAlunoModel.php` - Model para gestão de contas dos alunos
+- `backend/app/Controllers/Alunos.php` - Controller com endpoints para gestão de alunos
+- `backend/tests/Feature/AlunosTest.php` - Testes unitários
+- `bancodados.sql` - Adicionadas tabelas `cant_conta_alunos` e `cant_conta_movimentos`
+
+**Comandos para testar localmente:**
+
+```bash
+# Verificar sintaxe PHP
+php -l backend/app/Models/AlunoModel.php
+php -l backend/app/Models/ContaAlunoModel.php  
+php -l backend/app/Controllers/Alunos.php
+
+# Instalar dependências
+cd backend && composer install
+
+# Servir backend
+php spark serve
+
+# Gerar tokens JWT para teste
+php generate-tokens.php
+
+# Testar endpoints com curl (usar token do comando anterior)
+curl -H "Authorization: Bearer <TOKEN>" http://localhost:8080/api/alunos
+```
+
+**Tabelas adicionadas ao banco:**
+- `cant_conta_alunos` - Contas simplificadas dos alunos conforme especificação
+- `cant_conta_movimentos` - Movimentações das contas conforme especificação
 
 #### Task 3.2: Interface de Alunos - Frontend
 
