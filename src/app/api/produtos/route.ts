@@ -20,7 +20,10 @@ export async function GET(request: Request) {
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const { searchParams } = new URL(request.url);
   const incluirInativos = searchParams.get('inativos') === '1';
-  const produtos = await listarProdutos({ incluirInativos });
+  const search = searchParams.get('search') || null;
+  const tipoParam = searchParams.get('tipo');
+  const tipo = tipoParam ? Number(tipoParam) : null;
+  const produtos = await listarProdutos({ incluirInativos, search, tipoProdutoId: tipo });
   return NextResponse.json({ data: produtos });
 }
 

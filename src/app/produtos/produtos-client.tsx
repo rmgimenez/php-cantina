@@ -24,6 +24,10 @@ export default function ProdutosClient({ user }: { user: User }) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
+  // filtros
+  const [search, setSearch] = useState('');
+  const [filterTipo, setFilterTipo] = useState<string | null>(null);
+  const [incluirInativos, setIncluirInativos] = useState(false);
   const [formTipo, setFormTipo] = useState({ nome: '', descricao: '' });
   const [formProduto, setFormProduto] = useState({
     nome: '',
@@ -65,9 +69,14 @@ export default function ProdutosClient({ user }: { user: User }) {
   async function carregar() {
     setLoading(true);
     try {
+      const params = new URLSearchParams();
+      if (incluirInativos) params.set('inativos', '1');
+      if (search) params.set('search', search);
+      if (filterTipo) params.set('tipo', filterTipo);
+
       const [rTipos, rProdutos] = await Promise.all([
         fetch('/api/tipos-produtos').then((r) => r.json()),
-        fetch('/api/produtos').then((r) => r.json()),
+        fetch(`/api/produtos?${params.toString()}`).then((r) => r.json()),
       ]);
       setTipos(rTipos.data || []);
       setProdutos(rProdutos.data || []);
@@ -379,6 +388,54 @@ export default function ProdutosClient({ user }: { user: User }) {
                 <h5 className='mb-0 d-flex align-items-center'>📦 Lista de Produtos</h5>
               </div>
               <div className='card-body'>
+                <div className='mb-3'>
+                  <div className='row g-2 align-items-center'>
+                    <div className='col-md-5'>
+                      <input
+                        placeholder='Pesquisar por nome ou código de barras'
+                        className='form-control form-control-sm'
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
+                    </div>
+                    <div className='col-md-4'>
+                      <select
+                        className='form-select form-select-sm'
+                        value={filterTipo ?? ''}
+                        onChange={(e) => setFilterTipo(e.target.value || null)}
+                      >
+                        <option value=''>Todos os tipos</option>
+                        {tipos.map((t) => (
+                          <option key={t.id} value={String(t.id)}>
+                            {t.nome}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className='col-md-3 d-flex align-items-center'>
+                      <div className='form-check me-3'>
+                        <input
+                          id='inativosCheck'
+                          className='form-check-input'
+                          type='checkbox'
+                          checked={incluirInativos}
+                          onChange={(e) => setIncluirInativos(e.target.checked)}
+                        />
+                        <label className='form-check-label' htmlFor='inativosCheck'>
+                          Incluir inativos
+                        </label>
+                      </div>
+                      <button
+                        type='button'
+                        className='btn btn-sm btn-primary'
+                        onClick={() => carregar()}
+                      >
+                        Buscar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 {produtos.length > 0 ? (
                   <div className='table-responsive'>
                     <table className='table table-striped table-hover'>

@@ -17,14 +17,38 @@ export type Produto = {
 
 export async function listarProdutos({
   incluirInativos = false,
-}: { incluirInativos?: boolean } = {}) {
+  search,
+  tipoProdutoId,
+}: {
+  incluirInativos?: boolean;
+  search?: string | null;
+  tipoProdutoId?: number | null;
+} = {}) {
   const sqlBase = `SELECT p.id, p.codigo_barras as codigoBarras, p.nome, p.descricao, p.tipo_produto_id as tipoProdutoId, tp.nome as tipoProdutoNome, p.preco, p.estoque_atual as estoqueAtual, p.estoque_minimo as estoqueMinimo, p.ativo, p.data_criacao as dataCriacao, p.data_atualizacao as dataAtualizacao
     FROM cant_produtos p
     INNER JOIN cant_tipos_produtos tp ON tp.id = p.tipo_produto_id`;
-  const sql = incluirInativos
-    ? `${sqlBase} ORDER BY p.nome`
-    : `${sqlBase} WHERE p.ativo = 1 ORDER BY p.nome`;
-  const [rows] = await db.query(sql);
+
+  const whereClauses: string[] = [];
+  const params: any[] = [];
+
+  if (!incluirInativos) {
+    whereClauses.push('p.ativo = 1');
+  }
+
+  if (search && String(search).trim()) {
+    whereClauses.push('(p.nome LIKE ? OR p.codigo_barras LIKE ?)');
+    const like = `%${String(search).trim()}%`;
+    params.push(like, like);
+  }
+
+  if (tipoProdutoId !== undefined && tipoProdutoId !== null) {
+    whereClauses.push('p.tipo_produto_id = ?');
+    params.push(tipoProdutoId);
+  }
+
+  const where = whereClauses.length ? ` WHERE ${whereClauses.join(' AND ')}` : '';
+  const sql = `${sqlBase}${where} ORDER BY p.nome`;
+  const [rows] = await db.query(sql, params);
   return rows as Produto[];
 }
 
