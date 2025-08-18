@@ -24,7 +24,10 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         // $routes->resource('produtos', ['controller' => 'Produtos']);
         
         // Tipos de produtos
-        // $routes->resource('tipos-produtos', ['controller' => 'TiposProdutos']);
+        $routes->resource('tipos-produtos', ['controller' => 'TiposProdutos']);
+        $routes->get('tipos-produtos/ativos', 'TiposProdutos::ativos');
+        $routes->put('tipos-produtos/(:num)/ativar', 'TiposProdutos::ativar/$1');
+        $routes->put('tipos-produtos/(:num)/desativar', 'TiposProdutos::desativar/$1');
         
         // Alunos
         // $routes->resource('alunos', ['controller' => 'Alunos']);
