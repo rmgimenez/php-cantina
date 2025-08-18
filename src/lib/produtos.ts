@@ -10,6 +10,7 @@ export type Produto = {
   preco: string; // decimal as string
   estoqueAtual: number;
   estoqueMinimo: number;
+  isLowStock?: boolean;
   ativo: number;
   dataCriacao: string;
   dataAtualizacao: string;
@@ -49,7 +50,11 @@ export async function listarProdutos({
   const where = whereClauses.length ? ` WHERE ${whereClauses.join(' AND ')}` : '';
   const sql = `${sqlBase}${where} ORDER BY p.nome`;
   const [rows] = await db.query(sql, params);
-  return rows as Produto[];
+  const rs: any[] = rows as any[];
+  return rs.map((r) => ({
+    ...r,
+    isLowStock: Number(r.estoqueAtual) <= Number(r.estoqueMinimo),
+  })) as Produto[];
 }
 
 export async function obterProduto(id: number) {
@@ -59,7 +64,12 @@ export async function obterProduto(id: number) {
     [id]
   );
   const rs: any = rows;
-  return rs[0] || null;
+  if (!rs[0]) return null;
+  const item = rs[0];
+  return {
+    ...item,
+    isLowStock: Number(item.estoqueAtual) <= Number(item.estoqueMinimo),
+  };
 }
 
 export type CriarProdutoInput = {

@@ -74,19 +74,19 @@ Os scripts estarão no arquivo `bancodados.sql`.
 
 ## Requisitos Funcionais
 
-### RF-001 - Autenticação de Funcionários da Cantina
+### concluído - RF-001 - Autenticação de Funcionários da Cantina
 
 O sistema deve permitir que funcionários da cantina façam login usando nome de usuário e senha, com controle de tipos de usuário (administrador, atendente, estoquista).
 
-### RF-002 - Gerenciamento de Produtos
+### concluído - RF-002 - Gerenciamento de Produtos
 
 O sistema deve permitir o cadastro, edição, consulta e inativação de produtos, incluindo código de barras, nome, descrição, tipo, preço e controle de estoque.
 
-### RF-003 - Controle de Tipos de Produtos
+### concluído - RF-003 - Controle de Tipos de Produtos
 
 O sistema deve permitir o cadastro e gerenciamento de tipos de produtos (salgados, doces, bebidas, etc.) para classificação dos itens.
 
-### RF-004 - Controle de Estoque
+### concluído - RF-004 - Controle de Estoque
 
 O sistema deve controlar automaticamente o estoque dos produtos, registrando entradas, saídas e ajustes com histórico completo de movimentações.
 

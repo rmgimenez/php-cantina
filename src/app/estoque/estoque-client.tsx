@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FaEdit, FaHistory, FaPlus, FaSearch } from 'react-icons/fa';
-import Alert from '../../components/ui/alert';
+import Alert, { WarningAlert } from '../../components/ui/alert';
 import Loading from '../../components/ui/loading';
 import Modal from '../../components/ui/modal';
 
@@ -95,6 +95,8 @@ export default function EstoqueClient() {
     };
     inicializar();
   }, []);
+
+  const produtosEstoqueBaixo = produtos.filter((p) => p.estoqueAtual <= p.estoqueMinimo);
 
   const handleMovimentacao = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -228,6 +230,13 @@ export default function EstoqueClient() {
         <Alert type={alert.type} onClose={() => setAlert(null)}>
           {alert.message}
         </Alert>
+      )}
+
+      {/* Alerta global de estoque baixo */}
+      {produtosEstoqueBaixo.length > 0 && (
+        <WarningAlert onClose={() => {}}>
+          Existem <strong>{produtosEstoqueBaixo.length}</strong> produto(s) com estoque baixo. Verifique a lista abaixo ou filtre por "Mostrar apenas produtos com estoque baixo".
+        </WarningAlert>
       )}
 
       {/* Filtros */}
