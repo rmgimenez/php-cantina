@@ -42,7 +42,13 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         });
         
         // Alunos
-        // $routes->resource('alunos', ['controller' => 'Alunos']);
+        $routes->group('alunos', function($routes) {
+            $routes->get('', 'Alunos::index');
+            $routes->get('(:num)', 'Alunos::show/$1');
+            $routes->get('(:num)/conta', 'Alunos::conta/$1');
+            $routes->post('(:num)/credito', 'Alunos::credito/$1');
+            $routes->get('(:num)/historico', 'Alunos::historico/$1');
+        });
         
         // Vendas
         // $routes->resource('vendas', ['controller' => 'Vendas']);

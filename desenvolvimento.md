@@ -146,20 +146,24 @@ Este documento define as tarefas organizadas para desenvolvimento do sistema de 
 
 #### Task 3.1: Gestão de Alunos - Backend
 
-- [ ] Criar Model `AlunoModel` (usando view existente)
-- [ ] Criar Model `ContaAlunoModel`
-- [ ] Criar Controller `Alunos`
-- [ ] Implementar endpoints:
+- [x] Criar Model `AlunoModel` (usando view existente)
+- [x] Criar Model `ContaAlunoModel`
+- [x] Criar Controller `Alunos`
+- [x] Implementar endpoints:
   - `GET /api/alunos`
   - `GET /api/alunos/{ra}`
   - `GET /api/alunos/{ra}/conta`
   - `POST /api/alunos/{ra}/credito`
+  - `GET /api/alunos/{ra}/historico` (adicional)
+- [x] Atualizar rotas em `Config/Routes.php`
+- [x] Criar testes unitários (`AlunosTest.php`)
 
-**Arquivos a criar:**
+**Arquivos criados:**
 
 - `backend/app/Models/AlunoModel.php`
 - `backend/app/Models/ContaAlunoModel.php`
 - `backend/app/Controllers/Alunos.php`
+- `backend/tests/Feature/AlunosTest.php`
 
 #### Task 3.2: Interface de Alunos - Frontend
 
