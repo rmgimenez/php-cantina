@@ -25,9 +25,12 @@ class TiposProdutos extends BaseApiController
     public function index(): ResponseInterface
     {
         try {
+            // Parâmetros de paginação
+            $page = max(1, (int)$this->getParam('page', 1));
+            $perPage = min(100, max(1, (int)$this->getParam('perPage', 20)));
+            
             $filtros = [
-                'nome' => $this->getParam('nome'),
-                'descricao' => $this->getParam('descricao'),
+                'nome' => $this->getParam('q'), // 'q' conforme especificação da issue
                 'ativo' => $this->getParam('ativo')
             ];
 
@@ -36,11 +39,17 @@ class TiposProdutos extends BaseApiController
                 return $value !== null && $value !== '';
             });
 
-            $tiposProdutos = $this->model->buscarComFiltros($filtros);
+            $tiposProdutos = $this->model->buscarComFiltrosPaginado($filtros, $page, $perPage);
+            $total = $this->model->contarComFiltros($filtros);
 
             return $this->respondSuccess([
-                'tipos_produtos' => $tiposProdutos,
-                'total' => count($tiposProdutos)
+                'data' => $tiposProdutos,
+                'meta' => [
+                    'page' => $page,
+                    'perPage' => $perPage,
+                    'total' => $total,
+                    'totalPages' => ceil($total / $perPage)
+                ]
             ], 'Lista de tipos de produtos obtida com sucesso');
 
         } catch (\Exception $e) {
@@ -84,6 +93,11 @@ class TiposProdutos extends BaseApiController
     public function create(): ResponseInterface
     {
         try {
+            // Verificação de autorização
+            if (!$this->hasManagementPermission()) {
+                return $this->respondForbidden('Acesso negado. Apenas usuários com permissão de gestão podem criar tipos de produtos.');
+            }
+
             $data = $this->getRequestData();
 
             // Validação
@@ -109,8 +123,17 @@ class TiposProdutos extends BaseApiController
             }
 
             $tipoProduto = $this->model->find($id);
+            
+            // Formatar response conforme especificação da issue
+            $response = [
+                'id' => (int)$tipoProduto['id'],
+                'nome' => $tipoProduto['nome'],
+                'descricao' => $tipoProduto['descricao'],
+                'ativo' => (bool)$tipoProduto['ativo'],
+                'criado_em' => date('c', strtotime($tipoProduto['data_criacao'])) // ISO 8601
+            ];
 
-            return $this->respondSuccess($tipoProduto, 'Tipo de produto criado com sucesso', 201);
+            return $this->respondSuccess($response, 'Tipo de produto criado com sucesso', 201);
 
         } catch (\Exception $e) {
             log_message('error', 'Erro ao criar tipo de produto: ' . $e->getMessage());
@@ -127,6 +150,11 @@ class TiposProdutos extends BaseApiController
     public function update($id = null): ResponseInterface
     {
         try {
+            // Verificação de autorização
+            if (!$this->hasManagementPermission()) {
+                return $this->respondForbidden('Acesso negado. Apenas usuários com permissão de gestão podem atualizar tipos de produtos.');
+            }
+
             if (!$id || !is_numeric($id)) {
                 return $this->respondError('ID inválido', 400);
             }
@@ -166,7 +194,7 @@ class TiposProdutos extends BaseApiController
     }
 
     /**
-     * Exclui um tipo de produto
+     * Exclui um tipo de produto (soft delete)
      *
      * @param int $id
      * @return ResponseInterface
@@ -174,6 +202,11 @@ class TiposProdutos extends BaseApiController
     public function delete($id = null): ResponseInterface
     {
         try {
+            // Verificação de autorização
+            if (!$this->hasManagementPermission()) {
+                return $this->respondForbidden('Acesso negado. Apenas usuários com permissão de gestão podem excluir tipos de produtos.');
+            }
+
             if (!$id || !is_numeric($id)) {
                 return $this->respondError('ID inválido', 400);
             }
@@ -188,13 +221,14 @@ class TiposProdutos extends BaseApiController
                 return $this->respondError('Não é possível excluir este tipo de produto pois existem produtos associados a ele', 409);
             }
 
-            $success = $this->model->delete($id);
+            // Soft delete - apenas desativa em vez de deletar fisicamente
+            $success = $this->model->desativar($id);
 
             if (!$success) {
                 return $this->respondError('Erro ao excluir tipo de produto');
             }
 
-            return $this->respondSuccess(null, 'Tipo de produto excluído com sucesso');
+            return $this->respond(null, 204); // 204 No Content conforme especificação
 
         } catch (\RuntimeException $e) {
             return $this->respondError($e->getMessage(), 409);

@@ -186,4 +186,31 @@ class BaseApiController extends Controller
 
         return (int) $id;
     }
+
+    /**
+     * Obtém informações do usuário autenticado
+     *
+     * @return object|null
+     */
+    protected function getAuthenticatedUser(): ?object
+    {
+        return $this->request->user ?? null;
+    }
+
+    /**
+     * Verifica se o usuário tem permissão de gestão
+     *
+     * @return bool
+     */
+    protected function hasManagementPermission(): bool
+    {
+        $user = $this->getAuthenticatedUser();
+        
+        if (!$user) {
+            return false;
+        }
+
+        // Verifica se o usuário tem tipo 'administrador' ou 'estoquista' (conforme tabela cant_funcionarios)
+        return in_array($user->tipo ?? '', ['administrador', 'estoquista']);
+    }
 }
