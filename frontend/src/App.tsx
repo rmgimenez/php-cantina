@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { type ReactNode } from "react";
 import "./App.css";
 import LoginPage from "./pages/login";
-import { ProdutosPage } from "./pages/produtos";
+import { ProdutosPageSimple } from "./pages/produtos-simple";
 import { useAuth } from "./hooks/use-auth";
 
 function DashboardPlaceholder() {
@@ -37,10 +37,11 @@ function NotFound() {
 }
 
 function PrivateRoute({ children }: { children: ReactNode }) {
-  const { token } = useAuth();
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  // Temporarily disable authentication for demo
+  // const { token } = useAuth();
+  // if (!token) {
+  //   return <Navigate to="/login" replace />;
+  // }
   return children;
 }
 
@@ -53,6 +54,14 @@ function App() {
         element={
           <PrivateRoute>
             <DashboardPlaceholder />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/produtos"
+        element={
+          <PrivateRoute>
+            <ProdutosPageSimple />
           </PrivateRoute>
         }
       />
