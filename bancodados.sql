@@ -577,31 +577,9 @@ CREATE TABLE `cant_estoque_historico` (
   CONSTRAINT `fk_cant_estoque_historico_funcionario` FOREIGN KEY (`funcionario_cantina_id`) REFERENCES `cant_funcionarios` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- View para consulta de alunos com seus responsáveis e contas
-CREATE VIEW `cant_view_alunos_completo` AS
-SELECT 
-    a.ra,
-    a.nome,
-    a.nome_social,
-    a.nasc,
-    a.curso_nome,
-    a.serie,
-    a.turma,
-    a.periodo,
-    a.status,
-    a.nome_resp,
-    a.cpf_resp,
-    a.nasc_resp,
-    a.tel_cel_resp,
-    a.email_resp,
-    a.nome_resp_fin,
-    a.cpf_resp_fin,
-    a.nasc_resp_fin,
-    ca.saldo,
-    ca.limite_diario,
-    ca.ativo as conta_ativa
-FROM alunos a
-LEFT JOIN cant_contas_alunos ca ON a.ra = ca.ra_aluno;
+-- Nota: a view que permitia consulta direta de responsáveis (cant_view_alunos_completo)
+-- foi removida do script. A funcionalidade de consulta de consumo por responsáveis
+-- foi retirada do escopo deste sistema e será implementada em um outro sistema.
 
 -- View para consulta de produtos com estoque baixo
 CREATE VIEW `cant_view_produtos_estoque_baixo` AS

@@ -55,6 +55,9 @@ São consumidores que podem marcar na conta da cantina suas compras e depois a c
 - Os funcionários da escola poderão realizar compras e marcar na conta da cantina, que será fechada mensalmente.
 - Os responsáveis poderão consultar o que foi consumido e o saldo de seus dependentes através de uma tela onde ele deverá logar com o número do CPF e a data de nascimento.
 - Os responsáveis poderão definir quais tipos de produtos ou produtos individuais que seus dependentes podem consumir.
+
+  NOTE: A funcionalidade de consulta de consumo pelos responsáveis (login por CPF + data de nascimento e visualização de extrato/saldo) foi removida deste sistema e será implementada em um sistema separado. As capacidades restantes para responsáveis (como adicionar crédito, definir restrições e comprar pacotes) permanecem neste sistema.
+
 - Os produtos deverão possuir um tipo para classificação (ex: salgados, doces, etc).
 - Os responsáveis poderão comprar pacotes de alimentação para seus filhos. Por exemplo, comprar lanche da manhã e almoço por 1 mês.
 - Os funcionários da cantina poderão verificar se o aluno possui pacote de refeição comprada.
@@ -90,7 +93,7 @@ O sistema deve permitir o cadastro e gerenciamento de tipos de produtos (salgado
 
 O sistema deve controlar automaticamente o estoque dos produtos, registrando entradas, saídas e ajustes com histórico completo de movimentações.
 
-### RF-005 - Alerta de Estoque Baixo
+### concluído - RF-005 - Alerta de Estoque Baixo
 
 O sistema deve gerar alertas quando produtos atingirem o estoque mínimo configurado.
 
@@ -106,25 +109,31 @@ O sistema deve permitir que funcionários da cantina adicionem crédito nas cont
 
 O sistema deve controlar o saldo das contas dos alunos, debitando automaticamente o valor das compras realizadas.
 
-### RF-009 - Login de Responsáveis
+### RF-009 - (REMOVIDO) Login de Responsáveis
 
-O sistema deve permitir que responsáveis façam login usando CPF e data de nascimento para acessar informações dos dependentes.
+Esta funcionalidade foi removida: o login e a consulta de consumo por responsáveis serão fornecidos por outro sistema externo. Removida do escopo deste repositório.
 
-### RF-010 - Consulta de Saldo e Extrato por Responsáveis
+### RF-010 - (REMOVIDO) Consulta de Saldo e Extrato por Responsáveis
 
-O sistema deve permitir que responsáveis consultem o saldo atual e histórico de movimentações financeiras de seus dependentes.
+Esta funcionalidade foi removida do sistema; a visualização de saldo/extrato por responsáveis ficará a cargo do novo sistema de portal de responsáveis.
 
 ### RF-011 - Recarga de Crédito por Responsáveis
 
 O sistema deve permitir que responsáveis adicionem crédito nas contas de seus dependentes através do portal web.
 
+Os responsáveis poderão pagar via cartão de crédito, PIX ou boleto bancário. Tudo isso diretamente no caixa.
+
 ### RF-012 - Controle de Restrições de Produtos
 
 O sistema deve permitir que responsáveis definam restrições de consumo, bloqueando produtos específicos ou tipos de produtos para seus dependentes.
 
+Os responsáveis poderão definir restrições de consumo, bloqueando produtos específicos ou tipos de produtos para seus dependentes. Para bloquear os responsáveis deverão ir no caixa da cantina e solicitar para um atendente.
+
 ### RF-013 - Configuração de Limite Diário
 
 O sistema deve permitir que responsáveis definam um limite de gasto diário para seus dependentes.
+
+Isso deve ser feito no caixa da cantina. O responsável deverá solicitar ao atendente a configuração do limite.
 
 ### RF-014 - Gerenciamento de Contas de Funcionários da Escola
 
