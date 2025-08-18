@@ -55,6 +55,10 @@ export default function ProdutosClient({ user }: { user: User }) {
     ativo: 1,
   });
   const [confirmDeleteProdutoId, setConfirmDeleteProdutoId] = useState<number | null>(null);
+  // estoque modal
+  const [estoqueModalOpen, setEstoqueModalOpen] = useState(false);
+  const [estoqueProduto, setEstoqueProduto] = useState<Produto | null>(null);
+  const [estoqueForm, setEstoqueForm] = useState({ tipo: 'ajuste', quantidade: '0', motivo: '' });
 
   const podeEditar = ['administrador', 'estoquista'].includes(user.role);
 
@@ -428,6 +432,21 @@ export default function ProdutosClient({ user }: { user: User }) {
                                   </button>
                                   <button
                                     type='button'
+                                    className='btn btn-sm btn-outline-secondary'
+                                    onClick={() => {
+                                      setEstoqueProduto(p);
+                                      setEstoqueForm({
+                                        tipo: 'ajuste',
+                                        quantidade: String(p.estoqueAtual),
+                                        motivo: '',
+                                      });
+                                      setEstoqueModalOpen(true);
+                                    }}
+                                  >
+                                    Estoque
+                                  </button>
+                                  <button
+                                    type='button'
                                     className='btn btn-sm btn-outline-danger'
                                     onClick={() => setConfirmDeleteProdutoId(p.id)}
                                   >
@@ -720,6 +739,88 @@ export default function ProdutosClient({ user }: { user: User }) {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal ajustar estoque */}
+      <Modal
+        isOpen={estoqueModalOpen}
+        onClose={() => setEstoqueModalOpen(false)}
+        title={estoqueProduto ? `Estoque - ${estoqueProduto.nome}` : 'Estoque'}
+      >
+        {estoqueProduto && (
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              try {
+                const body: any = {
+                  tipo: estoqueForm.tipo,
+                  produtoId: estoqueProduto.id,
+                  quantidade: Number(estoqueForm.quantidade),
+                  motivo: estoqueForm.motivo || undefined,
+                };
+                const res = await fetch('/api/estoque', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(body),
+                });
+                if (!res.ok) {
+                  const j = await res.json().catch(() => ({}));
+                  setErro('Erro estoque: ' + (j.error || ''));
+                  return;
+                }
+                setEstoqueModalOpen(false);
+                carregar();
+              } catch (err) {
+                setErro('Erro de conexão');
+              }
+            }}
+          >
+            <div className='mb-2'>
+              <label className='form-label'>Tipo</label>
+              <select
+                className='form-select'
+                value={estoqueForm.tipo}
+                onChange={(e) => setEstoqueForm({ ...estoqueForm, tipo: e.target.value })}
+              >
+                <option value='entrada'>Entrada</option>
+                <option value='saida'>Saída</option>
+                <option value='ajuste'>Ajuste (define novo estoque)</option>
+              </select>
+            </div>
+            <div className='mb-2'>
+              <label className='form-label'>Quantidade</label>
+              <input
+                type='number'
+                min='0'
+                className='form-control'
+                value={estoqueForm.quantidade}
+                onChange={(e) => setEstoqueForm({ ...estoqueForm, quantidade: e.target.value })}
+                required
+              />
+            </div>
+            <div className='mb-3'>
+              <label className='form-label'>Motivo (opcional)</label>
+              <input
+                type='text'
+                className='form-control'
+                value={estoqueForm.motivo}
+                onChange={(e) => setEstoqueForm({ ...estoqueForm, motivo: e.target.value })}
+              />
+            </div>
+            <div className='text-end'>
+              <button
+                type='button'
+                className='btn btn-secondary me-2'
+                onClick={() => setEstoqueModalOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button type='submit' className='btn btn-primary'>
+                Confirmar
+              </button>
+            </div>
+          </form>
+        )}
       </Modal>
 
       {/* Confirm modals */}

@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Estoque (RF-004)
+
+Implementação de controle de estoque, histórico e ajustes:
+
+- API: `POST /api/estoque` permite registrar `entrada`, `saida` e `ajuste` (JSON: { tipo, produtoId, quantidade, motivo?, vendaId? }).
+- API: `GET /api/estoque?produtoId=...` retorna histórico. Requer autenticação de funcionário (cookie `cant_token`).
+- UI: na tela de produtos (`/produtos`) funcionários com papel `administrador` ou `estoquista` verão botão "Estoque" por produto para registrar movimentos.
+
+Banco: as tabelas `cant_estoque_historico`, triggers e procedures relacionadas estão definidas em `bancodados.sql`.
+
+Qualquer ajuste adicional (relatórios, export, notificações) pode ser adicionado como próximo passo.
