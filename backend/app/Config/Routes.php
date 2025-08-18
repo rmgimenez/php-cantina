@@ -21,10 +21,14 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     // Rotas protegidas (serão implementadas nas próximas tarefas)
     $routes->group('', ['filter' => 'jwt'], function($routes) {
         // Produtos
-        // $routes->resource('produtos', ['controller' => 'Produtos']);
+        $routes->resource('produtos', ['controller' => 'Produtos']);
+        $routes->get('produtos/estoque-baixo', 'Produtos::estoqueBaixo');
+        $routes->get('produtos/codigo-barras/(:segment)', 'Produtos::porCodigoBarras/$1');
+        $routes->put('produtos/(:num)/ativar', 'Produtos::ativar/$1');
         
         // Tipos de produtos
-        // $routes->resource('tipos-produtos', ['controller' => 'TiposProdutos']);
+        $routes->resource('tipos-produtos', ['controller' => 'TiposProdutos']);
+        $routes->put('tipos-produtos/(:num)/ativar', 'TiposProdutos::ativar/$1');
         
         // Alunos
         // $routes->resource('alunos', ['controller' => 'Alunos']);

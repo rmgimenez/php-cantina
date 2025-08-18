@@ -2,13 +2,27 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { type ReactNode } from "react";
 import "./App.css";
 import LoginPage from "./pages/login";
+import { ProdutosPage } from "./pages/produtos";
 import { useAuth } from "./hooks/use-auth";
 
 function DashboardPlaceholder() {
   return (
-    <div>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
       <h1>Sistema Cantina - Frontend Base</h1>
       <p>Configuração inicial concluída. Implemente as próximas telas.</p>
+      <div style={{ marginTop: '2rem' }}>
+        <a href="/produtos" style={{ 
+          display: 'inline-block',
+          padding: '1rem 2rem',
+          backgroundColor: '#007bff',
+          color: 'white',
+          textDecoration: 'none',
+          borderRadius: '4px',
+          margin: '0.5rem'
+        }}>
+          Gestão de Produtos
+        </a>
+      </div>
     </div>
   );
 }
