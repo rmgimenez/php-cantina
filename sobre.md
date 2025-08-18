@@ -141,13 +141,15 @@ Isso deve ser feito no caixa da cantina. O responsável deverá solicitar ao ate
 
 O sistema deve criar automaticamente contas mensais para funcionários da escola, permitindo compras a crédito que serão fechadas mensalmente.
 
-### RF-015 - Processamento de Vendas
+### concluído - RF-015 - Processamento de Vendas
 
 O sistema deve processar vendas para diferentes tipos de clientes (alunos, funcionários da escola, pagamento à vista), verificando saldo e restrições antes da finalização.
 
 ### RF-016 - Verificação de Restrições na Venda
 
 O sistema deve verificar automaticamente se o aluno pode consumir o produto baseado nas restrições definidas pelos responsáveis antes de permitir a venda.
+
+Mostrar mensagem de erro caso o aluno não possa consumir o produto.
 
 ### RF-017 - Geração de Número de Venda
 
