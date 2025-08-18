@@ -10,7 +10,7 @@ import { queryClient } from "./lib/react-query";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <BrowserRouter basename="/frontend">
         <App />
       </BrowserRouter>
     </QueryClientProvider>
