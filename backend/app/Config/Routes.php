@@ -21,7 +21,10 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     // Rotas protegidas (serão implementadas nas próximas tarefas)
     $routes->group('', ['filter' => 'jwt'], function($routes) {
         // Produtos
-        // $routes->resource('produtos', ['controller' => 'Produtos']);
+        $routes->resource('produtos', ['controller' => 'Produtos']);
+        $routes->get('produtos/estoque-baixo', 'Produtos::estoqueBaixo');
+        $routes->put('produtos/(:num)/ativar', 'Produtos::ativar/$1');
+        $routes->put('produtos/(:num)/desativar', 'Produtos::desativar/$1');
         
         // Tipos de produtos
         $routes->resource('tipos-produtos', ['controller' => 'TiposProdutos']);
@@ -29,17 +32,19 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->put('tipos-produtos/(:num)/ativar', 'TiposProdutos::ativar/$1');
         $routes->put('tipos-produtos/(:num)/desativar', 'TiposProdutos::desativar/$1');
         
+        // Estoque
+        $routes->group('estoque', function($routes) {
+            $routes->post('entrada', 'Estoque::entrada');
+            $routes->post('ajuste', 'Estoque::ajuste');
+            $routes->get('historico/(:num)', 'Estoque::historico/$1');
+            $routes->get('movimentacoes', 'Estoque::movimentacoes');
+            $routes->get('relatorio', 'Estoque::relatorio');
+        });
+        
         // Alunos
         // $routes->resource('alunos', ['controller' => 'Alunos']);
         
         // Vendas
         // $routes->resource('vendas', ['controller' => 'Vendas']);
-        
-        // Estoque
-        // $routes->group('estoque', function($routes) {
-        //     $routes->post('entrada', 'Estoque::entrada');
-        //     $routes->post('ajuste', 'Estoque::ajuste');
-        //     $routes->get('historico/(:num)', 'Estoque::historico/$1');
-        // });
     });
 });
