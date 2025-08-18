@@ -101,6 +101,25 @@ class TiposProdutos extends BaseApiController
 
             $data = $this->getRequestData();
 
+            // Espera um array associativo; caso receba um array indexado (ex: ["Nome", "Desc", 1])
+            // converte para associativo usando a ordem esperada dos campos.
+            if (!is_array($data)) {
+                log_message('error', 'Payload inválido ao criar tipo de produto: esperado objeto associativo');
+                return $this->respondError('Payload inválido', 400);
+            }
+
+            if (array_values($data) === $data) {
+                // Campos esperados na ordem quando payload vier como array indexado
+                $expected = ['nome', 'descricao', 'ativo'];
+                $assoc = [];
+                foreach ($data as $i => $value) {
+                    if (isset($expected[$i])) {
+                        $assoc[$expected[$i]] = $value;
+                    }
+                }
+                $data = $assoc;
+            }
+
             // Validação
             $rules = [
                 'nome' => 'required|min_length[2]|max_length[100]|is_unique[cant_tipos_produtos.nome]',
@@ -115,6 +134,15 @@ class TiposProdutos extends BaseApiController
             // Define valor padrão para ativo se não informado
             if (!isset($data['ativo'])) {
                 $data['ativo'] = 1;
+            }
+
+            // Log para depuração: inspeciona payload antes do insert
+            try {
+                log_message('debug', 'TiposProdutos::create payload keys: ' . implode(', ', array_keys((array)$data)));
+                log_message('debug', 'TiposProdutos::create payload: ' . json_encode($data));
+            } catch (\Throwable $t) {
+                // não bloquear execução em caso de erro no log
+                log_message('error', 'Erro ao logar payload: ' . $t->getMessage());
             }
 
             $id = $this->model->insert($data);
@@ -165,6 +193,23 @@ class TiposProdutos extends BaseApiController
             }
 
             $data = $this->getRequestData();
+
+            // Aceita também payloads indexados (ex: de clientes/testes) e converte para associativo
+            if (!is_array($data)) {
+                log_message('error', 'Payload inválido ao atualizar tipo de produto: esperado objeto associativo');
+                return $this->respondError('Payload inválido', 400);
+            }
+
+            if (array_values($data) === $data) {
+                $expected = ['nome', 'descricao', 'ativo'];
+                $assoc = [];
+                foreach ($data as $i => $value) {
+                    if (isset($expected[$i])) {
+                        $assoc[$expected[$i]] = $value;
+                    }
+                }
+                $data = $assoc;
+            }
 
             // Validação
             $rules = [
