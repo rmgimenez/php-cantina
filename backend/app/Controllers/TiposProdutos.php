@@ -128,6 +128,10 @@ class TiposProdutos extends BaseApiController
             $allowedFields = $this->model->allowedFields;
             $filteredData = array_intersect_key($data, array_flip($allowedFields));
 
+            // Normaliza payloads que venham como arrays indexados (0,1,2...) para mapear
+            // para chaves permitidas — evita passar chaves numéricas para o Query Builder
+            $filteredData = $this->normalizePayload($filteredData, $allowedFields);
+
             // Log para depuração
             log_message('debug', 'TiposProdutos::create payload: ' . json_encode($filteredData));
 
@@ -211,6 +215,9 @@ class TiposProdutos extends BaseApiController
                 $data['ativo'] = (string)$data['ativo']; // Garantir que seja string
             }
 
+            // Caso o cliente tenha enviado um array indexado, normalize para associativo
+            $data = $this->normalizePayload($data, $this->model->allowedFields);
+
             $success = $this->model->update($id, $data);
 
             if (!$success) {
@@ -224,6 +231,38 @@ class TiposProdutos extends BaseApiController
             log_message('error', 'Erro ao atualizar tipo de produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
         }
+    }
+
+    /**
+     * Normaliza payloads que podem chegar como arrays indexados (0,1,2..)
+     * Mapeia os valores na ordem dos campos permitidos para chaves associativas.
+     * Ex: ["Nome", "Desc", 1] com allowedFields ["nome","descricao","ativo"]
+     * vira ["nome"=>"Nome","descricao"=>"Desc","ativo"=>1]
+     *
+     * @param array $payload
+     * @param array $allowedFields
+     * @return array
+     */
+    private function normalizePayload(array $payload, array $allowedFields): array
+    {
+        // Se já é associativo com chaves de string, retorna como está
+        foreach ($payload as $k => $v) {
+            if (!is_int($k)) {
+                return $payload;
+            }
+        }
+
+        // Caso seja um array indexado, mapeia pela ordem dos campos permitidos
+        $normalized = [];
+        $i = 0;
+        foreach ($allowedFields as $field) {
+            if (array_key_exists($i, $payload)) {
+                $normalized[$field] = $payload[$i];
+            }
+            $i++;
+        }
+
+        return $normalized;
     }
 
     /**
