@@ -36,38 +36,31 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 360, margin: '0 auto' }}>
-      <h2>Login Cantina</h2>
+    <div className='login-card' role='region' aria-label='Login cantina'>
+      <img src='/vite.svg' alt='Cantina' className='login-logo' />
+      <h2 className='login-title'>Login Cantina</h2>
+
       {error && (
-        <div style={{ color: 'red', marginBottom: 12 }} role='alert'>
+        <div className='login-error' role='alert'>
           {error}
         </div>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <label
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            textAlign: 'left',
-          }}
-        >
-          <span>Usuário</span>
+
+      <form onSubmit={handleSubmit} className='login-form'>
+        <label className='field'>
+          <span className='field-label'>Usuário</span>
           <input
             name='usuario'
             value={form.usuario}
             onChange={handleChange}
             autoComplete='username'
             placeholder='Usuário'
+            className='field-input'
           />
         </label>
-        <label
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            textAlign: 'left',
-          }}
-        >
-          <span>Senha</span>
+
+        <label className='field'>
+          <span className='field-label'>Senha</span>
           <input
             name='senha'
             type='password'
@@ -75,12 +68,14 @@ export function LoginForm() {
             onChange={handleChange}
             autoComplete='current-password'
             placeholder='Senha'
+            className='field-input'
           />
         </label>
-        <button type='submit' disabled={loading}>
+
+        <button type='submit' className='btn-primary' disabled={loading}>
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
