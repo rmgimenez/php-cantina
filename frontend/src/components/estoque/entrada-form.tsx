@@ -91,13 +91,14 @@ const EntradaForm: React.FC<EntradaFormProps> = ({
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao registrar entrada';
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string; errors?: Record<string, string> } } }).response?.data?.message || 'Erro ao registrar entrada';
       alert(message);
       
       // Se houver erros de validação do backend
-      if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors);
+      const errors = (error as { response?: { data?: { errors?: Record<string, string> } } }).response?.data?.errors;
+      if (errors) {
+        setErrors(errors);
       }
     }
   };

@@ -37,8 +37,8 @@ const ProdutosList: React.FC = () => {
       try {
         await deleteMutation.mutateAsync(id);
         alert('Produto excluído com sucesso!');
-      } catch (error: any) {
-        const message = error.response?.data?.message || 'Erro ao excluir produto';
+      } catch (error: unknown) {
+        const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Erro ao excluir produto';
         alert(message);
       }
     }
@@ -53,8 +53,8 @@ const ProdutosList: React.FC = () => {
         await ativarMutation.mutateAsync(id);
         alert('Produto ativado com sucesso!');
       }
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao alterar status';
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Erro ao alterar status';
       alert(message);
     }
   };
@@ -107,7 +107,7 @@ const ProdutosList: React.FC = () => {
     const pages = [];
     const maxPages = 5;
     let startPage = Math.max(1, page - Math.floor(maxPages / 2));
-    let endPage = Math.min(pagination.totalPages, startPage + maxPages - 1);
+    const endPage = Math.min(pagination.totalPages, startPage + maxPages - 1);
 
     if (endPage - startPage + 1 < maxPages) {
       startPage = Math.max(1, endPage - maxPages + 1);

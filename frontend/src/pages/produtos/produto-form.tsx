@@ -120,13 +120,14 @@ const ProdutoForm: React.FC = () => {
         alert('Produto criado com sucesso!');
       }
       navigate('/produtos');
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao salvar produto';
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string; errors?: Record<string, string> } } }).response?.data?.message || 'Erro ao salvar produto';
       alert(message);
       
       // Se houver erros de validação do backend
-      if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors);
+      const errors = (error as { response?: { data?: { errors?: Record<string, string> } } }).response?.data?.errors;
+      if (errors) {
+        setErrors(errors);
       }
     }
   };

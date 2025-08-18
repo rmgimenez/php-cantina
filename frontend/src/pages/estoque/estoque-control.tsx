@@ -47,8 +47,8 @@ const EstoqueControl: React.FC = () => {
         motivo: '',
         funcionario_cantina_id: 1,
       });
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao registrar ajuste';
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Erro ao registrar ajuste';
       alert(message);
     }
   };

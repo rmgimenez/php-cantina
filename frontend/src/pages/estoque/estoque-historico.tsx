@@ -87,7 +87,7 @@ const EstoqueHistorico: React.FC = () => {
     const pages = [];
     const maxPages = 5;
     let startPage = Math.max(1, page - Math.floor(maxPages / 2));
-    let endPage = Math.min(pagination.totalPages, startPage + maxPages - 1);
+    const endPage = Math.min(pagination.totalPages, startPage + maxPages - 1);
 
     if (endPage - startPage + 1 < maxPages) {
       startPage = Math.max(1, endPage - maxPages + 1);
@@ -160,7 +160,7 @@ const EstoqueHistorico: React.FC = () => {
                     className="form-select"
                     id="filtroTipo"
                     value={filtros.tipo_movimentacao || ''}
-                    onChange={(e) => handleFiltroChange('tipo_movimentacao', e.target.value as any)}
+                    onChange={(e) => handleFiltroChange('tipo_movimentacao', e.target.value as 'entrada' | 'saida' | 'ajuste' | undefined)}
                   >
                     <option value="">Todos os tipos</option>
                     <option value="entrada">Entrada</option>
