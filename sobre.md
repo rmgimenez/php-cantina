@@ -2,40 +2,14 @@
 
 O objetivo desse sistema é gerenciar de forma eficiente as operações de uma cantina escolar, permitindo o controle de usuários, funcionários, responsáveis e alunos, além de facilitar a gestão de vendas e estoque.
 
-## Organização do Projeto
+## Tecnologias utilizadas
 
-O projeto está organizado em duas partes principais: backend e frontend.
+O sistema utiliza as seguintes tecnologias:
 
-Durante o desenvolvimento, será importante manter uma comunicação clara entre as equipes de backend e frontend para garantir que as APIs atendam às necessidades da interface do usuário.
-
-Terá que ser feito configuração de CORS no backend para permitir requisições do frontend durante o desenvolvimento.
-
-Em produção, a configuração de CORS deve ser mais restritiva, permitindo apenas origens específicas.
-
-Quando fizer o build do frontend, os arquivos estáticos gerados devem ser servidos pelo backend.
-
-### Backend
-
-O backend ficará na pasta `backend`, onde serão implementadas as APIs necessárias para o funcionamento do sistema.
-
-Será usado a framework codeigniter 4.
-
-### Frontend
-
-O frontend ficará na pasta `frontend`, onde será implementada a interface do usuário do sistema.
-
-Será utilizado vite com react para a construção da aplicação frontend.
-
-Para gerenciar os pacotes será utilizado o gerenciador de pacotes pnpm.
-
-Bibliotecas utilizadas:
-
-- [react-router-dom](https://reactrouter.com/en/main) - Para roteamento da aplicação.
-- [axios](https://axios-http.com/) - Para requisições HTTP.
-- [zustand](https://github.com/pmndrs/zustand) - Para gerenciamento de estado.
-- [react-query](https://react-query.tanstack.com/) - Para gerenciamento de dados assíncronos.
-- [bootstrap](https://getbootstrap.com/) - Para estilização da aplicação.
-- [react-icons](https://react-icons.github.io/react-icons/) - Para ícones no projeto.
+- **Next.js**: Framework React para construção do frontend com renderização híbrida (SSR/SSG).
+- **bootstrap**: Para estilização da aplicação.
+- **react-icons**: Para uso de ícones.
+- **MySQL**: Banco de dados relacional utilizado no backend.
 
 ## Funcionalidades
 
@@ -88,3 +62,125 @@ Não é para usar migrations do codeigniter.
 Todo o esquema do banco de dados deve ser criado manualmente.
 
 Os scripts estarão no arquivo `bancodados.sql`.
+
+## Requisitos Funcionais
+
+### RF-001 - Autenticação de Funcionários da Cantina
+
+O sistema deve permitir que funcionários da cantina façam login usando nome de usuário e senha, com controle de tipos de usuário (administrador, atendente, estoquista).
+
+### RF-002 - Gerenciamento de Produtos
+
+O sistema deve permitir o cadastro, edição, consulta e inativação de produtos, incluindo código de barras, nome, descrição, tipo, preço e controle de estoque.
+
+### RF-003 - Controle de Tipos de Produtos
+
+O sistema deve permitir o cadastro e gerenciamento de tipos de produtos (salgados, doces, bebidas, etc.) para classificação dos itens.
+
+### RF-004 - Controle de Estoque
+
+O sistema deve controlar automaticamente o estoque dos produtos, registrando entradas, saídas e ajustes com histórico completo de movimentações.
+
+### RF-005 - Alerta de Estoque Baixo
+
+O sistema deve gerar alertas quando produtos atingirem o estoque mínimo configurado.
+
+### RF-006 - Gerenciamento de Contas de Alunos
+
+O sistema deve permitir a criação e gerenciamento de contas para alunos, vinculadas ao RA (registro acadêmico) existente no sistema escolar.
+
+### RF-007 - Adição de Crédito em Contas de Alunos
+
+O sistema deve permitir que funcionários da cantina adicionem crédito nas contas dos alunos, registrando todas as movimentações financeiras.
+
+### RF-008 - Controle de Saldo de Alunos
+
+O sistema deve controlar o saldo das contas dos alunos, debitando automaticamente o valor das compras realizadas.
+
+### RF-009 - Login de Responsáveis
+
+O sistema deve permitir que responsáveis façam login usando CPF e data de nascimento para acessar informações dos dependentes.
+
+### RF-010 - Consulta de Saldo e Extrato por Responsáveis
+
+O sistema deve permitir que responsáveis consultem o saldo atual e histórico de movimentações financeiras de seus dependentes.
+
+### RF-011 - Recarga de Crédito por Responsáveis
+
+O sistema deve permitir que responsáveis adicionem crédito nas contas de seus dependentes através do portal web.
+
+### RF-012 - Controle de Restrições de Produtos
+
+O sistema deve permitir que responsáveis definam restrições de consumo, bloqueando produtos específicos ou tipos de produtos para seus dependentes.
+
+### RF-013 - Configuração de Limite Diário
+
+O sistema deve permitir que responsáveis definam um limite de gasto diário para seus dependentes.
+
+### RF-014 - Gerenciamento de Contas de Funcionários da Escola
+
+O sistema deve criar automaticamente contas mensais para funcionários da escola, permitindo compras a crédito que serão fechadas mensalmente.
+
+### RF-015 - Processamento de Vendas
+
+O sistema deve processar vendas para diferentes tipos de clientes (alunos, funcionários da escola, pagamento à vista), verificando saldo e restrições antes da finalização.
+
+### RF-016 - Verificação de Restrições na Venda
+
+O sistema deve verificar automaticamente se o aluno pode consumir o produto baseado nas restrições definidas pelos responsáveis antes de permitir a venda.
+
+### RF-017 - Geração de Número de Venda
+
+O sistema deve gerar automaticamente números sequenciais únicos para cada venda, organizados por data.
+
+### RF-018 - Registro de Itens da Venda
+
+O sistema deve registrar todos os itens vendidos, quantidades, preços unitários e subtotais para cada venda.
+
+### RF-019 - Controle de Formas de Pagamento
+
+O sistema deve suportar diferentes formas de pagamento: conta (débito em conta), dinheiro, cartão e PIX.
+
+### RF-020 - Cálculo de Troco
+
+O sistema deve calcular automaticamente o troco para vendas em dinheiro, registrando valor recebido e troco dado.
+
+### RF-021 - Criação de Pacotes de Alimentação
+
+O sistema deve permitir a criação de pacotes de refeições (lanche manhã, almoço, lanche tarde) com validade e preços específicos.
+
+### RF-022 - Compra de Pacotes por Responsáveis
+
+O sistema deve permitir que responsáveis comprem pacotes de alimentação para seus dependentes, definindo período de validade e número de refeições.
+
+### RF-023 - Consumo de Pacotes
+
+O sistema deve permitir que funcionários da cantina registrem o consumo de refeições de pacotes, decrementando automaticamente o saldo de refeições disponíveis.
+
+### RF-024 - Verificação de Pacotes Ativos
+
+O sistema deve permitir consultar rapidamente se um aluno possui pacotes de refeição ativos e quantas refeições restam.
+
+### RF-025 - Relatório de Vendas Diárias
+
+O sistema deve gerar relatórios de vendas por período, separando por tipo de cliente e funcionário responsável.
+
+### RF-026 - Relatório de Consumo Mensal de Funcionários
+
+O sistema deve gerar relatórios mensais do consumo de funcionários da escola para envio ao departamento pessoal.
+
+### RF-027 - Histórico de Movimentações Financeiras
+
+O sistema deve manter histórico completo de todas as movimentações financeiras (créditos, débitos) com data, hora e responsável.
+
+### RF-028 - Histórico de Vendas por Aluno
+
+O sistema deve permitir consultar o histórico completo de compras de qualquer aluno, incluindo produtos consumidos e valores.
+
+### RF-029 - Controle de Sessões de Usuário
+
+O sistema deve gerenciar sessões de login para todos os tipos de usuários, mantendo segurança e controle de acesso.
+
+### RF-030 - Auditoria de Operações
+
+O sistema deve registrar todas as operações realizadas, identificando usuário responsável, data/hora e tipo de operação para fins de auditoria.

@@ -1,80 +1,89 @@
-# Guia rápido para agentes de codificação — php-cantina
+# Sistema de Controle de Cantina Escolar - Copilot Instructions
 
-Objetivo: dar ao agente informação suficiente para começar a trabalhar neste repositório sem perguntas repetitivas.
+## Project Overview
 
-Checklist rápida (o que vou assumir / verificar quando começar a editar):
+This is a **school cafeteria management system** built with **Next.js**, **Bootstrap**, and **MySQL**. The system manages sales, inventory, user accounts (students, parents, school staff), and meal packages for a school cafeteria environment.
 
-- Verificar `bancodados.sql` para entender o modelo de dados existente (tabelas importadas e views).
-- Procurar código em `backend/` e `frontend/` (neste ponto as pastas podem estar vazias; adaptar a mudanças).
-- Respeitar convenções de código e estilo do projeto descritas abaixo.
+## Architecture & Key Components
 
-Visão geral do projeto
+### Database Design (MySQL)
 
-- Estrutura: duas partes principais — `backend/` (CodeIgniter 4) e `frontend/` (Vite + React). Os arquivos que implementam cada parte podem não estar presentes neste snapshot; use os arquivos SQL e os .md como fontes de verdade.
-- Fluxo de dados: o backend expõe APIs (CodeIgniter) que o frontend consome (axios/react-query). O build do frontend gera estáticos que serão servidos pelo backend em produção.
-- Banco de dados: `bancodados.sql` contém as tabelas legadas principais (ex.: `cadastro_alunos`, `familias`, `funcionarios`) e uma view (`alunos`). As tabelas específicas da cantina ainda não aparecem no SQL (marcadas como "-- início - tabelas da cantina" sem conteúdo).
+- **Existing Tables**: `cadastro_alunos`, `funcionarios` (pre-existing school system tables - DO NOT MODIFY)
+- **Cantina Tables**: All new tables use `cant_` prefix (defined in `bancodados.sql`)
+- **Key Entities**: Products, Product Types, User Accounts, Sales, Meal Packages, Financial Movements
+- **Complex Relationships**: Student restrictions on products/categories, meal package consumption tracking
 
-Padrões e convenções específicas (seguir estritamente)
+### User Types & Authentication
 
-- Nomes de variáveis: camelCase.
-- Nomes de classes: PascalCase.
-- Constantes: UPPER_SNAKE_CASE.
-- Nomes de arquivos: kebab-case (ex.: `produto-list.tsx`).
-- Strings: usar sempre aspas simples em código ('exemplo').
-- Atributos HTML: usar aspas duplas ("id", "class").
-- Terminar linhas de instrução com ponto e vírgula quando aplicável.
+- **Cantina Staff**: 3 roles (administrador, atendente, estoquista) - username/password auth
+- **Students**: Identified by `ra` (student ID), no direct login
+- **Parents**: Login via CPF + birth date to manage student accounts
+- **School Staff**: Monthly account billing system for purchases
 
-Desenvolvimento local — comandos esperados (adapte caso arquivos estejam faltando)
+### Core Business Logic
 
-- Backend (CodeIgniter 4 — suposição padrão):
-  - Instalar dependências: `composer install`.
-  - Servir localmente: `php spark serve` ou configurar Apache/Nginx com document root apontando para `public/`.
-  - Nota: se `backend/` estiver vazio, crie scaffold mínimos seguindo CodeIgniter 4; confirme com o mantenedor antes de grandes mudanças.
-- Frontend (Vite + React, pnpm):
-  - Instalar: `pnpm install`.
-  - Rodar em dev: `pnpm dev`.
-  - Build de produção: `pnpm build` (arquivos estáticos devem ser copiados/servidos pelo backend quando necessário).
+- **Account-based sales**: Students/staff buy on credit, parents add funds
+- **Meal packages**: Pre-purchased meal plans with consumption tracking
+- **Product restrictions**: Parents can restrict what students can purchase
+- **Inventory management**: Real-time stock tracking with automatic updates
+- **Financial tracking**: Complete audit trail of all transactions
 
-Pontos importantes para o agente quando for editar/gerar código
+## Development Patterns
 
-- Ao alterar o esquema do banco de dados, atualize `bancodados.sql` (manter charset latin1 e comentários existentes) e documente a migração.
-- Procure por campos legados no SQL (muitos campos com nomes em português e formatos antigos). Evite renomear colunas sem conversação prévia.
-- Se for adicionar endpoints novos, mantenha os contratos simples: URL, método HTTP, formato JSON de request/response. Exemplos: GET `/api/alunos/:ra` -> retorna a view `alunos` por `ra`.
-- Ao criar novos arquivos frontend, siga kebab-case e exportações padrão do React.
+### Database Conventions
 
-Integrações e dependências externas a checar
+```sql
+-- Table naming: cant_{entity_name}
+-- Use camelCase for variables, PascalCase for classes
+-- All cantina tables have: id, ativo, data_criacao, data_atualizacao
+-- Foreign keys follow pattern: fk_cant_{table}_{field}
+```
 
-- Dependências esperadas (frontend): `react-router-dom`, `axios`, `zustand`, `@tanstack/react-query` (react-query), `bootstrap`, `react-icons`.
-- Backend: CodeIgniter 4 (assumido). Pode haver integrações com MySQL/MariaDB (ver `bancodados.sql`).
+### Critical Stored Procedures & Triggers
 
-Detecção de problemas e ações automáticas do agente
+- `sp_cant_adicionar_credito_aluno()`: Add funds to student accounts
+- `sp_cant_verificar_restricao_aluno()`: Check product purchase restrictions
+- `sp_cant_gerar_numero_venda()`: Generate daily sequential sale numbers
+- Auto-triggers: Update balances, stock levels, and audit trails on sales
 
-- Se encontrar pastas vazias onde arquivos são esperados (ex.: `backend/`, `frontend/`), gerar um resumo de opções (scaffold mínimo, pedir arquivos ao mantenedor, ou criar READMEs explicando o scaffold).
-- Antes de abrir PR: rodar `pnpm install` & `pnpm build` (se frontend existir) e executar checks do PHP (lint ou php -l) se houver código PHP.
+### Key Business Rules
 
-Arquivos/locais que o agente deve ler primeiro
+1. **Student purchases**: Check account balance + product restrictions before sale
+2. **Meal packages**: Verify active packages and decrement usage on consumption
+3. **Staff accounts**: Monthly billing cycle, automatic account creation per month
+4. **Parent controls**: Can set daily spending limits and product restrictions
+5. **Stock management**: Real-time updates with historical tracking
 
-- `bancodados.sql` — fonte principal do modelo de dados;
-- `README.md`, `sobre.md` — contexto do projeto (estão no repositório raiz);
-- `backend/` e `frontend/` — procurar `composer.json`, `package.json`, `vite.config.*`, `app` ou `src`.
+## Views & Reports
 
-Exemplos de linguagem usados no repositório
+- `cant_view_alunos_completo`: Students with account and parent info
+- `cant_view_produtos_estoque_baixo`: Low stock alerts
+- `cant_view_vendas_resumo`: Daily sales summary by customer type
+- `cant_view_pacotes_alunos_ativos`: Active meal packages per student
 
-- Tabela: `cadastro_alunos` usa `ra` como PK; a view `alunos` junta `cadastro_alunos`, `matriculas_alunos` e `cursos` com filtros por `ano_matricula` e `ano_letivo`.
+## Frontend Technology Stack
 
-Comportamento esperado do agente ao criar um PR
+- **Next.js**: React framework with SSR/SSG capabilities
+- **Bootstrap**: UI styling framework
+- **react-icons**: Icon library
 
-- Forneça um resumo curto no corpo do PR: o que foi mudado, por que, arquivos afetados, passos para testar localmente.
-- Inclua comandos rápidos para teste (por exemplo: `pnpm install; pnpm dev`), e notas sobre banco de dados (como importar `bancodados.sql` se relevante).
+## Critical Integration Points
 
-Seções que normalmente não devem ser alteradas automaticamente
+- **Existing school system**: Must integrate with `cadastro_alunos` and `funcionarios` tables
+- **Financial workflows**: Real-time balance updates and transaction logging
+- **Reporting system**: Monthly billing for school staff consumption
+- **Parent portal**: CPF-based authentication for account management
 
-- Não modificar manualmente os campos do SQL legados sem comunicação (nomes em português, tipos e charset).
+## Development Workflow
 
-Feedback
+- Database scripts in `bancodados.sql` - manual execution (no migrations)
+- Use kebab-case for file names, camelCase for variables
+- All financial calculations use DECIMAL(10,2) for precision
+- Implement proper error handling for insufficient funds/stock scenarios
 
-- Se alguma seção está ambígua ou faltar exemplos (ex.: local de `public/` do backend ou `package.json` do frontend), peça ao mantenedor por esses arquivos antes de mudanças grandes.
+## Security Considerations
 
----
-
-Obrigado — peça para eu ajustar qualquer parte deste guia com exemplos adicionais ou formatos de PR/commit específicos do time.
+- Password hashing for cantina staff (example uses bcrypt)
+- SQL injection prevention in all database queries
+- Session management for different user types
+- Audit trail for all financial transactions
