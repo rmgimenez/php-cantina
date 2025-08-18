@@ -77,6 +77,8 @@ Os scripts estarão no arquivo `bancodados.sql`.
 
 ## Requisitos Funcionais
 
+Sempre que um requisito for concluído, ele deverá ser marcado como "concluído".
+
 ### concluído - RF-001 - Autenticação de Funcionários da Cantina
 
 O sistema deve permitir que funcionários da cantina façam login usando nome de usuário e senha, com controle de tipos de usuário (administrador, atendente, estoquista).
@@ -97,15 +99,15 @@ O sistema deve controlar automaticamente o estoque dos produtos, registrando ent
 
 O sistema deve gerar alertas quando produtos atingirem o estoque mínimo configurado.
 
-### RF-006 - Gerenciamento de Contas de Alunos
+### concluído - RF-006 - Gerenciamento de Contas de Alunos
 
 O sistema deve permitir a criação e gerenciamento de contas para alunos, vinculadas ao RA (registro acadêmico) existente no sistema escolar.
 
-### RF-007 - Adição de Crédito em Contas de Alunos
+### concluído - RF-007 - Adição de Crédito em Contas de Alunos
 
 O sistema deve permitir que funcionários da cantina adicionem crédito nas contas dos alunos, registrando todas as movimentações financeiras.
 
-### RF-008 - Controle de Saldo de Alunos
+### concluído - RF-008 - Controle de Saldo de Alunos
 
 O sistema deve controlar o saldo das contas dos alunos, debitando automaticamente o valor das compras realizadas.
 

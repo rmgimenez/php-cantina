@@ -167,7 +167,7 @@ export async function criarContaAluno(
 export async function adicionarCreditoAluno(
   ra: number,
   valor: number,
-  funcionario_cantina_id: number,
+  funcionario_cantina_id: number | null,
   descricao: string = "Adição de crédito"
 ): Promise<boolean> {
   const connection = await pool.getConnection();
