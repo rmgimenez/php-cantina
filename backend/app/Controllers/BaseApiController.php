@@ -109,13 +109,13 @@ class BaseApiController extends Controller
     protected function validateInput(array $rules, array $data = null): bool
     {
         $validation = \Config\Services::validation();
-        
+
         if ($data === null) {
             $data = $this->getRequestData();
         }
 
         $validation->setRules($rules);
-        
+
         if (!$validation->run($data)) {
             $this->validator = $validation;
             return false;
@@ -145,17 +145,22 @@ class BaseApiController extends Controller
      */
     protected function getRequestData(): array
     {
-        // Tenta obter JSON do corpo da requisição
-        $input = $this->request->getBody();
-        if (!empty($input)) {
-            $json = json_decode($input, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return $json;
-            }
+        // Prioriza payload JSON se o content-type for correspondente
+        if ($this->request->hasHeader('Content-Type') && strpos($this->request->getHeaderLine('Content-Type'), 'application/json') !== false) {
+            $data = $this->request->getJSON(true);
+            return is_array($data) ? $data : [];
         }
-        
-        // Fallback para POST data
-        return $_POST ?? [];
+
+        // Para outros métodos, usa getVar() que lida com POST, PUT, PATCH, etc.
+        $data = $this->request->getVar();
+
+        // Se getVar() retornar um objeto, converte para array
+        if (is_object($data)) {
+            $data = (array) $data;
+        }
+
+        // Se ainda assim não for um array, retorna um array vazio
+        return is_array($data) ? $data : [];
     }
 
     /**
@@ -179,7 +184,7 @@ class BaseApiController extends Controller
     protected function getValidId(string $paramName = 'id'): ?int
     {
         $id = $_GET[$paramName] ?? $_POST[$paramName] ?? null;
-        
+
         if (!is_numeric($id) || $id <= 0) {
             return null;
         }
@@ -205,7 +210,7 @@ class BaseApiController extends Controller
     protected function hasManagementPermission(): bool
     {
         $user = $this->getAuthenticatedUser();
-        
+
         if (!$user) {
             return false;
         }

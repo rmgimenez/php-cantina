@@ -5,14 +5,14 @@ export interface TipoProduto {
   id: number;
   nome: string;
   descricao?: string;
-  ativo: number;
+  ativo: string | number; // Para aceitar tanto string quanto número
   data_criacao: string;
 }
 
 export interface TipoProdutoInput {
   nome: string;
   descricao?: string;
-  ativo?: number;
+  ativo?: string | number; // Para aceitar tanto string quanto número
 }
 
 export interface TiposProdutosResponse {
@@ -34,7 +34,7 @@ export interface TipoProdutoResponse {
 export const useTiposProdutos = (filtros?: {
   nome?: string;
   descricao?: string;
-  ativo?: number;
+  ativo?: string | number;
 }) => {
   return useQuery({
     queryKey: ['tipos-produtos', filtros],
@@ -42,7 +42,7 @@ export const useTiposProdutos = (filtros?: {
       const params = new URLSearchParams();
       if (filtros?.nome) params.append('nome', filtros.nome);
       if (filtros?.descricao) params.append('descricao', filtros.descricao);
-      if (filtros?.ativo !== undefined) params.append('ativo', filtros.ativo.toString());
+      if (filtros?.ativo !== undefined) params.append('ativo', String(filtros.ativo));
 
       const { data } = await api.get(`/tipos-produtos?${params.toString()}`);
       return data;

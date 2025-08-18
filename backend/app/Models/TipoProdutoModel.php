@@ -52,7 +52,7 @@ class TipoProdutoModel extends Model
      */
     public function findAtivos(): array
     {
-        return $this->where('ativo', 1)
+        return $this->where('ativo', '1')
             ->orderBy('nome', 'ASC')
             ->findAll();
     }
@@ -77,7 +77,7 @@ class TipoProdutoModel extends Model
      */
     public function desativar(int $id): bool
     {
-        return $this->update($id, ['ativo' => 0]);
+        return $this->update($id, ['ativo' => '0']);
     }
 
     /**
@@ -88,7 +88,7 @@ class TipoProdutoModel extends Model
      */
     public function ativar(int $id): bool
     {
-        return $this->update($id, ['ativo' => 1]);
+        return $this->update($id, ['ativo' => '1']);
     }
 
     /**
@@ -101,21 +101,16 @@ class TipoProdutoModel extends Model
      */
     public function buscarComFiltrosPaginado(array $filtros = [], int $page = 1, int $perPage = 20): array
     {
-        // Garante que $filtros seja associativo
-        if (array_values($filtros) === $filtros) {
-            $filtros = [];
-        }
-
         $builder = $this->builder();
 
-        if (!empty($filtros['nome'])) {
+        if (isset($filtros['nome']) && !empty($filtros['nome'])) {
             $builder->like('nome', $filtros['nome']);
         }
 
-        if (isset($filtros['ativo'])) {
-            $builder->where('ativo', $filtros['ativo']);
+        if (isset($filtros['ativo']) && $filtros['ativo'] !== null && $filtros['ativo'] !== '') {
+            $builder->where('ativo', (string)$filtros['ativo']);
         } else {
-            $builder->where('ativo', 1); // Por padrão, só ativos
+            $builder->where('ativo', '1'); // Por padrão, só ativos - convertido para string
         }
 
         $offset = ($page - 1) * $perPage;
@@ -136,14 +131,14 @@ class TipoProdutoModel extends Model
     {
         $builder = $this->builder();
 
-        if (!empty($filtros['nome'])) {
+        if (isset($filtros['nome']) && !empty($filtros['nome'])) {
             $builder->like('nome', $filtros['nome']);
         }
 
-        if (isset($filtros['ativo'])) {
-            $builder->where('ativo', $filtros['ativo']);
+        if (isset($filtros['ativo']) && $filtros['ativo'] !== null && $filtros['ativo'] !== '') {
+            $builder->where('ativo', (string)$filtros['ativo']);
         } else {
-            $builder->where('ativo', 1); // Por padrão, só ativos
+            $builder->where('ativo', '1'); // Por padrão, só ativos - convertido para string
         }
 
         return $builder->countAllResults();
@@ -156,7 +151,7 @@ class TipoProdutoModel extends Model
      */
     public function contarAtivos(): int
     {
-        return $this->where('ativo', 1)->countAllResults();
+        return $this->where('ativo', '1')->countAllResults();
     }
 
     /**
@@ -169,7 +164,7 @@ class TipoProdutoModel extends Model
     {
         // Verifica se há produtos usando este tipo
         $db = \Config\Database::connect();
-        $query = $db->query('SELECT COUNT(*) as total FROM cant_produtos WHERE tipo_produto_id = ? AND ativo = 1', [$id]);
+        $query = $db->query('SELECT COUNT(*) as total FROM cant_produtos WHERE tipo_produto_id = ? AND ativo = \'1\'', [(string)$id]);
         $result = $query->getRow();
 
         return $result->total == 0;

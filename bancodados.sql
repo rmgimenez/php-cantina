@@ -840,6 +840,11 @@ DELIMITER ;
 
 -- Inserir dados iniciais
 
+-- Funcionário da cantina para teste
+-- Usuário: admin, Senha: 123456
+INSERT INTO `cant_funcionarios` (`usuario`, `senha`, `nome`, `email`, `tipo`) VALUES
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrador', 'admin@cantina.com', 'administrador');
+
 -- Tipos de produtos padrão
 INSERT INTO `cant_tipos_produtos` (`nome`, `descricao`) VALUES
 ('Salgados', 'Produtos salgados como coxinhas, pastéis, etc.'),

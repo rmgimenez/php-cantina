@@ -84,10 +84,10 @@ class ProdutoModel extends Model
     public function findAtivos(): array
     {
         return $this->select('cant_produtos.*, cant_tipos_produtos.nome as tipo_produto_nome')
-                   ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
-                   ->where('cant_produtos.ativo', 1)
-                   ->orderBy('cant_produtos.nome', 'ASC')
-                   ->findAll();
+            ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
+            ->where('cant_produtos.ativo', '1')
+            ->orderBy('cant_produtos.nome', 'ASC')
+            ->findAll();
     }
 
     /**
@@ -99,9 +99,9 @@ class ProdutoModel extends Model
     public function findByCodigoBarras(string $codigoBarras): ?array
     {
         return $this->select('cant_produtos.*, cant_tipos_produtos.nome as tipo_produto_nome')
-                   ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
-                   ->where('cant_produtos.codigo_barras', $codigoBarras)
-                   ->first();
+            ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
+            ->where('cant_produtos.codigo_barras', $codigoBarras)
+            ->first();
     }
 
     /**
@@ -113,9 +113,9 @@ class ProdutoModel extends Model
     public function findComTipo(int $id): ?array
     {
         return $this->select('cant_produtos.*, cant_tipos_produtos.nome as tipo_produto_nome')
-                   ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
-                   ->where('cant_produtos.id', $id)
-                   ->first();
+            ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
+            ->where('cant_produtos.id', $id)
+            ->first();
     }
 
     /**
@@ -126,11 +126,11 @@ class ProdutoModel extends Model
     public function findEstoqueBaixo(): array
     {
         return $this->select('cant_produtos.*, cant_tipos_produtos.nome as tipo_produto_nome, (cant_produtos.estoque_minimo - cant_produtos.estoque_atual) as quantidade_repor')
-                   ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
-                   ->where('cant_produtos.estoque_atual <=', 'cant_produtos.estoque_minimo', false)
-                   ->where('cant_produtos.ativo', 1)
-                   ->orderBy('quantidade_repor', 'DESC')
-                   ->findAll();
+            ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id')
+            ->where('cant_produtos.estoque_atual <= cant_produtos.estoque_minimo')
+            ->where('cant_produtos.ativo', 1)
+            ->orderBy('quantidade_repor', 'DESC')
+            ->findAll();
     }
 
     /**
@@ -141,7 +141,7 @@ class ProdutoModel extends Model
      */
     public function desativar(int $id): bool
     {
-        return $this->update($id, ['ativo' => 0]);
+        return $this->update($id, ['ativo' => '0']);
     }
 
     /**
@@ -152,7 +152,7 @@ class ProdutoModel extends Model
      */
     public function ativar(int $id): bool
     {
-        return $this->update($id, ['ativo' => 1]);
+        return $this->update($id, ['ativo' => '1']);
     }
 
     /**
@@ -165,7 +165,7 @@ class ProdutoModel extends Model
     {
         $builder = $this->builder();
         $builder->select('cant_produtos.*, cant_tipos_produtos.nome as tipo_produto_nome')
-                ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id');
+            ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id');
 
         if (!empty($filtros['nome'])) {
             $builder->like('cant_produtos.nome', $filtros['nome']);
@@ -182,7 +182,7 @@ class ProdutoModel extends Model
         if (isset($filtros['ativo'])) {
             $builder->where('cant_produtos.ativo', $filtros['ativo']);
         } else {
-            $builder->where('cant_produtos.ativo', 1); // Por padrão, só ativos
+            $builder->where('cant_produtos.ativo', '1'); // Por padrão, só ativos
         }
 
         return $builder->orderBy('cant_produtos.nome', 'ASC')->get()->getResultArray();
@@ -200,15 +200,15 @@ class ProdutoModel extends Model
     {
         $builder = $this->builder();
         $builder->select('cant_produtos.*, cant_tipos_produtos.nome as tipo_produto_nome')
-                ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id');
+            ->join('cant_tipos_produtos', 'cant_produtos.tipo_produto_id = cant_tipos_produtos.id');
 
         // Aplicar filtros
         if (!empty($filtros['q'])) {
             $builder->groupStart()
-                    ->like('cant_produtos.nome', $filtros['q'])
-                    ->orLike('cant_produtos.codigo_barras', $filtros['q'])
-                    ->orLike('cant_produtos.descricao', $filtros['q'])
-                    ->groupEnd();
+                ->like('cant_produtos.nome', $filtros['q'])
+                ->orLike('cant_produtos.codigo_barras', $filtros['q'])
+                ->orLike('cant_produtos.descricao', $filtros['q'])
+                ->groupEnd();
         }
 
         if (!empty($filtros['tipo_produto_id'])) {
@@ -218,7 +218,7 @@ class ProdutoModel extends Model
         if (isset($filtros['ativo'])) {
             $builder->where('cant_produtos.ativo', $filtros['ativo']);
         } else {
-            $builder->where('cant_produtos.ativo', 1);
+            $builder->where('cant_produtos.ativo', '1');
         }
 
         // Contar total
@@ -227,9 +227,9 @@ class ProdutoModel extends Model
         // Aplicar paginação
         $offset = ($page - 1) * $perPage;
         $produtos = $builder->orderBy('cant_produtos.nome', 'ASC')
-                           ->limit($perPage, $offset)
-                           ->get()
-                           ->getResultArray();
+            ->limit($perPage, $offset)
+            ->get()
+            ->getResultArray();
 
         return [
             'produtos' => $produtos,
@@ -247,7 +247,7 @@ class ProdutoModel extends Model
      */
     public function contarAtivos(): int
     {
-        return $this->where('ativo', 1)->countAllResults();
+        return $this->where('ativo', '1')->countAllResults();
     }
 
     /**
@@ -274,7 +274,7 @@ class ProdutoModel extends Model
         $db = \Config\Database::connect();
         $query = $db->query('SELECT COUNT(*) as total FROM cant_vendas_itens WHERE produto_id = ?', [$id]);
         $result = $query->getRow();
-        
+
         return $result->total == 0;
     }
 

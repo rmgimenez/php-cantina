@@ -27,7 +27,7 @@ class Produtos extends BaseApiController
         try {
             $perPage = (int) ($this->getParam('perPage', 20));
             $page = (int) ($this->getParam('page', 1));
-            
+
             $filtros = [
                 'q' => $this->getParam('q'),
                 'tipo_produto_id' => $this->getParam('tipo_produto_id'),
@@ -35,7 +35,7 @@ class Produtos extends BaseApiController
             ];
 
             // Remove filtros vazios
-            $filtros = array_filter($filtros, function($value) {
+            $filtros = array_filter($filtros, function ($value) {
                 return $value !== null && $value !== '';
             });
 
@@ -50,7 +50,6 @@ class Produtos extends BaseApiController
                     'totalPages' => $resultado['totalPages']
                 ]
             ], 'Produtos listados com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao listar produtos: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -77,7 +76,6 @@ class Produtos extends BaseApiController
             }
 
             return $this->respondSuccess($produto, 'Produto encontrado com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao buscar produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -112,7 +110,7 @@ class Produtos extends BaseApiController
 
             // Define valores padrão
             if (!isset($data['ativo'])) {
-                $data['ativo'] = 1;
+                $data['ativo'] = '1';
             }
             if (!isset($data['estoque_atual'])) {
                 $data['estoque_atual'] = 0;
@@ -121,7 +119,18 @@ class Produtos extends BaseApiController
                 $data['estoque_minimo'] = 0;
             }
 
-            $produtoId = $this->model->insert($data);
+            // Filtra o array $data para conter apenas as chaves permitidas pelo modelo
+            $allowedFields = $this->model->allowedFields;
+            $filteredData = array_intersect_key($data, array_flip($allowedFields));
+
+            // Garantir tipos de dados corretos
+            $filteredData['tipo_produto_id'] = (int)$filteredData['tipo_produto_id'];
+            $filteredData['preco'] = (float)$filteredData['preco'];
+            $filteredData['estoque_atual'] = (int)$filteredData['estoque_atual'];
+            $filteredData['estoque_minimo'] = (int)$filteredData['estoque_minimo'];
+            $filteredData['ativo'] = (string)$filteredData['ativo']; // Convertendo para string
+
+            $produtoId = $this->model->insert($filteredData);
 
             if (!$produtoId) {
                 return $this->respondError('Erro ao criar produto', 500, $this->model->errors());
@@ -130,7 +139,6 @@ class Produtos extends BaseApiController
             $produtoCriado = $this->model->findComTipo($produtoId);
 
             return $this->respondSuccess($produtoCriado, 'Produto criado com sucesso', 201);
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao criar produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -173,6 +181,23 @@ class Produtos extends BaseApiController
                 return $this->respondValidationError($this->getValidationErrors());
             }
 
+            // Garantir tipos de dados corretos
+            if (isset($data['tipo_produto_id'])) {
+                $data['tipo_produto_id'] = (int)$data['tipo_produto_id'];
+            }
+            if (isset($data['preco'])) {
+                $data['preco'] = (float)$data['preco'];
+            }
+            if (isset($data['estoque_atual'])) {
+                $data['estoque_atual'] = (int)$data['estoque_atual'];
+            }
+            if (isset($data['estoque_minimo'])) {
+                $data['estoque_minimo'] = (int)$data['estoque_minimo'];
+            }
+            if (isset($data['ativo'])) {
+                $data['ativo'] = (string)$data['ativo']; // Convertendo para string
+            }
+
             $success = $this->model->update($id, $data);
 
             if (!$success) {
@@ -182,7 +207,6 @@ class Produtos extends BaseApiController
             $produtoAtualizado = $this->model->findComTipo((int) $id);
 
             return $this->respondSuccess($produtoAtualizado, 'Produto atualizado com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao atualizar produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -215,7 +239,6 @@ class Produtos extends BaseApiController
             }
 
             return $this->respondSuccess(null, 'Produto excluído com sucesso');
-
         } catch (\RuntimeException $e) {
             return $this->respondError($e->getMessage(), 422);
         } catch (\Exception $e) {
@@ -238,7 +261,6 @@ class Produtos extends BaseApiController
                 'produtos' => $produtos,
                 'total' => count($produtos)
             ], 'Produtos com estoque baixo listados com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao listar produtos com estoque baixo: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -272,7 +294,6 @@ class Produtos extends BaseApiController
             $produtoAtualizado = $this->model->findComTipo((int) $id);
 
             return $this->respondSuccess($produtoAtualizado, 'Produto ativado com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao ativar produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');
@@ -306,7 +327,6 @@ class Produtos extends BaseApiController
             $produtoAtualizado = $this->model->findComTipo((int) $id);
 
             return $this->respondSuccess($produtoAtualizado, 'Produto desativado com sucesso');
-
         } catch (\Exception $e) {
             log_message('error', 'Erro ao desativar produto: ' . $e->getMessage());
             return $this->respondError('Erro interno do servidor');

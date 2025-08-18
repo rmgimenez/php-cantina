@@ -29,18 +29,19 @@ class TiposProdutos extends BaseApiController
             $page = max(1, (int)$this->getParam('page', 1));
             $perPage = min(100, max(1, (int)$this->getParam('perPage', 20)));
 
-            $filtros = [
-                'nome' => $this->getParam('q'), // 'q' conforme especificação da issue
-                'ativo' => $this->getParam('ativo')
-            ];
+            $filtros = [];
 
-            // Remove filtros vazios
+            // Filtro por nome
+            $nome = $this->getParam('q');
+            if ($nome !== null && $nome !== '') {
+                $filtros['nome'] = $nome;
+            }
 
-            $filtros = array_filter($filtros, function ($value) {
-                return $value !== null && $value !== '';
-            });
-            // Garante que as chaves associativas sejam mantidas
-            $filtros = array_intersect_key($filtros, ['nome' => '', 'ativo' => '']);
+            // Filtro por ativo
+            $ativo = $this->getParam('ativo');
+            if ($ativo !== null && $ativo !== '') {
+                $filtros['ativo'] = (int)$ativo;
+            }
 
             $tiposProdutos = $this->model->buscarComFiltrosPaginado($filtros, $page, $perPage);
             $total = $this->model->contarComFiltros($filtros);
@@ -101,30 +102,17 @@ class TiposProdutos extends BaseApiController
 
             $data = $this->getRequestData();
 
-            // Espera um array associativo; caso receba um array indexado (ex: ["Nome", "Desc", 1])
-            // converte para associativo usando a ordem esperada dos campos.
+            // Validação básica do payload
             if (!is_array($data)) {
                 log_message('error', 'Payload inválido ao criar tipo de produto: esperado objeto associativo');
                 return $this->respondError('Payload inválido', 400);
-            }
-
-            if (array_values($data) === $data) {
-                // Campos esperados na ordem quando payload vier como array indexado
-                $expected = ['nome', 'descricao', 'ativo'];
-                $assoc = [];
-                foreach ($data as $i => $value) {
-                    if (isset($expected[$i])) {
-                        $assoc[$expected[$i]] = $value;
-                    }
-                }
-                $data = $assoc;
             }
 
             // Validação
             $rules = [
                 'nome' => 'required|min_length[2]|max_length[100]|is_unique[cant_tipos_produtos.nome]',
                 'descricao' => 'permit_empty|max_length[1000]',
-                'ativo' => 'permit_empty|in_list[0,1]'
+                'ativo' => 'permit_empty|in_list[0,1,\'0\',\'1\']'
             ];
 
             if (!$this->validateInput($rules, $data)) {
@@ -133,19 +121,22 @@ class TiposProdutos extends BaseApiController
 
             // Define valor padrão para ativo se não informado
             if (!isset($data['ativo'])) {
-                $data['ativo'] = 1;
+                $data['ativo'] = '1';
             }
 
-            // Log para depuração: inspeciona payload antes do insert
-            try {
-                log_message('debug', 'TiposProdutos::create payload keys: ' . implode(', ', array_keys((array)$data)));
-                log_message('debug', 'TiposProdutos::create payload: ' . json_encode($data));
-            } catch (\Throwable $t) {
-                // não bloquear execução em caso de erro no log
-                log_message('error', 'Erro ao logar payload: ' . $t->getMessage());
+            // Filtra o array $data para conter apenas as chaves permitidas pelo modelo
+            $allowedFields = $this->model->allowedFields;
+            $filteredData = array_intersect_key($data, array_flip($allowedFields));
+
+            // Log para depuração
+            log_message('debug', 'TiposProdutos::create payload: ' . json_encode($filteredData));
+
+            // Garantir que os tipos de dados estão corretos antes da inserção
+            if (isset($filteredData['ativo'])) {
+                $filteredData['ativo'] = (string)$filteredData['ativo']; // Garantir que seja string
             }
 
-            $id = $this->model->insert($data);
+            $id = $this->model->insert($filteredData);
 
             if (!$id) {
                 return $this->respondError('Erro ao criar tipo de produto', 500, $this->model->errors());
@@ -153,11 +144,15 @@ class TiposProdutos extends BaseApiController
 
             $tipoProduto = $this->model->find($id);
 
+            if (!$tipoProduto) {
+                return $this->respondError('Erro ao recuperar o tipo de produto criado', 500);
+            }
+
             // Formatar response conforme especificação da issue
             $response = [
                 'id' => (int)$tipoProduto['id'],
                 'nome' => $tipoProduto['nome'],
-                'descricao' => $tipoProduto['descricao'],
+                'descricao' => $tipoProduto['descricao'] ?? '',
                 'ativo' => (bool)$tipoProduto['ativo'],
                 'criado_em' => date('c', strtotime($tipoProduto['data_criacao'])) // ISO 8601
             ];
@@ -194,32 +189,26 @@ class TiposProdutos extends BaseApiController
 
             $data = $this->getRequestData();
 
-            // Aceita também payloads indexados (ex: de clientes/testes) e converte para associativo
+            // Validação básica do payload
             if (!is_array($data)) {
                 log_message('error', 'Payload inválido ao atualizar tipo de produto: esperado objeto associativo');
                 return $this->respondError('Payload inválido', 400);
-            }
-
-            if (array_values($data) === $data) {
-                $expected = ['nome', 'descricao', 'ativo'];
-                $assoc = [];
-                foreach ($data as $i => $value) {
-                    if (isset($expected[$i])) {
-                        $assoc[$expected[$i]] = $value;
-                    }
-                }
-                $data = $assoc;
             }
 
             // Validação
             $rules = [
                 'nome' => "required|min_length[2]|max_length[100]|is_unique[cant_tipos_produtos.nome,id,$id]",
                 'descricao' => 'permit_empty|max_length[1000]',
-                'ativo' => 'permit_empty|in_list[0,1]'
+                'ativo' => 'permit_empty|in_list[0,1,\'0\',\'1\']'
             ];
 
             if (!$this->validateInput($rules, $data)) {
                 return $this->respondValidationError($this->getValidationErrors());
+            }
+
+            // Garantir que os tipos de dados estão corretos antes da atualização
+            if (isset($data['ativo'])) {
+                $data['ativo'] = (string)$data['ativo']; // Garantir que seja string
             }
 
             $success = $this->model->update($id, $data);
