@@ -1,5 +1,17 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import {
+  FaBoxes,
+  FaChartBar,
+  FaCog,
+  FaCoins,
+  FaShoppingCart,
+  FaUsers,
+  FaUtensils,
+  FaWarehouse,
+} from 'react-icons/fa';
+import Navbar from '../../components/layout/navbar';
+import DashboardCard from '../../components/ui/dashboard-card';
 import { verifyToken } from '../../lib/auth/tokens';
 
 type TokenPayload = {
@@ -27,107 +39,146 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  return (
-    <div className='container py-4'>
-      <div className='d-flex justify-content-between align-items-center mb-4'>
-        <div>
-          <h2 className='mb-0'>Dashboard</h2>
-          <small className='text-muted'>
-            Bem-vindo, {user.username} ({user.role})
-          </small>
-        </div>
-        <form action='/api/auth/logout' method='post'>
-          <button className='btn btn-outline-secondary btn-sm'>Sair</button>
-        </form>
-      </div>
+  const canSell = ['administrador', 'atendente'].includes(user.role);
+  const canManageStock = ['administrador', 'estoquista'].includes(user.role);
+  const isAdmin = user.role === 'administrador';
 
-      <div className='row g-4'>
-        <div className='col-md-3'>
-          <div className='card h-100 shadow-sm'>
-            <div className='card-body'>
-              <h5 className='card-title'>Resumo</h5>
-              <p className='card-text small text-muted'>
-                Indicadores rápidos do dia (placeholder).
-              </p>
-              <ul className='list-unstyled mb-0 small'>
-                <li>Vendas: --</li>
-                <li>Itens vendidos: --</li>
-                <li>Saldo médio alunos: --</li>
-              </ul>
+  return (
+    <>
+      <Navbar user={user} />
+      <div className='container py-4'>
+        {/* Header */}
+        <div className='row mb-4'>
+          <div className='col-12'>
+            <div className='card dashboard-card'>
+              <div className='card-body text-center py-4'>
+                <h1 className='h3 mb-2 text-primary'>🍽️ Dashboard da Cantina</h1>
+                <p className='text-muted mb-0'>
+                  Bem-vindo, <strong>{user.username}</strong>! Você está logado como{' '}
+                  <span className='badge bg-primary'>{user.role}</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        <div className='col-md-9'>
-          <div className='row g-4'>
-            <div className='col-md-4'>
-              <div className='card h-100 border-primary'>
-                <div className='card-body d-flex flex-column'>
-                  <h5 className='card-title'>Registrar Venda</h5>
-                  <p className='card-text small flex-grow-1'>
-                    Iniciar processo de venda para aluno, funcionário ou avulso.
-                  </p>
-                  <a className='btn btn-primary btn-sm disabled'>Abrir (em breve)</a>
-                </div>
-              </div>
-            </div>
-            <div className='col-md-4'>
-              <div className='card h-100 border-success'>
-                <div className='card-body d-flex flex-column'>
-                  <h5 className='card-title'>Produtos</h5>
-                  <p className='card-text small flex-grow-1'>
-                    Gerenciar cadastro e tipos de produtos.
-                  </p>
-                  <a href='/produtos' className='btn btn-success btn-sm'>
-                    Gerenciar
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className='col-md-4'>
-              <div className='card h-100 border-warning'>
-                <div className='card-body d-flex flex-column'>
-                  <h5 className='card-title'>Estoque</h5>
-                  <p className='card-text small flex-grow-1'>
-                    Movimentações, ajustes e alertas de mínimo.
-                  </p>
-                  <a className='btn btn-warning btn-sm text-white disabled'>Estoque</a>
-                </div>
-              </div>
-            </div>
-            <div className='col-md-4'>
-              <div className='card h-100 border-info'>
-                <div className='card-body d-flex flex-column'>
-                  <h5 className='card-title'>Pacotes</h5>
-                  <p className='card-text small flex-grow-1'>
-                    Consulta e consumo de pacotes de alimentação.
-                  </p>
-                  <a className='btn btn-info btn-sm text-white disabled'>Ver Pacotes</a>
-                </div>
-              </div>
-            </div>
-            <div className='col-md-4'>
-              <div className='card h-100 border-secondary'>
-                <div className='card-body d-flex flex-column'>
-                  <h5 className='card-title'>Relatórios</h5>
-                  <p className='card-text small flex-grow-1'>
-                    Vendas diárias, consumo e financeiros.
-                  </p>
-                  <a className='btn btn-secondary btn-sm disabled'>Abrir</a>
-                </div>
-              </div>
-            </div>
-            <div className='col-md-4'>
-              <div className='card h-100 border-dark'>
-                <div className='card-body d-flex flex-column'>
-                  <h5 className='card-title'>Administração</h5>
-                  <p className='card-text small flex-grow-1'>Usuários, limites e configurações.</p>
-                  <a className='btn btn-dark btn-sm disabled'>Configurar</a>
-                </div>
+
+        {/* Quick Stats */}
+        <div className='row mb-4'>
+          <div className='col-md-3 mb-3'>
+            <div className='card stats-card h-100'>
+              <div className='card-body text-center'>
+                <FaCoins className='text-primary mb-2' size={24} />
+                <h6 className='card-title text-muted'>Vendas Hoje</h6>
+                <h4 className='text-primary mb-0'>R$ --</h4>
+                <small className='text-muted'>-- transações</small>
               </div>
             </div>
           </div>
+          <div className='col-md-3 mb-3'>
+            <div className='card stats-card h-100'>
+              <div className='card-body text-center'>
+                <FaBoxes className='text-success mb-2' size={24} />
+                <h6 className='card-title text-muted'>Produtos Ativos</h6>
+                <h4 className='text-success mb-0'>--</h4>
+                <small className='text-muted'>-- tipos</small>
+              </div>
+            </div>
+          </div>
+          <div className='col-md-3 mb-3'>
+            <div className='card stats-card h-100'>
+              <div className='card-body text-center'>
+                <FaWarehouse className='text-warning mb-2' size={24} />
+                <h6 className='card-title text-muted'>Estoque Baixo</h6>
+                <h4 className='text-warning mb-0'>--</h4>
+                <small className='text-muted'>itens</small>
+              </div>
+            </div>
+          </div>
+          <div className='col-md-3 mb-3'>
+            <div className='card stats-card h-100'>
+              <div className='card-body text-center'>
+                <FaUsers className='text-info mb-2' size={24} />
+                <h6 className='card-title text-muted'>Contas Ativas</h6>
+                <h4 className='text-info mb-0'>--</h4>
+                <small className='text-muted'>alunos</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Actions */}
+        <div className='row'>
+          <div className='col-12 mb-3'>
+            <h5 className='text-primary'>Ações Principais</h5>
+            <hr />
+          </div>
+
+          <DashboardCard
+            title='Registrar Venda'
+            description='Iniciar processo de venda para aluno, funcionário ou cliente avulso.'
+            icon={<FaShoppingCart size={20} />}
+            iconClass='icon-vendas'
+            href={canSell ? '/vendas' : undefined}
+            disabled={!canSell}
+            buttonText={canSell ? 'Nova Venda' : 'Sem Permissão'}
+            buttonVariant='primary'
+          />
+
+          <DashboardCard
+            title='Gerenciar Produtos'
+            description='Cadastrar produtos, tipos e gerenciar informações do catálogo.'
+            icon={<FaBoxes size={20} />}
+            iconClass='icon-produtos'
+            href='/produtos'
+            buttonText='Gerenciar'
+            buttonVariant='success'
+          />
+
+          <DashboardCard
+            title='Controle de Estoque'
+            description='Movimentações, ajustes de estoque e alertas de produtos em falta.'
+            icon={<FaWarehouse size={20} />}
+            iconClass='icon-estoque'
+            href={canManageStock ? '/estoque' : undefined}
+            disabled={!canManageStock}
+            buttonText={canManageStock ? 'Ver Estoque' : 'Sem Permissão'}
+            buttonVariant='warning'
+          />
+
+          <DashboardCard
+            title='Pacotes de Refeição'
+            description='Consultar e registrar consumo de pacotes de alimentação dos alunos.'
+            icon={<FaUtensils size={20} />}
+            iconClass='icon-pacotes'
+            href='/pacotes'
+            disabled={true}
+            buttonText='Em Breve'
+            buttonVariant='info'
+          />
+
+          <DashboardCard
+            title='Relatórios'
+            description='Vendas diárias, consumo por aluno e relatórios financeiros.'
+            icon={<FaChartBar size={20} />}
+            iconClass='icon-relatorios'
+            href={isAdmin ? '/relatorios' : undefined}
+            disabled={!isAdmin}
+            buttonText={isAdmin ? 'Ver Relatórios' : 'Apenas Admin'}
+            buttonVariant='secondary'
+          />
+
+          <DashboardCard
+            title='Administração'
+            description='Gerenciar usuários, contas de alunos, limites e configurações do sistema.'
+            icon={<FaCog size={20} />}
+            iconClass='icon-admin'
+            href={isAdmin ? '/admin' : undefined}
+            disabled={!isAdmin}
+            buttonText={isAdmin ? 'Configurar' : 'Apenas Admin'}
+            buttonVariant='dark'
+          />
         </div>
       </div>
-    </div>
+    </>
   );
 }
