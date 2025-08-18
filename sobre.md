@@ -2,6 +2,16 @@
 
 O objetivo desse sistema é gerenciar de forma eficiente as operações de uma cantina escolar, permitindo o controle de usuários, funcionários, responsáveis e alunos, além de facilitar a gestão de vendas e estoque.
 
+## Cores
+
+Cores principais para serem utilizadas no sistema:
+
+- Azul: #253287
+- Vermelho: #B20000
+- Amarelo: #FEA800
+- Escuro: #333333
+- Claro: #FFFFFF
+
 ## Tecnologias utilizadas
 
 O sistema utiliza as seguintes tecnologias:

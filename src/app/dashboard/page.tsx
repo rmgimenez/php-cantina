@@ -77,7 +77,9 @@ export default async function DashboardPage() {
                   <p className='card-text small flex-grow-1'>
                     Gerenciar cadastro e tipos de produtos.
                   </p>
-                  <a className='btn btn-success btn-sm disabled'>Gerenciar</a>
+                  <a href='/produtos' className='btn btn-success btn-sm'>
+                    Gerenciar
+                  </a>
                 </div>
               </div>
             </div>
