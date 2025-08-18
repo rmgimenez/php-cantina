@@ -855,4 +855,26 @@ INSERT INTO `cant_pacotes_alimentacao` (`nome`, `descricao`, `tipo_refeicao`, `p
 ('Lanche da Tarde - Mensal', 'Pacote de lanche da tarde para 30 dias', 'lanche_tarde', 120.00, 30),
 ('Combo Completo - Mensal', 'Lanche manhã + Almoço + Lanche tarde', 'personalizado', 500.00, 30);
 
+-- Tabelas adicionais solicitadas na Task 3.1
+CREATE TABLE IF NOT EXISTS `cant_conta_alunos` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ra` VARCHAR(20) NOT NULL,
+  `saldo` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX (`ra`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `cant_conta_movimentos` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `conta_id` INT UNSIGNED NOT NULL,
+  `valor` DECIMAL(10,2) NOT NULL,
+  `tipo` VARCHAR(20) NOT NULL, -- 'deposit', 'ajuste', 'venda'
+  `descricao` VARCHAR(255) NOT NULL,
+  `created_by` INT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX (`conta_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 -- fim - tabelas da cantina

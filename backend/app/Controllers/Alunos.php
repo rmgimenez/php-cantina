@@ -331,7 +331,7 @@ class Alunos extends BaseApiController
     /**
      * Obtém dados do request (JSON ou form data)
      */
-    private function getRequestData(): array
+    protected function getRequestData(): array
     {
         $contentType = $this->request->getHeaderLine('Content-Type');
         
