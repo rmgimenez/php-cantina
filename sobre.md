@@ -36,10 +36,6 @@ Eles usarão um nome de usuário e senha para acessar o sistema.
 
 São os principais clientes da cantina.
 
-#### Responsáveis dos alunos
-
-São os responsáveis legais pelos alunos e poderão gerenciar as contas de seus dependentes.
-
 #### Funcionários da escola
 
 São consumidores que podem marcar na conta da cantina suas compras e depois a cantina envia um relatório para o departamento pessoal para descontar o valor consumido no mês. A conta fecha por mês.
@@ -62,6 +58,7 @@ São consumidores que podem marcar na conta da cantina suas compras e depois a c
 - Os responsáveis poderão comprar pacotes de alimentação para seus filhos. Por exemplo, comprar lanche da manhã e almoço por 1 mês.
 - Os funcionários da cantina poderão verificar se o aluno possui pacote de refeição comprada.
 - Os funcionários da cantina poderão verificar o histórico de vendas e consumo dos alunos.
+- As fotos dos alunos deverão ser obtidas através da URL <https://sistema.santanna.g12.br/carometr/$ra.jpg>. O RA do aluno será utilizado para substituir o `$ra` na URL.
 
 ## Banco de dados
 
