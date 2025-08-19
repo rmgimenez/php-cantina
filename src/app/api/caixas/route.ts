@@ -1,20 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "../../../lib/auth/tokens";
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyToken } from '../../../lib/auth/tokens';
 import {
+  abrirCaixa,
+  calcularTotaisCaixa,
+  criarCaixa,
+  fecharCaixa,
   getCaixas,
   getCaixasAbertas,
-  abrirCaixa,
-  fecharCaixa,
-  criarCaixa,
   getRelatoriosCaixa,
-  calcularTotaisCaixa,
-} from "../../../lib/caixa";
-import { cookies } from "next/headers";
+} from '../../../lib/caixa';
 
 async function getCurrentUser() {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("auth-token")?.value;
+    const token = cookieStore.get('cant_token')?.value;
 
     if (!token) {
       return null;
@@ -31,35 +31,32 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const action = searchParams.get("action");
+    const action = searchParams.get('action');
 
-    if (action === "abertas") {
+    if (action === 'abertas') {
       const caixasAbertas = await getCaixasAbertas();
       return NextResponse.json({ success: true, data: caixasAbertas });
     }
 
-    if (action === "relatorios") {
-      const dataInicio = searchParams.get("dataInicio") || undefined;
-      const dataFim = searchParams.get("dataFim") || undefined;
-      const caixaId = searchParams.get("caixaId")
-        ? parseInt(searchParams.get("caixaId")!)
+    if (action === 'relatorios') {
+      const dataInicio = searchParams.get('dataInicio') || undefined;
+      const dataFim = searchParams.get('dataFim') || undefined;
+      const caixaId = searchParams.get('caixaId')
+        ? parseInt(searchParams.get('caixaId')!)
         : undefined;
 
       const relatorios = await getRelatoriosCaixa(dataInicio, dataFim, caixaId);
       return NextResponse.json({ success: true, data: relatorios });
     }
 
-    if (action === "totais") {
-      const aberturaId = searchParams.get("aberturaId");
+    if (action === 'totais') {
+      const aberturaId = searchParams.get('aberturaId');
       if (!aberturaId) {
-        return NextResponse.json(
-          { error: "ID da abertura é obrigatório" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'ID da abertura é obrigatório' }, { status: 400 });
       }
 
       const totais = await calcularTotaisCaixa(parseInt(aberturaId));
@@ -69,11 +66,8 @@ export async function GET(request: NextRequest) {
     const caixas = await getCaixas();
     return NextResponse.json({ success: true, data: caixas });
   } catch (error) {
-    console.error("Erro ao buscar caixas:", error);
-    return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    console.error('Erro ao buscar caixas:', error);
+    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
   }
 }
 
@@ -81,25 +75,22 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     // Verifica se tem permissão (atendente ou administrador)
-    if (!["administrador", "atendente"].includes(user.tipo)) {
-      return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
+    if (!['administrador', 'atendente'].includes(user.role)) {
+      return NextResponse.json({ error: 'Acesso negado' }, { status: 403 });
     }
 
     const body = await request.json();
     const { action } = body;
 
-    if (action === "abrir") {
+    if (action === 'abrir') {
       const { caixa_id, saldo_inicial, observacoes } = body;
 
       if (!caixa_id || saldo_inicial === undefined) {
-        return NextResponse.json(
-          { error: "Dados obrigatórios não informados" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Dados obrigatórios não informados' }, { status: 400 });
       }
 
       const aberturaId = await abrirCaixa(user.id, {
@@ -110,12 +101,12 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: "Caixa aberto com sucesso",
+        message: 'Caixa aberto com sucesso',
         data: { abertura_id: aberturaId },
       });
     }
 
-    if (action === "fechar") {
+    if (action === 'fechar') {
       const {
         abertura_id,
         saldo_final,
@@ -127,10 +118,7 @@ export async function POST(request: NextRequest) {
       } = body;
 
       if (!abertura_id || saldo_final === undefined) {
-        return NextResponse.json(
-          { error: "Dados obrigatórios não informados" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Dados obrigatórios não informados' }, { status: 400 });
       }
 
       const fechamentoId = await fecharCaixa(user.id, {
@@ -145,49 +133,40 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: "Caixa fechado com sucesso",
+        message: 'Caixa fechado com sucesso',
         data: { fechamento_id: fechamentoId },
       });
     }
 
-    if (action === "criar") {
+    if (action === 'criar') {
       // Apenas administrador pode criar caixas
-      if (user.tipo !== "administrador") {
-        return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
+      if (user.role !== 'administrador') {
+        return NextResponse.json({ error: 'Acesso negado' }, { status: 403 });
       }
 
       const { nome, descricao } = body;
 
       if (!nome) {
-        return NextResponse.json(
-          { error: "Nome é obrigatório" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
       }
 
       const caixaId = await criarCaixa(nome, descricao);
 
       return NextResponse.json({
         success: true,
-        message: "Caixa criado com sucesso",
+        message: 'Caixa criado com sucesso',
         data: { caixa_id: caixaId },
       });
     }
 
-    return NextResponse.json(
-      { error: "Ação não reconhecida" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Ação não reconhecida' }, { status: 400 });
   } catch (error) {
-    console.error("Erro ao processar solicitação:", error);
+    console.error('Erro ao processar solicitação:', error);
 
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
   }
 }

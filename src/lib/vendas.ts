@@ -1,5 +1,5 @@
-import pool from "./db";
-import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import pool from './db';
 
 export interface ItemVenda {
   produtoId: number;
@@ -11,12 +11,12 @@ export interface ItemVenda {
 }
 
 export interface NovaVenda {
-  tipoCliente: "aluno" | "funcionario" | "dinheiro";
+  tipoCliente: 'aluno' | 'funcionario' | 'dinheiro';
   raAluno?: number;
   codigoFuncionario?: number;
   funcionarioCantina: number;
   valorTotal: number;
-  formaPagamento: "conta" | "dinheiro" | "cartao" | "pix";
+  formaPagamento: 'conta' | 'dinheiro' | 'cartao' | 'pix';
   valorRecebido?: number;
   valorTroco?: number;
   observacoes?: string;
@@ -26,12 +26,12 @@ export interface NovaVenda {
 export interface Venda {
   id: number;
   numeroVenda: string;
-  tipoCliente: "aluno" | "funcionario" | "dinheiro";
+  tipoCliente: 'aluno' | 'funcionario' | 'dinheiro';
   raAluno?: number;
   codigoFuncionario?: number;
   funcionarioCantina: number;
   valorTotal: number;
-  formaPagamento: "conta" | "dinheiro" | "cartao" | "pix";
+  formaPagamento: 'conta' | 'dinheiro' | 'cartao' | 'pix';
   valorRecebido?: number;
   valorTroco?: number;
   observacoes?: string;
@@ -62,10 +62,13 @@ export interface VerificacaoVenda {
 export async function gerarNumeroVenda(): Promise<string> {
   const connection = await pool.getConnection();
   try {
-    await connection.execute("CALL sp_cant_gerar_numero_venda(@numero)");
-    const [rows] = await connection.execute<RowDataPacket[]>(
-      "SELECT @numero as numero_venda"
-    );
+    // Forçar collation da sessão para evitar "Illegal mix of collations"
+    // Alguns bancos/tables usam utf8mb4_0900_ai_ci e outros utf8mb4_unicode_ci.
+    // Ajustamos a collation da conexão para uma compatível antes de chamar a procedure.
+    await connection.execute("SET SESSION collation_connection = 'utf8mb4_unicode_ci'");
+
+    await connection.execute('CALL sp_cant_gerar_numero_venda(@numero)');
+    const [rows] = await connection.execute<RowDataPacket[]>('SELECT @numero as numero_venda');
     return rows[0].numero_venda;
   } finally {
     connection.release();
@@ -78,12 +81,12 @@ export async function verificarRestricaoAluno(
 ): Promise<boolean> {
   const connection = await pool.getConnection();
   try {
-    await connection.execute(
-      "CALL sp_cant_verificar_restricao_aluno(?, ?, @pode_consumir)",
-      [raAluno, produtoId]
-    );
+    await connection.execute('CALL sp_cant_verificar_restricao_aluno(?, ?, @pode_consumir)', [
+      raAluno,
+      produtoId,
+    ]);
     const [rows] = await connection.execute<RowDataPacket[]>(
-      "SELECT @pode_consumir as pode_consumir"
+      'SELECT @pode_consumir as pode_consumir'
     );
     return rows[0].pode_consumir === 1;
   } finally {
@@ -92,18 +95,18 @@ export async function verificarRestricaoAluno(
 }
 
 export async function verificarCondicoesVenda(
-  tipoCliente: "aluno" | "funcionario" | "dinheiro",
+  tipoCliente: 'aluno' | 'funcionario' | 'dinheiro',
   valorTotal: number,
   clienteId?: number,
   itens?: ItemVenda[]
 ): Promise<VerificacaoVenda> {
   const connection = await pool.getConnection();
   try {
-    if (tipoCliente === "dinheiro") {
+    if (tipoCliente === 'dinheiro') {
       return { podeVender: true };
     }
 
-    if (tipoCliente === "aluno" && clienteId) {
+    if (tipoCliente === 'aluno' && clienteId) {
       // Verificar saldo do aluno
       const [rows] = await connection.execute<RowDataPacket[]>(
         `SELECT ca.saldo, ca.limite_diario,
@@ -119,14 +122,14 @@ export async function verificarCondicoesVenda(
       if (!contaAluno) {
         return {
           podeVender: false,
-          motivo: "Aluno não possui conta ativa na cantina",
+          motivo: 'Aluno não possui conta ativa na cantina',
         };
       }
 
       if (contaAluno.saldo < valorTotal) {
         return {
           podeVender: false,
-          motivo: "Saldo insuficiente",
+          motivo: 'Saldo insuficiente',
           saldoAtual: contaAluno.saldo,
         };
       }
@@ -135,7 +138,7 @@ export async function verificarCondicoesVenda(
       if (contaAluno.limite_diario && gastoTotal > contaAluno.limite_diario) {
         return {
           podeVender: false,
-          motivo: "Limite diário excedido",
+          motivo: 'Limite diário excedido',
           limiteDiario: contaAluno.limite_diario,
           gastoHoje: contaAluno.gasto_hoje,
         };
@@ -144,10 +147,7 @@ export async function verificarCondicoesVenda(
       // Verificar restrições de produtos
       if (itens) {
         for (const item of itens) {
-          const podeConsumir = await verificarRestricaoAluno(
-            clienteId,
-            item.produtoId
-          );
+          const podeConsumir = await verificarRestricaoAluno(clienteId, item.produtoId);
           if (!podeConsumir) {
             return {
               podeVender: false,
@@ -165,9 +165,9 @@ export async function verificarCondicoesVenda(
       };
     }
 
-    if (tipoCliente === "funcionario" && clienteId) {
+    if (tipoCliente === 'funcionario' && clienteId) {
       // Verificar se funcionário existe e criar conta mensal se necessário
-      const mesReferencia = new Date().toISOString().slice(0, 7) + "-01";
+      const mesReferencia = new Date().toISOString().slice(0, 7) + '-01';
 
       await connection.execute(
         `INSERT IGNORE INTO cant_contas_funcionarios (codigo_funcionario, mes_referencia, saldo, consumo_mes_atual)
@@ -180,7 +180,7 @@ export async function verificarCondicoesVenda(
 
     return {
       podeVender: false,
-      motivo: "Tipo de cliente inválido",
+      motivo: 'Tipo de cliente inválido',
     };
   } finally {
     connection.release();
@@ -202,7 +202,7 @@ export async function criarVenda(novaVenda: NovaVenda): Promise<number> {
     );
 
     if (!verificacao.podeVender) {
-      throw new Error(verificacao.motivo || "Venda não permitida");
+      throw new Error(verificacao.motivo || 'Venda não permitida');
     }
 
     // Gerar número da venda
@@ -287,26 +287,26 @@ export async function buscarVendas(
     const params: any[] = [];
 
     if (dataInicio) {
-      query += " AND DATE(v.data_venda) >= ?";
+      query += ' AND DATE(v.data_venda) >= ?';
       params.push(dataInicio);
     }
 
     if (dataFim) {
-      query += " AND DATE(v.data_venda) <= ?";
+      query += ' AND DATE(v.data_venda) <= ?';
       params.push(dataFim);
     }
 
     if (tipoCliente) {
-      query += " AND v.tipo_cliente = ?";
+      query += ' AND v.tipo_cliente = ?';
       params.push(tipoCliente);
     }
 
     if (funcionarioCantina) {
-      query += " AND v.funcionario_cantina_id = ?";
+      query += ' AND v.funcionario_cantina_id = ?';
       params.push(funcionarioCantina);
     }
 
-    query += " ORDER BY v.data_venda DESC LIMIT ? OFFSET ?";
+    query += ' ORDER BY v.data_venda DESC LIMIT ? OFFSET ?';
     params.push(limite, offset);
 
     const [rows] = await connection.execute<RowDataPacket[]>(query, params);
@@ -320,9 +320,7 @@ export async function buscarVendas(
       funcionarioCantina: row.funcionarioCantina,
       valorTotal: parseFloat(row.valor_total),
       formaPagamento: row.forma_pagamento,
-      valorRecebido: row.valor_recebido
-        ? parseFloat(row.valor_recebido)
-        : undefined,
+      valorRecebido: row.valor_recebido ? parseFloat(row.valor_recebido) : undefined,
       valorTroco: row.valor_troco ? parseFloat(row.valor_troco) : undefined,
       observacoes: row.observacoes,
       dataVenda: new Date(row.data_venda),
@@ -374,9 +372,7 @@ export async function buscarVendaPorId(id: number): Promise<Venda | null> {
       funcionarioCantina: row.funcionarioCantina,
       valorTotal: parseFloat(row.valor_total),
       formaPagamento: row.forma_pagamento,
-      valorRecebido: row.valor_recebido
-        ? parseFloat(row.valor_recebido)
-        : undefined,
+      valorRecebido: row.valor_recebido ? parseFloat(row.valor_recebido) : undefined,
       valorTroco: row.valor_troco ? parseFloat(row.valor_troco) : undefined,
       observacoes: row.observacoes,
       dataVenda: new Date(row.data_venda),
@@ -390,9 +386,7 @@ export async function buscarVendaPorId(id: number): Promise<Venda | null> {
   }
 }
 
-export async function buscarItensVenda(
-  vendaId: number
-): Promise<ItemVendaCompleto[]> {
+export async function buscarItensVenda(vendaId: number): Promise<ItemVendaCompleto[]> {
   const connection = await pool.getConnection();
   try {
     const query = `
@@ -449,12 +443,12 @@ export async function buscarEstatisticasVendas(
     const params: any[] = [];
 
     if (dataInicio) {
-      query += " AND DATE(data_venda) >= ?";
+      query += ' AND DATE(data_venda) >= ?';
       params.push(dataInicio);
     }
 
     if (dataFim) {
-      query += " AND DATE(data_venda) <= ?";
+      query += ' AND DATE(data_venda) <= ?';
       params.push(dataFim);
     }
 
@@ -490,11 +484,11 @@ export async function buscarFuncionariosEscola(nome?: string): Promise<any[]> {
     const params: any[] = [];
 
     if (nome) {
-      query += " AND nome LIKE ?";
+      query += ' AND nome LIKE ?';
       params.push(`%${nome}%`);
     }
 
-    query += " ORDER BY nome LIMIT 50";
+    query += ' ORDER BY nome LIMIT 50';
 
     const [rows] = await connection.execute<RowDataPacket[]>(query, params);
 
@@ -511,13 +505,11 @@ export async function buscarFuncionariosEscola(nome?: string): Promise<any[]> {
 }
 
 // Função para buscar um funcionário específico por código
-export async function buscarFuncionarioPorCodigo(
-  codigo: number
-): Promise<any | null> {
+export async function buscarFuncionarioPorCodigo(codigo: number): Promise<any | null> {
   const connection = await pool.getConnection();
   try {
     const [rows] = await connection.execute<RowDataPacket[]>(
-      "SELECT codigo, nome, cargo, departamento, inativo FROM funcionarios WHERE codigo = ?",
+      'SELECT codigo, nome, cargo, departamento, inativo FROM funcionarios WHERE codigo = ?',
       [codigo]
     );
 

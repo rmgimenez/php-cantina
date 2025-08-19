@@ -12,8 +12,11 @@ export async function POST(request: Request) {
     if (!user) return NextResponse.json({ error: 'invalid' }, { status: 401 });
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return NextResponse.json({ error: 'invalid' }, { status: 401 });
-    const token = createToken({ username: user.username, role: user.role });
-    const res = NextResponse.json({ ok: true, user: { username: user.username, role: user.role } });
+    const token = createToken({ id: user.id, username: user.username, role: user.role });
+    const res = NextResponse.json({
+      ok: true,
+      user: { id: user.id, username: user.username, role: user.role },
+    });
     res.headers.set('Set-Cookie', `cant_token=${token}; HttpOnly; Path=/; Max-Age=28800`);
     return res;
   } catch (err) {
