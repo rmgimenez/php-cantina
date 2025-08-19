@@ -1,8 +1,8 @@
 'use client';
 
 import Alert from '@/components/ui/alert';
+import Avatar from '@/components/ui/avatar';
 import Breadcrumb from '@/components/ui/breadcrumb';
-import Image from 'next/image';
 import { useState } from 'react';
 
 export default function RecargaClient() {
@@ -98,27 +98,13 @@ export default function RecargaClient() {
                 />
               </div>
               <div className='ms-3'>
-                {ra &&
-                  (fallbackSrc ? (
-                    <Image
-                      src={fallbackSrc}
-                      alt={`Foto aluno ${ra}`}
-                      width={64}
-                      height={64}
-                      className='rounded-circle'
-                      style={{ objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <Image
-                      src={`https://sistema.santanna.g12.br/carometr/${ra}.jpg`}
-                      alt={`Foto aluno ${ra}`}
-                      width={64}
-                      height={64}
-                      className='rounded-circle'
-                      style={{ objectFit: 'cover' }}
-                      onError={() => setFallbackSrc('/file.svg')}
-                    />
-                  ))}
+                {ra && (
+                  <Avatar
+                    src={fallbackSrc || `https://sistema.santanna.g12.br/carometr/${ra}.jpg`}
+                    alt={`Foto aluno ${ra}`}
+                    size={64}
+                  />
+                )}
               </div>
             </div>
 

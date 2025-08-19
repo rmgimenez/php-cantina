@@ -1,6 +1,7 @@
 'use client';
 
 import Alert from '@/components/ui/alert';
+import Avatar from '@/components/ui/avatar';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import Loading from '@/components/ui/loading';
 import Modal from '@/components/ui/modal';
@@ -324,28 +325,15 @@ export default function AlunosClient() {
                     </td>
                     <td>
                       <div className='d-flex align-items-center'>
-                        {fallbackMap[aluno.ra] ? (
-                          <Image
-                            src={fallbackMap[aluno.ra]}
-                            alt={`Foto ${aluno.nome}`}
-                            width={48}
-                            height={48}
-                            className='rounded-circle me-2'
-                            style={{ objectFit: 'cover' }}
-                          />
-                        ) : (
-                          <Image
-                            src={`https://sistema.santanna.g12.br/carometr/${aluno.ra}.jpg`}
-                            alt={`Foto ${aluno.nome}`}
-                            width={48}
-                            height={48}
-                            className='rounded-circle me-2'
-                            style={{ objectFit: 'cover' }}
-                            onError={() =>
-                              setFallbackMap((s) => ({ ...s, [aluno.ra]: '/file.svg' }))
-                            }
-                          />
-                        )}
+                        {/* usar Avatar compartilhado para padronizar fallback */}
+                        <Avatar
+                          src={
+                            fallbackMap[aluno.ra] ||
+                            `https://sistema.santanna.g12.br/carometr/${aluno.ra}.jpg`
+                          }
+                          alt={`Foto ${aluno.nome}`}
+                          size={48}
+                        />
                         <div>
                           <strong>{aluno.nome}</strong>
                           {aluno.nome_social && (

@@ -1,5 +1,6 @@
 'use client';
 
+import Avatar from '@/components/ui/avatar';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -38,6 +39,7 @@ interface ItemCarrinho {
 }
 
 export default function VendasClient() {
+  // ...existing code...
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState<Produto[]>([]);
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
@@ -509,15 +511,10 @@ export default function VendasClient() {
                     <div className='d-flex align-items-center'>
                       {/* Foto do aluno/funcionário selecionado (se for aluno) */}
                       {cliente.tipo === 'aluno' ? (
-                        // usar img simples para evitar necessidade de configuração extra do next/image aqui
-                        <img
+                        <Avatar
                           src={`https://sistema.santanna.g12.br/carometr/${cliente.id}.jpg`}
                           alt={`Foto ${cliente.nome}`}
-                          width={40}
-                          height={40}
-                          className='rounded-circle me-2'
-                          style={{ objectFit: 'cover' }}
-                          onError={(e: any) => (e.currentTarget.src = '/file.svg')}
+                          size={40}
                         />
                       ) : null}
 
@@ -572,14 +569,10 @@ export default function VendasClient() {
                             style={{ cursor: 'pointer' }}
                           >
                             {cliente.tipo === 'aluno' ? (
-                              <img
+                              <Avatar
                                 src={`https://sistema.santanna.g12.br/carometr/${clienteItem.ra}.jpg`}
                                 alt={`Foto ${clienteItem.nome}`}
-                                width={40}
-                                height={40}
-                                className='rounded-circle me-2'
-                                style={{ objectFit: 'cover' }}
-                                onError={(e: any) => (e.currentTarget.src = '/file.svg')}
+                                size={40}
                               />
                             ) : null}
 
