@@ -1,20 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  FaUser,
-  FaExclamationTriangle,
-  FaSearch,
-  FaDollarSign,
-  FaPlus,
-  FaEye,
-  FaEdit,
-  FaUsers,
-} from "react-icons/fa";
-import Breadcrumb from "@/components/ui/breadcrumb";
-import Alert from "@/components/ui/alert";
-import Loading from "@/components/ui/loading";
-import Modal from "@/components/ui/modal";
+import Alert from '@/components/ui/alert';
+import Breadcrumb from '@/components/ui/breadcrumb';
+import Loading from '@/components/ui/loading';
+import Modal from '@/components/ui/modal';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
+import { FaDollarSign, FaEye, FaPlus, FaSearch, FaUsers } from 'react-icons/fa';
 
 interface Aluno {
   ra: number;
@@ -47,61 +39,60 @@ interface AlunoCompleto extends Aluno {
 
 interface MovimentacaoFinanceira {
   id: number;
-  tipo_conta: "aluno" | "funcionario";
+  tipo_conta: 'aluno' | 'funcionario';
   ra_aluno?: number;
-  tipo_movimentacao: "credito" | "debito";
+  tipo_movimentacao: 'credito' | 'debito';
   valor: number;
   descricao: string;
   data_movimentacao: string;
 }
 
 interface AlertType {
-  type: "success" | "danger" | "warning" | "info";
+  type: 'success' | 'danger' | 'warning' | 'info';
   message: string;
 }
 
 export default function AlunosClient() {
+  // states to handle image fallback per-aluno when next/image fails
+  const [fallbackMap, setFallbackMap] = useState<Record<number, string>>({});
   const [alunos, setAlunos] = useState<AlunoCompleto[]>([]);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
-  const [busca, setBusca] = useState("");
+  const [busca, setBusca] = useState('');
   const [modalCredito, setModalCredito] = useState(false);
   const [modalMovimentacoes, setModalMovimentacoes] = useState(false);
   const [modalCriarConta, setModalCriarConta] = useState(false);
-  const [alunoSelecionado, setAlunoSelecionado] =
-    useState<AlunoCompleto | null>(null);
-  const [movimentacoes, setMovimentacoes] = useState<MovimentacaoFinanceira[]>(
-    []
-  );
+  const [alunoSelecionado, setAlunoSelecionado] = useState<AlunoCompleto | null>(null);
+  const [movimentacoes, setMovimentacoes] = useState<MovimentacaoFinanceira[]>([]);
   const [loadingMovimentacoes, setLoadingMovimentacoes] = useState(false);
 
   // Formulários
   const [formCredito, setFormCredito] = useState({
-    valor: "",
-    descricao: "",
+    valor: '',
+    descricao: '',
   });
 
   const [formConta, setFormConta] = useState({
-    limite_diario: "",
+    limite_diario: '',
   });
 
   const carregarAlunos = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/alunos?com_contas=true");
+      const response = await fetch('/api/alunos?com_contas=true');
       if (response.ok) {
         const data = await response.json();
         setAlunos(data);
       } else {
         setAlert({
-          type: "danger",
-          message: "Erro ao carregar alunos",
+          type: 'danger',
+          message: 'Erro ao carregar alunos',
         });
       }
     } catch (error) {
       setAlert({
-        type: "danger",
-        message: "Erro de conexão ao carregar alunos",
+        type: 'danger',
+        message: 'Erro de conexão ao carregar alunos',
       });
     } finally {
       setLoading(false);
@@ -126,8 +117,8 @@ export default function AlunosClient() {
         }
       } catch (error) {
         setAlert({
-          type: "danger",
-          message: "Erro ao buscar alunos",
+          type: 'danger',
+          message: 'Erro ao buscar alunos',
         });
       } finally {
         setLoading(false);
@@ -140,37 +131,35 @@ export default function AlunosClient() {
     if (!alunoSelecionado) return;
 
     try {
-      const response = await fetch("/api/alunos/contas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/alunos/contas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ra: alunoSelecionado.ra,
-          acao: "criar_conta",
-          limite_diario: formConta.limite_diario
-            ? parseFloat(formConta.limite_diario)
-            : null,
+          acao: 'criar_conta',
+          limite_diario: formConta.limite_diario ? parseFloat(formConta.limite_diario) : null,
         }),
       });
 
       if (response.ok) {
         setAlert({
-          type: "success",
-          message: "Conta criada com sucesso!",
+          type: 'success',
+          message: 'Conta criada com sucesso!',
         });
         setModalCriarConta(false);
-        setFormConta({ limite_diario: "" });
+        setFormConta({ limite_diario: '' });
         carregarAlunos();
       } else {
         const data = await response.json();
         setAlert({
-          type: "danger",
-          message: data.message || "Erro ao criar conta",
+          type: 'danger',
+          message: data.message || 'Erro ao criar conta',
         });
       }
     } catch (error) {
       setAlert({
-        type: "danger",
-        message: "Erro de conexão ao criar conta",
+        type: 'danger',
+        message: 'Erro de conexão ao criar conta',
       });
     }
   };
@@ -179,36 +168,36 @@ export default function AlunosClient() {
     if (!alunoSelecionado || !formCredito.valor) return;
 
     try {
-      const response = await fetch("/api/alunos/contas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/alunos/contas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ra: alunoSelecionado.ra,
-          acao: "adicionar_credito",
+          acao: 'adicionar_credito',
           valor: parseFloat(formCredito.valor),
-          descricao: formCredito.descricao || "Adição de crédito",
+          descricao: formCredito.descricao || 'Adição de crédito',
         }),
       });
 
       if (response.ok) {
         setAlert({
-          type: "success",
-          message: "Crédito adicionado com sucesso!",
+          type: 'success',
+          message: 'Crédito adicionado com sucesso!',
         });
         setModalCredito(false);
-        setFormCredito({ valor: "", descricao: "" });
+        setFormCredito({ valor: '', descricao: '' });
         carregarAlunos();
       } else {
         const data = await response.json();
         setAlert({
-          type: "danger",
-          message: data.message || "Erro ao adicionar crédito",
+          type: 'danger',
+          message: data.message || 'Erro ao adicionar crédito',
         });
       }
     } catch (error) {
       setAlert({
-        type: "danger",
-        message: "Erro de conexão ao adicionar crédito",
+        type: 'danger',
+        message: 'Erro de conexão ao adicionar crédito',
       });
     }
   };
@@ -216,9 +205,7 @@ export default function AlunosClient() {
   const carregarMovimentacoes = async (aluno: AlunoCompleto) => {
     try {
       setLoadingMovimentacoes(true);
-      const response = await fetch(
-        `/api/alunos/contas?ra=${aluno.ra}&acao=movimentacoes`
-      );
+      const response = await fetch(`/api/alunos/contas?ra=${aluno.ra}&acao=movimentacoes`);
       if (response.ok) {
         const data = await response.json();
         setMovimentacoes(data.movimentacoes);
@@ -227,8 +214,8 @@ export default function AlunosClient() {
       }
     } catch (error) {
       setAlert({
-        type: "danger",
-        message: "Erro ao carregar movimentações",
+        type: 'danger',
+        message: 'Erro ao carregar movimentações',
       });
     } finally {
       setLoadingMovimentacoes(false);
@@ -241,41 +228,39 @@ export default function AlunosClient() {
 
   const alunosFiltrados = alunos.filter(
     (aluno) =>
-      aluno.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      aluno.ra.toString().includes(busca)
+      aluno.nome.toLowerCase().includes(busca.toLowerCase()) || aluno.ra.toString().includes(busca)
   );
 
   const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
     }).format(valor);
   };
 
   const formatarData = (data: string) => {
-    return new Date(data).toLocaleString("pt-BR");
+    return new Date(data).toLocaleString('pt-BR');
   };
 
   if (loading) return <Loading />;
 
   return (
-    <div className="container-fluid py-4">
+    <div className='container-fluid py-4'>
       <Breadcrumb
         items={[
-          { label: "Dashboard", href: "/dashboard" },
-          { label: "Gerenciar Contas de Alunos", href: "/alunos" },
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Gerenciar Contas de Alunos', href: '/alunos' },
         ]}
       />
 
-      <div className="row mb-4">
-        <div className="col">
-          <h1 className="h3 mb-0 d-flex align-items-center">
-            <FaUsers className="me-2" />
+      <div className='row mb-4'>
+        <div className='col'>
+          <h1 className='h3 mb-0 d-flex align-items-center'>
+            <FaUsers className='me-2' />
             Gerenciar Contas de Alunos
           </h1>
-          <p className="text-muted">
-            RF-006, RF-007, RF-008: Gerencie contas, adicione crédito e consulte
-            saldos dos alunos
+          <p className='text-muted'>
+            RF-006, RF-007, RF-008: Gerencie contas, adicione crédito e consulte saldos dos alunos
           </p>
         </div>
       </div>
@@ -287,42 +272,40 @@ export default function AlunosClient() {
       )}
 
       {/* Barra de busca */}
-      <div className="row mb-4">
-        <div className="col-md-6">
-          <div className="input-group">
-            <span className="input-group-text">
+      <div className='row mb-4'>
+        <div className='col-md-6'>
+          <div className='input-group'>
+            <span className='input-group-text'>
               <FaSearch size={18} />
             </span>
             <input
-              type="text"
-              className="form-control"
-              placeholder="Buscar por nome ou RA..."
+              type='text'
+              className='form-control'
+              placeholder='Buscar por nome ou RA...'
               value={busca}
               onChange={(e) => {
                 setBusca(e.target.value);
-                if (e.target.value.length >= 3 || e.target.value === "") {
+                if (e.target.value.length >= 3 || e.target.value === '') {
                   buscarAlunos(e.target.value);
                 }
               }}
             />
           </div>
         </div>
-        <div className="col-md-6 text-end">
-          <span className="text-muted">
-            {alunosFiltrados.length} aluno(s) encontrado(s)
-          </span>
+        <div className='col-md-6 text-end'>
+          <span className='text-muted'>{alunosFiltrados.length} aluno(s) encontrado(s)</span>
         </div>
       </div>
 
       {/* Lista de alunos */}
-      <div className="card">
-        <div className="card-header">
-          <h5 className="card-title mb-0">Lista de Alunos</h5>
+      <div className='card'>
+        <div className='card-header'>
+          <h5 className='card-title mb-0'>Lista de Alunos</h5>
         </div>
-        <div className="card-body p-0">
-          <div className="table-responsive">
-            <table className="table table-hover mb-0">
-              <thead className="table-light">
+        <div className='card-body p-0'>
+          <div className='table-responsive'>
+            <table className='table table-hover mb-0'>
+              <thead className='table-light'>
                 <tr>
                   <th>RA</th>
                   <th>Nome</th>
@@ -337,20 +320,42 @@ export default function AlunosClient() {
                 {alunosFiltrados.map((aluno) => (
                   <tr key={aluno.ra}>
                     <td>
-                      <span className="badge bg-secondary">{aluno.ra}</span>
+                      <span className='badge bg-secondary'>{aluno.ra}</span>
                     </td>
                     <td>
-                      <div>
-                        <strong>{aluno.nome}</strong>
-                        {aluno.nome_social && (
-                          <div className="small text-muted">
-                            Nome social: {aluno.nome_social}
-                          </div>
+                      <div className='d-flex align-items-center'>
+                        {fallbackMap[aluno.ra] ? (
+                          <Image
+                            src={fallbackMap[aluno.ra]}
+                            alt={`Foto ${aluno.nome}`}
+                            width={48}
+                            height={48}
+                            className='rounded-circle me-2'
+                            style={{ objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <Image
+                            src={`https://sistema.santanna.g12.br/carometr/${aluno.ra}.jpg`}
+                            alt={`Foto ${aluno.nome}`}
+                            width={48}
+                            height={48}
+                            className='rounded-circle me-2'
+                            style={{ objectFit: 'cover' }}
+                            onError={() =>
+                              setFallbackMap((s) => ({ ...s, [aluno.ra]: '/file.svg' }))
+                            }
+                          />
                         )}
+                        <div>
+                          <strong>{aluno.nome}</strong>
+                          {aluno.nome_social && (
+                            <div className='small text-muted'>Nome social: {aluno.nome_social}</div>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td>
-                      <div className="small">
+                      <div className='small'>
                         {aluno.curso_nome}
                         {aluno.serie && <div>{aluno.serie}ª série</div>}
                         {aluno.turma && <div>Turma: {aluno.turma}</div>}
@@ -359,59 +364,57 @@ export default function AlunosClient() {
                     <td>
                       {aluno.conta ? (
                         <span
-                          className={`badge ${
-                            aluno.conta.saldo > 0 ? "bg-success" : "bg-warning"
-                          }`}
+                          className={`badge ${aluno.conta.saldo > 0 ? 'bg-success' : 'bg-warning'}`}
                         >
                           {formatarMoeda(aluno.conta.saldo)}
                         </span>
                       ) : (
-                        <span className="text-muted">Sem conta</span>
+                        <span className='text-muted'>Sem conta</span>
                       )}
                     </td>
                     <td>
                       {aluno.conta?.limite_diario ? (
                         formatarMoeda(aluno.conta.limite_diario)
                       ) : (
-                        <span className="text-muted">Sem limite</span>
+                        <span className='text-muted'>Sem limite</span>
                       )}
                     </td>
                     <td>
                       {aluno.conta ? (
-                        <span className="badge bg-success">Conta Ativa</span>
+                        <span className='badge bg-success'>Conta Ativa</span>
                       ) : (
-                        <span className="badge bg-warning">Sem Conta</span>
+                        <span className='badge bg-warning'>Sem Conta</span>
                       )}
                     </td>
                     <td>
-                      <div className="btn-group" role="group">
+                      <div className='btn-group' role='group'>
                         {!aluno.conta ? (
                           <button
-                            className="btn btn-sm btn-primary"
+                            className='btn btn-sm btn-primary'
                             onClick={() => {
                               setAlunoSelecionado(aluno);
                               setModalCriarConta(true);
                             }}
-                            title="Criar conta"
+                            title='Criar conta'
                           >
                             <FaPlus size={16} />
                           </button>
                         ) : (
                           <>
                             <button
-                              className="btn btn-sm btn-success"
+                              className='btn btn-sm btn-success'
                               onClick={() => {
                                 setAlunoSelecionado(aluno);
                                 setModalCredito(true);
                               }}
-                              title="Adicionar crédito"
+                              title='Adicionar crédito'
                             >
                               <FaDollarSign size={16} />
                             </button>
                             <button
-                              className="btn btn-sm btn-info"
+                              className='btn btn-sm btn-info'
                               onClick={() => carregarMovimentacoes(aluno)}
-                              title="Ver movimentações"
+                              title='Ver movimentações'
                             >
                               <FaEye size={16} />
                             </button>
@@ -428,11 +431,7 @@ export default function AlunosClient() {
       </div>
 
       {/* Modal Criar Conta */}
-      <Modal
-        isOpen={modalCriarConta}
-        onClose={() => setModalCriarConta(false)}
-        title="Criar Conta"
-      >
+      <Modal isOpen={modalCriarConta} onClose={() => setModalCriarConta(false)} title='Criar Conta'>
         {alunoSelecionado && (
           <form
             onSubmit={(e) => {
@@ -440,41 +439,62 @@ export default function AlunosClient() {
               criarConta();
             }}
           >
-            <div className="mb-3">
-              <label className="form-label">Aluno</label>
-              <div className="form-control-plaintext">
-                <strong>{alunoSelecionado.nome}</strong> (RA:{" "}
-                {alunoSelecionado.ra})
+            <div className='mb-3 d-flex align-items-center'>
+              {alunoSelecionado &&
+                (fallbackMap[alunoSelecionado.ra] ? (
+                  <Image
+                    src={fallbackMap[alunoSelecionado.ra]}
+                    alt={`Foto ${alunoSelecionado.nome}`}
+                    width={64}
+                    height={64}
+                    className='rounded-circle me-3'
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <Image
+                    src={`https://sistema.santanna.g12.br/carometr/${alunoSelecionado.ra}.jpg`}
+                    alt={`Foto ${alunoSelecionado.nome}`}
+                    width={64}
+                    height={64}
+                    className='rounded-circle me-3'
+                    style={{ objectFit: 'cover' }}
+                    onError={() =>
+                      alunoSelecionado &&
+                      setFallbackMap((s) => ({ ...s, [alunoSelecionado.ra]: '/file.svg' }))
+                    }
+                  />
+                ))}
+              <div>
+                <label className='form-label'>Aluno</label>
+                <div className='form-control-plaintext'>
+                  <strong>{alunoSelecionado.nome}</strong> (RA: {alunoSelecionado.ra})
+                </div>
               </div>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">Limite Diário (opcional)</label>
+            <div className='mb-3'>
+              <label className='form-label'>Limite Diário (opcional)</label>
               <input
-                type="number"
-                className="form-control"
-                step="0.01"
-                min="0"
+                type='number'
+                className='form-control'
+                step='0.01'
+                min='0'
                 value={formConta.limite_diario}
-                onChange={(e) =>
-                  setFormConta({ ...formConta, limite_diario: e.target.value })
-                }
-                placeholder="Ex: 50.00"
+                onChange={(e) => setFormConta({ ...formConta, limite_diario: e.target.value })}
+                placeholder='Ex: 50.00'
               />
-              <div className="form-text">
-                Deixe em branco para não definir limite diário
-              </div>
+              <div className='form-text'>Deixe em branco para não definir limite diário</div>
             </div>
 
-            <div className="d-flex justify-content-end gap-2">
+            <div className='d-flex justify-content-end gap-2'>
               <button
-                type="button"
-                className="btn btn-secondary"
+                type='button'
+                className='btn btn-secondary'
                 onClick={() => setModalCriarConta(false)}
               >
                 Cancelar
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button type='submit' className='btn btn-primary'>
                 Criar Conta
               </button>
             </div>
@@ -483,11 +503,7 @@ export default function AlunosClient() {
       </Modal>
 
       {/* Modal Adicionar Crédito */}
-      <Modal
-        isOpen={modalCredito}
-        onClose={() => setModalCredito(false)}
-        title="Adicionar Crédito"
-      >
+      <Modal isOpen={modalCredito} onClose={() => setModalCredito(false)} title='Adicionar Crédito'>
         {alunoSelecionado && (
           <form
             onSubmit={(e) => {
@@ -495,57 +511,78 @@ export default function AlunosClient() {
               adicionarCredito();
             }}
           >
-            <div className="mb-3">
-              <label className="form-label">Aluno</label>
-              <div className="form-control-plaintext">
-                <strong>{alunoSelecionado.nome}</strong> (RA:{" "}
-                {alunoSelecionado.ra})
-              </div>
-              {alunoSelecionado.conta && (
-                <div className="small text-muted">
-                  Saldo atual: {formatarMoeda(alunoSelecionado.conta.saldo)}
+            <div className='mb-3 d-flex align-items-center'>
+              {alunoSelecionado &&
+                (fallbackMap[alunoSelecionado.ra] ? (
+                  <Image
+                    src={fallbackMap[alunoSelecionado.ra]}
+                    alt={`Foto ${alunoSelecionado.nome}`}
+                    width={64}
+                    height={64}
+                    className='rounded-circle me-3'
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <Image
+                    src={`https://sistema.santanna.g12.br/carometr/${alunoSelecionado.ra}.jpg`}
+                    alt={`Foto ${alunoSelecionado.nome}`}
+                    width={64}
+                    height={64}
+                    className='rounded-circle me-3'
+                    style={{ objectFit: 'cover' }}
+                    onError={() =>
+                      alunoSelecionado &&
+                      setFallbackMap((s) => ({ ...s, [alunoSelecionado.ra]: '/file.svg' }))
+                    }
+                  />
+                ))}
+              <div>
+                <label className='form-label'>Aluno</label>
+                <div className='form-control-plaintext'>
+                  <strong>{alunoSelecionado.nome}</strong> (RA: {alunoSelecionado.ra})
                 </div>
-              )}
+                {alunoSelecionado.conta && (
+                  <div className='small text-muted'>
+                    Saldo atual: {formatarMoeda(alunoSelecionado.conta.saldo)}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">Valor *</label>
+            <div className='mb-3'>
+              <label className='form-label'>Valor *</label>
               <input
-                type="number"
-                className="form-control"
-                step="0.01"
-                min="0.01"
+                type='number'
+                className='form-control'
+                step='0.01'
+                min='0.01'
                 value={formCredito.valor}
-                onChange={(e) =>
-                  setFormCredito({ ...formCredito, valor: e.target.value })
-                }
-                placeholder="Ex: 50.00"
+                onChange={(e) => setFormCredito({ ...formCredito, valor: e.target.value })}
+                placeholder='Ex: 50.00'
                 required
               />
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">Descrição</label>
+            <div className='mb-3'>
+              <label className='form-label'>Descrição</label>
               <input
-                type="text"
-                className="form-control"
+                type='text'
+                className='form-control'
                 value={formCredito.descricao}
-                onChange={(e) =>
-                  setFormCredito({ ...formCredito, descricao: e.target.value })
-                }
-                placeholder="Ex: Recarga mensal"
+                onChange={(e) => setFormCredito({ ...formCredito, descricao: e.target.value })}
+                placeholder='Ex: Recarga mensal'
               />
             </div>
 
-            <div className="d-flex justify-content-end gap-2">
+            <div className='d-flex justify-content-end gap-2'>
               <button
-                type="button"
-                className="btn btn-secondary"
+                type='button'
+                className='btn btn-secondary'
                 onClick={() => setModalCredito(false)}
               >
                 Cancelar
               </button>
-              <button type="submit" className="btn btn-success">
+              <button type='submit' className='btn btn-success'>
                 Adicionar Crédito
               </button>
             </div>
@@ -557,32 +594,32 @@ export default function AlunosClient() {
       <Modal
         isOpen={modalMovimentacoes}
         onClose={() => setModalMovimentacoes(false)}
-        title="Histórico de Movimentações"
-        size="xl"
+        title='Histórico de Movimentações'
+        size='xl'
       >
         {alunoSelecionado && (
           <div>
-            <div className="mb-3">
+            <div className='mb-3'>
               <h6>
                 {alunoSelecionado.nome} (RA: {alunoSelecionado.ra})
               </h6>
               {alunoSelecionado.conta && (
-                <div className="text-muted">
+                <div className='text-muted'>
                   Saldo atual: {formatarMoeda(alunoSelecionado.conta.saldo)}
                 </div>
               )}
             </div>
 
             {loadingMovimentacoes ? (
-              <div className="text-center py-4">
-                <div className="spinner-border" role="status">
-                  <span className="visually-hidden">Carregando...</span>
+              <div className='text-center py-4'>
+                <div className='spinner-border' role='status'>
+                  <span className='visually-hidden'>Carregando...</span>
                 </div>
               </div>
             ) : (
-              <div className="table-responsive">
-                <table className="table table-sm">
-                  <thead className="table-light">
+              <div className='table-responsive'>
+                <table className='table table-sm'>
+                  <thead className='table-light'>
                     <tr>
                       <th>Data</th>
                       <th>Tipo</th>
@@ -593,7 +630,7 @@ export default function AlunosClient() {
                   <tbody>
                     {movimentacoes.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="text-center text-muted py-4">
+                        <td colSpan={4} className='text-center text-muted py-4'>
                           Nenhuma movimentação encontrada
                         </td>
                       </tr>
@@ -604,25 +641,19 @@ export default function AlunosClient() {
                           <td>
                             <span
                               className={`badge ${
-                                mov.tipo_movimentacao === "credito"
-                                  ? "bg-success"
-                                  : "bg-danger"
+                                mov.tipo_movimentacao === 'credito' ? 'bg-success' : 'bg-danger'
                               }`}
                             >
-                              {mov.tipo_movimentacao === "credito"
-                                ? "Crédito"
-                                : "Débito"}
+                              {mov.tipo_movimentacao === 'credito' ? 'Crédito' : 'Débito'}
                             </span>
                           </td>
                           <td>
                             <span
                               className={
-                                mov.tipo_movimentacao === "credito"
-                                  ? "text-success"
-                                  : "text-danger"
+                                mov.tipo_movimentacao === 'credito' ? 'text-success' : 'text-danger'
                               }
                             >
-                              {mov.tipo_movimentacao === "credito" ? "+" : "-"}
+                              {mov.tipo_movimentacao === 'credito' ? '+' : '-'}
                               {formatarMoeda(mov.valor)}
                             </span>
                           </td>
