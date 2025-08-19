@@ -1,4 +1,11 @@
-import { obterAlunoPorRA, obterAlunosAtivos } from '@/lib/alunos';
+import {
+  adicionarObservacaoAluno,
+  inativarObservacaoAluno,
+  obterAlunoPorRA,
+  obterAlunosAtivos,
+  obterObservacoesAluno,
+  obterObservacoesAlunoFull,
+} from '@/lib/alunos';
 import { verifyToken } from '@/lib/auth/tokens';
 import { listarProdutos } from '@/lib/produtos';
 import {
@@ -81,8 +88,10 @@ export async function GET(request: NextRequest) {
       if (!aluno) {
         return NextResponse.json({ error: 'Aluno não encontrado' }, { status: 404 });
       }
+      // Buscar observações públicas para o aluno
+      const observacoes = await obterObservacoesAluno(parseInt(ra));
 
-      return NextResponse.json({ success: true, data: aluno });
+      return NextResponse.json({ success: true, data: { aluno, observacoes } });
     }
 
     if (action === 'funcionario') {
@@ -112,6 +121,42 @@ export async function GET(request: NextRequest) {
 
       const verificacao = await verificarCondicoesVenda(tipoCliente, valorTotal, clienteId);
       return NextResponse.json({ success: true, data: verificacao });
+    }
+
+    if (action === 'adicionarObservacao') {
+      const ra = searchParams.get('ra');
+      const texto = searchParams.get('texto');
+      const publico = searchParams.get('publico') !== 'false';
+
+      if (!ra || !texto) {
+        return NextResponse.json({ error: 'Parâmetros inválidos' }, { status: 400 });
+      }
+
+      // usuário atual será o funcionário que criou a observação
+      const user = await getCurrentUser();
+      const funcionarioId = user ? user.id : null;
+
+      const ok = await adicionarObservacaoAluno(parseInt(ra), texto, funcionarioId, publico);
+      if (!ok) {
+        return NextResponse.json({ error: 'Erro ao adicionar observação' }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, message: 'Observação adicionada' });
+    }
+
+    if (action === 'observacoesFull') {
+      const ra = searchParams.get('ra');
+      if (!ra) return NextResponse.json({ error: 'RA é obrigatório' }, { status: 400 });
+      const historico = await obterObservacoesAlunoFull(parseInt(ra));
+      return NextResponse.json({ success: true, data: historico });
+    }
+
+    if (action === 'inativarObservacao') {
+      const id = searchParams.get('id');
+      if (!id) return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 });
+      const ok = await inativarObservacaoAluno(parseInt(id));
+      if (!ok) return NextResponse.json({ error: 'Falha ao inativar' }, { status: 500 });
+      return NextResponse.json({ success: true, message: 'Observação inativada' });
     }
 
     // Buscar vendas com filtros
@@ -257,7 +302,9 @@ export async function POST(request: NextRequest) {
 
     // Se for um erro de validação/negócio, retornar a mensagem específica
     if (error.message && !error.message.includes('server')) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      const payload: any = { error: error.message };
+      if (error.observacoesAluno) payload.observacoes = error.observacoesAluno;
+      return NextResponse.json(payload, { status: 400 });
     }
 
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });

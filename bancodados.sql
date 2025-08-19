@@ -429,6 +429,22 @@ CREATE TABLE `cant_restricoes_alunos` (
   )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabela de observações/anotações sobre alunos (usada no caixa pela cantina)
+CREATE TABLE `cant_observacoes_alunos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ra_aluno` int NOT NULL,
+  `texto` text NOT NULL,
+  `funcionario_cantina_id` int DEFAULT NULL,
+  `publico` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Se a observação deve aparecer no caixa',
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_observacoes_alunos_ra` (`ra_aluno`),
+  CONSTRAINT `fk_cant_observacoes_alunos_ra` FOREIGN KEY (`ra_aluno`) REFERENCES `cadastro_alunos` (`ra`),
+  CONSTRAINT `fk_cant_observacoes_alunos_func` FOREIGN KEY (`funcionario_cantina_id`) REFERENCES `cant_funcionarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Tabela de pacotes de alimentação
 CREATE TABLE `cant_pacotes_alimentacao` (
   `id` int NOT NULL AUTO_INCREMENT,

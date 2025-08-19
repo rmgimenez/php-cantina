@@ -148,6 +148,10 @@ O sistema deve verificar automaticamente se o aluno pode consumir o produto base
 
 Mostrar mensagem de erro caso o aluno não possa consumir o produto.
 
+Ter uma opção de escrever uma observação para o aluno e essa observação deverá aparecer no momento da venda.
+
+Deverá ter uma tela onde os funcionários da cantina possam fazer anotações sobre os alunos e configurações do que eles podem ou não consumir.
+
 ### RF-017 - Geração de Número de Venda
 
 O sistema deve gerar automaticamente números sequenciais únicos para cada venda, organizados por data.

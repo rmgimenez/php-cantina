@@ -1,5 +1,5 @@
-import pool from "./db";
-import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import pool from './db';
 
 export interface Aluno {
   ra: number;
@@ -37,10 +37,10 @@ export interface AlunoCompleto extends Aluno {
 
 export interface MovimentacaoFinanceira {
   id: number;
-  tipo_conta: "aluno" | "funcionario";
+  tipo_conta: 'aluno' | 'funcionario';
   ra_aluno?: number;
   codigo_funcionario?: number;
-  tipo_movimentacao: "credito" | "debito";
+  tipo_movimentacao: 'credito' | 'debito';
   valor: number;
   descricao: string;
   venda_id?: number;
@@ -120,7 +120,7 @@ export async function obterContaAluno(ra: number): Promise<ContaAluno | null> {
   const connection = await pool.getConnection();
   try {
     const [rows] = await connection.execute<RowDataPacket[]>(
-      "SELECT * FROM cant_contas_alunos WHERE ra_aluno = ?",
+      'SELECT * FROM cant_contas_alunos WHERE ra_aluno = ?',
       [ra]
     );
     return rows.length > 0 ? (rows[0] as ContaAluno) : null;
@@ -132,10 +132,7 @@ export async function obterContaAluno(ra: number): Promise<ContaAluno | null> {
 /**
  * Criar conta para o aluno se não existir
  */
-export async function criarContaAluno(
-  ra: number,
-  limite_diario?: number
-): Promise<ContaAluno> {
+export async function criarContaAluno(ra: number, limite_diario?: number): Promise<ContaAluno> {
   const connection = await pool.getConnection();
   try {
     // Verificar se já existe
@@ -146,12 +143,12 @@ export async function criarContaAluno(
 
     // Criar nova conta
     const [result] = await connection.execute<ResultSetHeader>(
-      "INSERT INTO cant_contas_alunos (ra_aluno, saldo, limite_diario) VALUES (?, 0.00, ?)",
+      'INSERT INTO cant_contas_alunos (ra_aluno, saldo, limite_diario) VALUES (?, 0.00, ?)',
       [ra, limite_diario || null]
     );
 
     const [rows] = await connection.execute<RowDataPacket[]>(
-      "SELECT * FROM cant_contas_alunos WHERE id = ?",
+      'SELECT * FROM cant_contas_alunos WHERE id = ?',
       [result.insertId]
     );
 
@@ -168,17 +165,19 @@ export async function adicionarCreditoAluno(
   ra: number,
   valor: number,
   funcionario_cantina_id: number | null,
-  descricao: string = "Adição de crédito"
+  descricao: string = 'Adição de crédito'
 ): Promise<boolean> {
   const connection = await pool.getConnection();
   try {
-    await connection.execute(
-      "CALL sp_cant_adicionar_credito_aluno(?, ?, ?, ?)",
-      [ra, valor, funcionario_cantina_id, descricao]
-    );
+    await connection.execute('CALL sp_cant_adicionar_credito_aluno(?, ?, ?, ?)', [
+      ra,
+      valor,
+      funcionario_cantina_id,
+      descricao,
+    ]);
     return true;
   } catch (error) {
-    console.error("Erro ao adicionar crédito:", error);
+    console.error('Erro ao adicionar crédito:', error);
     return false;
   } finally {
     connection.release();
@@ -208,6 +207,92 @@ export async function obterMovimentacoesAluno(
   }
 }
 
+export interface ObservacaoAluno {
+  id: number;
+  ra_aluno: number;
+  texto: string;
+  funcionario_cantina_id?: number | null;
+  publico: boolean;
+  ativo: boolean;
+  data_criacao: Date;
+  data_atualizacao: Date;
+}
+
+/**
+ * Obter observações públicas/ativas de um aluno
+ */
+export async function obterObservacoesAluno(ra: number): Promise<ObservacaoAluno[]> {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      'SELECT * FROM cant_observacoes_alunos WHERE ra_aluno = ? AND publico = 1 AND ativo = 1 ORDER BY data_criacao DESC',
+      [ra]
+    );
+    return rows as ObservacaoAluno[];
+  } finally {
+    connection.release();
+  }
+}
+
+/**
+ * Adicionar observação sobre um aluno (feito por funcionário da cantina)
+ */
+export async function adicionarObservacaoAluno(
+  ra: number,
+  texto: string,
+  funcionarioCantinaId?: number | null,
+  publico: boolean = true
+): Promise<boolean> {
+  const connection = await pool.getConnection();
+  try {
+    await connection.execute(
+      `INSERT INTO cant_observacoes_alunos (ra_aluno, texto, funcionario_cantina_id, publico, ativo) VALUES (?, ?, ?, ?, 1)`,
+      [ra, texto, funcionarioCantinaId || null, publico ? 1 : 0]
+    );
+    return true;
+  } catch (error) {
+    console.error('Erro ao adicionar observação:', error);
+    return false;
+  } finally {
+    connection.release();
+  }
+}
+
+/**
+ * Obter todas as observações de um aluno (inclui inativas e privadas) - para histórico
+ */
+export async function obterObservacoesAlunoFull(ra: number): Promise<ObservacaoAluno[]> {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      'SELECT * FROM cant_observacoes_alunos WHERE ra_aluno = ? ORDER BY data_criacao DESC',
+      [ra]
+    );
+    return rows as ObservacaoAluno[];
+  } finally {
+    connection.release();
+  }
+}
+
+/**
+ * Inativar (marcar como inativa) uma observação por id
+ */
+export async function inativarObservacaoAluno(id: number): Promise<boolean> {
+  const connection = await pool.getConnection();
+  try {
+    const [result] = await connection.execute<ResultSetHeader>(
+      'UPDATE cant_observacoes_alunos SET ativo = 0, data_atualizacao = CURRENT_TIMESTAMP WHERE id = ?',
+      [id]
+    );
+    return (result as ResultSetHeader).affectedRows > 0;
+  } catch (error) {
+    console.error('Erro ao inativar observação:', error);
+    return false;
+  } finally {
+    connection.release();
+  }
+}
+
 /**
  * Obter saldo atual do aluno
  */
@@ -215,7 +300,7 @@ export async function obterSaldoAluno(ra: number): Promise<number> {
   const connection = await pool.getConnection();
   try {
     const [rows] = await connection.execute<RowDataPacket[]>(
-      "SELECT saldo FROM cant_contas_alunos WHERE ra_aluno = ?",
+      'SELECT saldo FROM cant_contas_alunos WHERE ra_aluno = ?',
       [ra]
     );
     return rows.length > 0 ? rows[0].saldo : 0;
@@ -227,19 +312,16 @@ export async function obterSaldoAluno(ra: number): Promise<number> {
 /**
  * Atualizar limite diário do aluno
  */
-export async function atualizarLimiteDiario(
-  ra: number,
-  limite_diario?: number
-): Promise<boolean> {
+export async function atualizarLimiteDiario(ra: number, limite_diario?: number): Promise<boolean> {
   const connection = await pool.getConnection();
   try {
     const [result] = await connection.execute<ResultSetHeader>(
-      "UPDATE cant_contas_alunos SET limite_diario = ? WHERE ra_aluno = ?",
+      'UPDATE cant_contas_alunos SET limite_diario = ? WHERE ra_aluno = ?',
       [limite_diario || null, ra]
     );
     return result.affectedRows > 0;
   } catch (error) {
-    console.error("Erro ao atualizar limite diário:", error);
+    console.error('Erro ao atualizar limite diário:', error);
     return false;
   } finally {
     connection.release();
@@ -311,12 +393,12 @@ export async function verificarLimiteGasto(
   try {
     const conta = await obterContaAluno(ra);
     if (!conta) {
-      return { pode: false, motivo: "Conta não encontrada" };
+      return { pode: false, motivo: 'Conta não encontrada' };
     }
 
     // Verificar saldo
     if (conta.saldo < valor) {
-      return { pode: false, motivo: "Saldo insuficiente" };
+      return { pode: false, motivo: 'Saldo insuficiente' };
     }
 
     // Verificar limite diário se definido

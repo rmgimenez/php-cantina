@@ -54,6 +54,13 @@ export default function VendasClient() {
   );
   const [valorRecebido, setValorRecebido] = useState<string>('');
   const [observacoes, setObservacoes] = useState('');
+  const [observacoesAluno, setObservacoesAluno] = useState<string[]>([]);
+  const [newObsText, setNewObsText] = useState('');
+  const [newObsPublico, setNewObsPublico] = useState(true);
+  const [blockedInfo, setBlockedInfo] = useState<{
+    motivo?: string;
+    observacoes?: string[];
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [codigoBarras, setCodigoBarras] = useState('');
 
@@ -164,7 +171,11 @@ export default function VendasClient() {
         const response = await fetch(`/api/vendas?action=aluno&ra=${clienteData.ra}`);
         const data = await response.json();
         if (data.success && data.data) {
-          // Pode incluir saldo e limite se disponível
+          // data.data: { aluno, observacoes }
+          // Preencher observações do aluno (apenas texto)
+          const obs = (data.data.observacoes || []).map((o: any) => o.texto || o);
+          setObservacoesAluno(obs);
+          // Pode incluir saldo e limite se disponível (se quiser adaptar)
         }
       } catch (error) {
         console.error('Erro ao buscar dados do aluno:', error);
@@ -180,6 +191,38 @@ export default function VendasClient() {
 
     setClientesEncontrados([]);
     setBuscarCliente('');
+  };
+
+  const adicionarObservacao = async () => {
+    if (!cliente || cliente.tipo !== 'aluno' || !cliente.ra) {
+      alert('Selecione um aluno para adicionar observação');
+      return;
+    }
+    if (!newObsText || newObsText.trim().length === 0) {
+      alert('Digite o texto da observação');
+      return;
+    }
+
+    try {
+      const ra = cliente.ra;
+      const response = await fetch(
+        `/api/vendas?action=adicionarObservacao&ra=${ra}&texto=${encodeURIComponent(
+          newObsText
+        )}&publico=${newObsPublico}`
+      );
+      const data = await response.json();
+      if (data.success) {
+        // atualizar lista local de observações
+        setObservacoesAluno([newObsText, ...observacoesAluno]);
+        setNewObsText('');
+        setNewObsPublico(true);
+      } else {
+        alert(data.error || 'Erro ao adicionar observação');
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar observação:', error);
+      alert('Erro ao adicionar observação');
+    }
   };
 
   const adicionarAoCarrinho = (produto: Produto) => {
@@ -278,7 +321,17 @@ export default function VendasClient() {
         const data = await response.json();
 
         if (!data.success || !data.data.podeVender) {
-          alert(data.data.motivo || 'Venda não permitida');
+          // mostrar motivo e observações (se houver)
+          const motivo = data.data.motivo || 'Venda não permitida';
+          const obsArr = data.data.observacoes || data.data.observacoesAluno || [];
+          setBlockedInfo({ motivo, observacoes: obsArr });
+          // também exibir alerta simples
+          let msg = motivo;
+          if (obsArr && obsArr.length) {
+            msg +=
+              '\n\nObservações:\n' + obsArr.map((o: any, i: number) => `${i + 1}. ${o}`).join('\n');
+          }
+          alert(msg);
           return false;
         }
       } catch (error) {
@@ -367,6 +420,46 @@ export default function VendasClient() {
     setObservacoes('');
     setBuscarCliente('');
     setClientesEncontrados([]);
+  };
+
+  // Modal de histórico de observações
+  const [showObsModal, setShowObsModal] = useState(false);
+  const [obsHistorico, setObsHistorico] = useState<any[]>([]);
+  const abrirHistoricoObservacoes = async () => {
+    if (!cliente || cliente.tipo !== 'aluno' || !cliente.ra) {
+      alert('Selecione um aluno para ver o histórico');
+      return;
+    }
+    try {
+      const response = await fetch(`/api/vendas?action=observacoesFull&ra=${cliente.ra}`);
+      const data = await response.json();
+      if (data.success) {
+        setObsHistorico(data.data || []);
+        setShowObsModal(true);
+      } else {
+        alert(data.error || 'Erro ao obter histórico');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+      alert('Erro ao carregar histórico de observações');
+    }
+  };
+
+  const inativarObservacao = async (id: number) => {
+    try {
+      const response = await fetch(`/api/vendas?action=inativarObservacao&id=${id}`);
+      const data = await response.json();
+      if (data.success) {
+        // atualizar lista local
+        setObsHistorico(obsHistorico.map((o) => (o.id === id ? { ...o, ativo: 0 } : o)));
+        setObservacoesAluno(obsHistorico.filter((o) => o.ativo && o.publico).map((o) => o.texto));
+      } else {
+        alert(data.error || 'Erro ao inativar observação');
+      }
+    } catch (error) {
+      console.error('Erro ao inativar observação:', error);
+      alert('Erro ao inativar observação');
+    }
   };
 
   return (
@@ -545,6 +638,57 @@ export default function VendasClient() {
                       }}
                       placeholder={`Buscar ${cliente.tipo === 'aluno' ? 'aluno' : 'funcionário'}`}
                     />
+                  )}
+
+                  {/* Observações do aluno quando selecionado */}
+                  {cliente.nome && cliente.tipo === 'aluno' && (
+                    <div className='mt-2'>
+                      <div className='d-flex justify-content-between align-items-center'>
+                        <h6 className='m-0'>Observações</h6>
+                        <button
+                          className='btn btn-sm btn-outline-secondary'
+                          onClick={abrirHistoricoObservacoes}
+                        >
+                          Histórico
+                        </button>
+                      </div>
+                      {observacoesAluno.length === 0 ? (
+                        <p className='text-muted'>Nenhuma observação pública</p>
+                      ) : (
+                        <ul className='list-group mb-2'>
+                          {observacoesAluno.map((o, idx) => (
+                            <li key={idx} className='list-group-item'>
+                              {o}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      <div className='input-group'>
+                        <input
+                          type='text'
+                          className='form-control'
+                          placeholder='Adicionar observação (apenas texto público)'
+                          value={newObsText}
+                          onChange={(e) => setNewObsText(e.target.value)}
+                        />
+                        <button className='btn btn-outline-primary' onClick={adicionarObservacao}>
+                          Adicionar
+                        </button>
+                      </div>
+                      <div className='form-check form-switch mt-1'>
+                        <input
+                          className='form-check-input'
+                          type='checkbox'
+                          checked={newObsPublico}
+                          onChange={(e) => setNewObsPublico(e.target.checked)}
+                          id='obsPublico'
+                        />
+                        <label className='form-check-label' htmlFor='obsPublico'>
+                          Mostrar publicamente no caixa
+                        </label>
+                      </div>
+                    </div>
                   )}
 
                   {/* Lista de clientes encontrados */}
@@ -728,6 +872,76 @@ export default function VendasClient() {
           )}
         </div>
       </div>
+
+      {/* Modal de Histórico de Observações */}
+      {showObsModal && (
+        <div
+          className='modal d-block'
+          tabIndex={-1}
+          role='dialog'
+          style={{ background: 'rgba(0,0,0,0.5)' }}
+        >
+          <div className='modal-dialog modal-lg' role='document'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h5 className='modal-title'>Histórico de Observações - {cliente.nome}</h5>
+                <button
+                  type='button'
+                  className='btn-close'
+                  onClick={() => setShowObsModal(false)}
+                />
+              </div>
+              <div className='modal-body'>
+                {obsHistorico.length === 0 ? (
+                  <p className='text-muted'>Nenhuma observação registrada</p>
+                ) : (
+                  <div className='list-group'>
+                    {obsHistorico.map((o) => (
+                      <div
+                        key={o.id}
+                        className={`list-group-item d-flex justify-content-between align-items-start ${
+                          o.ativo ? '' : 'text-muted'
+                        }`}
+                      >
+                        <div>
+                          <div className='fw-bold'>{o.texto}</div>
+                          <small className='text-muted'>
+                            {o.funcionario_cantina_id
+                              ? `Por funcionário ${o.funcionario_cantina_id} `
+                              : ''}
+                            - {new Date(o.data_criacao).toLocaleString()}
+                            {o.publico ? ' • Público' : ' • Privado'}
+                            {o.ativo ? '' : ' • Inativo'}
+                          </small>
+                        </div>
+                        <div>
+                          {o.ativo && (
+                            <button
+                              className='btn btn-sm btn-outline-danger'
+                              onClick={() => inativarObservacao(o.id)}
+                            >
+                              Inativar
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className='modal-footer'>
+                <button
+                  type='button'
+                  className='btn btn-secondary'
+                  onClick={() => setShowObsModal(false)}
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

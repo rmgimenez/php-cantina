@@ -57,6 +57,7 @@ export interface VerificacaoVenda {
   saldoAtual?: number;
   limiteDiario?: number;
   gastoHoje?: number;
+  observacoesAluno?: string[]; // observações públicas encontradas para o aluno
 }
 
 export async function gerarNumeroVenda(): Promise<string> {
@@ -149,9 +150,17 @@ export async function verificarCondicoesVenda(
         for (const item of itens) {
           const podeConsumir = await verificarRestricaoAluno(clienteId, item.produtoId);
           if (!podeConsumir) {
+            // Buscar observações do aluno para exibir junto com o motivo
+            const [obsRows] = await connection.execute<RowDataPacket[]>(
+              'SELECT texto FROM cant_observacoes_alunos WHERE ra_aluno = ? AND publico = 1 AND ativo = 1 ORDER BY data_criacao DESC LIMIT 5',
+              [clienteId]
+            );
+            const observacoes = obsRows.map((r: any) => r.texto);
+
             return {
               podeVender: false,
-              motivo: `Produto "${item.nomeProduto}" não permitido para este aluno`,
+              motivo: `Produto "${item.nomeProduto}" n\u00e3o permitido para este aluno`,
+              observacoesAluno: observacoes,
             };
           }
         }
@@ -202,7 +211,10 @@ export async function criarVenda(novaVenda: NovaVenda): Promise<number> {
     );
 
     if (!verificacao.podeVender) {
-      throw new Error(verificacao.motivo || 'Venda não permitida');
+      // lançar um objeto para propagar observações caso existam
+      const err: any = new Error(verificacao.motivo || 'Venda não permitida');
+      err.observacoesAluno = verificacao.observacoesAluno;
+      throw err;
     }
 
     // Gerar número da venda
