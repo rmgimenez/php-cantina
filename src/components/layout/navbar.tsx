@@ -92,6 +92,32 @@ export default function Navbar({ user, showLogout = true }: NavbarProps) {
                       </li>
                     </ul>
                   </li>
+                  <li className="nav-item dropdown">
+                    <a
+                      className="nav-link dropdown-toggle"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      Caixas
+                    </a>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <Link href="/caixas" className="dropdown-item">
+                          Gerenciar Caixas
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/caixas/relatorios"
+                          className="dropdown-item"
+                        >
+                          Relatórios de Caixa
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
                   <li className="nav-item">
                     <Link href="/alunos" className="nav-link">
                       Alunos

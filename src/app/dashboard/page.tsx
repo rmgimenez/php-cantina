@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   FaBoxes,
+  FaCashRegister,
   FaChartBar,
   FaCog,
   FaCoins,
@@ -79,10 +80,10 @@ export default async function DashboardPage() {
           <div className="col-md-3 mb-3">
             <div className="card stats-card h-100">
               <div className="card-body text-center">
-                <FaBoxes className="text-success mb-2" size={24} />
-                <h6 className="card-title text-muted">Produtos Ativos</h6>
+                <FaCashRegister className="text-success mb-2" size={24} />
+                <h6 className="card-title text-muted">Caixas Abertos</h6>
                 <h4 className="text-success mb-0">--</h4>
-                <small className="text-muted">-- tipos</small>
+                <small className="text-muted">operando</small>
               </div>
             </div>
           </div>
@@ -145,6 +146,17 @@ export default async function DashboardPage() {
             disabled={!canManageStock}
             buttonText={canManageStock ? "Ver Estoque" : "Sem Permissão"}
             buttonVariant="warning"
+          />
+
+          <DashboardCard
+            title="Gerenciamento de Caixas"
+            description="Abrir e fechar caixas, controlar fluxo de vendas e relatórios financeiros."
+            icon={<FaCashRegister size={20} />}
+            iconClass="icon-caixas"
+            href={canSell ? "/caixas" : undefined}
+            disabled={!canSell}
+            buttonText={canSell ? "Gerenciar Caixas" : "Sem Permissão"}
+            buttonVariant="primary"
           />
 
           <DashboardCard

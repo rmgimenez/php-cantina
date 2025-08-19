@@ -839,3 +839,81 @@ INSERT INTO `cant_pacotes_alimentacao` (`nome`, `descricao`, `tipo_refeicao`, `p
 ('Combo Completo - Mensal', 'Lanche manhã + Almoço + Lanche tarde', 'personalizado', 500.00, 30);
 
 -- fim - tabelas da cantina
+-- início - tabelas para RF-031: Abertura e Fechamento de Caixa
+
+-- Tabela de caixas (caixas físicas / pontos de venda)
+CREATE TABLE `cant_caixas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT 1,
+  `data_criacao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_caixas_nome` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de aberturas de caixa (registro de abertura feita pelo atendente)
+CREATE TABLE `cant_caixas_aberturas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `caixa_id` int NOT NULL,
+  `funcionario_cantina_id` int NOT NULL,
+  `saldo_inicial` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `data_abertura` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `aberto` tinyint(1) NOT NULL DEFAULT 1,
+  `observacoes` varchar(255) DEFAULT NULL,
+  `data_atualizacao` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_caixas_aberturas_caixa` (`caixa_id`),
+  KEY `idx_cant_caixas_aberturas_func` (`funcionario_cantina_id`),
+  CONSTRAINT `fk_cant_caixas_aberturas_caixa` FOREIGN KEY (`caixa_id`) REFERENCES `cant_caixas` (`id`),
+  CONSTRAINT `fk_cant_caixas_aberturas_func` FOREIGN KEY (`funcionario_cantina_id`) REFERENCES `cant_funcionarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de fechamentos de caixa (registro do fechamento ligado a uma abertura)
+CREATE TABLE `cant_caixas_fechamentos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `abertura_id` int NOT NULL,
+  `funcionario_cantina_id` int NOT NULL,
+  `saldo_final` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_vendas` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_movimentacoes` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_dinheiro` decimal(10,2) DEFAULT NULL,
+  `total_cartao` decimal(10,2) DEFAULT NULL,
+  `total_pix` decimal(10,2) DEFAULT NULL,
+  `troco` decimal(10,2) DEFAULT NULL,
+  `diferenca` decimal(10,2) DEFAULT NULL,
+  `observacoes` text DEFAULT NULL,
+  `data_fechamento` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cant_caixas_fechamentos_abertura` (`abertura_id`),
+  KEY `idx_cant_caixas_fechamentos_func` (`funcionario_cantina_id`),
+  CONSTRAINT `fk_cant_caixas_fechamentos_abertura` FOREIGN KEY (`abertura_id`) REFERENCES `cant_caixas_aberturas` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cant_caixas_fechamentos_func` FOREIGN KEY (`funcionario_cantina_id`) REFERENCES `cant_funcionarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- View para checar aberturas ativas
+CREATE VIEW `cant_view_caixas_abertas` AS
+SELECT
+  a.id as abertura_id,
+  c.id as caixa_id,
+  c.nome as caixa_nome,
+  a.funcionario_cantina_id,
+  fc.nome as funcionario_nome,
+  a.saldo_inicial,
+  a.data_abertura
+FROM cant_caixas_aberturas a
+INNER JOIN cant_caixas c ON a.caixa_id = c.id
+INNER JOIN cant_funcionarios fc ON a.funcionario_cantina_id = fc.id
+WHERE a.aberto = 1;
+
+-- Observação: regras de unicidade (por exemplo: apenas uma abertura ativa por caixa) deverão
+-- ser garantidas pela camada de aplicação ou por triggers adicionais se desejado.
+
+-- fim - tabelas para RF-031
+
+-- Dados iniciais para caixas
+INSERT INTO `cant_caixas` (`nome`, `descricao`) VALUES
+('Caixa Principal', 'Caixa principal da cantina'),
+('Caixa 2', 'Segundo caixa para dias de movimento'),
+('Caixa Eventos', 'Caixa específico para eventos especiais');

@@ -206,3 +206,11 @@ O sistema deve gerenciar sessões de login para todos os tipos de usuários, man
 ### RF-030 - Auditoria de Operações
 
 O sistema deve registrar todas as operações realizadas, identificando usuário responsável, data/hora e tipo de operação para fins de auditoria.
+
+### RF-031 - Abertura e Fechamento de Caixa
+
+O sistema deve permitir que atendentes abram e fechem o caixa no início e fim do expediente, registrando valores iniciais e finais.
+
+O sistema deve garantir que todas as transações sejam registradas corretamente durante o expediente, permitindo auditorias futuras.
+
+Terá um relatório de movimentações financeiras por período, detalhando entradas e saídas de caixa.
