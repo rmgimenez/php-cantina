@@ -128,6 +128,10 @@ O sistema deve permitir que responsáveis definam restrições de consumo, bloqu
 
 Os responsáveis poderão definir restrições de consumo, bloqueando produtos específicos ou tipos de produtos para seus dependentes. Para bloquear os responsáveis deverão ir no caixa da cantina e solicitar para um atendente.
 
+A tela deverá exibir as restrições atuais e permitir a adição de novas restrições.
+
+O funcionário da cantina irá pesquisar o aluno e cadastrar as restrições desejadas.
+
 ### RF-013 - Configuração de Limite Diário
 
 O sistema deve permitir que responsáveis definam um limite de gasto diário para seus dependentes.
