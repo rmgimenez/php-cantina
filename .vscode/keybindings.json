@@ -1,0 +1,27 @@
+[
+  {
+    "key": "tab",
+    "command": "editor.action.inlineSuggest.accept",
+    "when": "editorTextFocus && inlineSuggestionVisible"
+  },
+  {
+    "key": "ctrl+alt+\\",
+    "command": "editor.action.inlineSuggest.accept",
+    "when": "editorTextFocus && inlineSuggestionVisible"
+  },
+  {
+    "key": "alt+]",
+    "command": "editor.action.inlineSuggest.showNext",
+    "when": "editorTextFocus && inlineSuggestionVisible"
+  },
+  {
+    "key": "alt+[",
+    "command": "editor.action.inlineSuggest.showPrevious",
+    "when": "editorTextFocus && inlineSuggestionVisible"
+  },
+  {
+    "key": "ctrl+esc",
+    "command": "editor.action.inlineSuggest.hide",
+    "when": "editorTextFocus && inlineSuggestionVisible"
+  }
+]
